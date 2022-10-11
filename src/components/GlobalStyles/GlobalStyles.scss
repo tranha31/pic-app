@@ -35,3 +35,25 @@
     text-transform: none;
     text-decoration: none;
 }
+
+.App{
+    width: 100vw;
+    height: 100vh;
+}
+
+.d-none{
+    display: none;
+}
+
+.d-flex{
+    display: flex;
+}
+
+.flex-column{
+    flex-direction: column;
+}
+
+.flex-1{
+    flex: 1;
+}
+

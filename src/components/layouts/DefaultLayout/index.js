@@ -1,13 +1,14 @@
+import { Fragment } from "react";
 import Header from "./Header";
 
 function DefaultLayout({children}) {
     return ( 
-        <div>
+        <Fragment>
             <Header/>
             <div className="container">
                 <div className="content">{children}</div>
             </div>
-        </div>
+        </Fragment>
      );
 }
 
