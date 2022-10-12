@@ -121,6 +121,17 @@
     }
 }
 
+.user-option{
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    padding-right: 15px;
+
+    .btn-mobi{
+        display: none;
+    }
+}
+
 @media only screen and (max-width: 768px) {
     .nav-bar{
         display: none !important;
@@ -128,5 +139,17 @@
 
     .small-nav-bar{
         display: flex !important;
+    }
+
+    .user-option {
+        .btn-desktop{
+            display: none !important;
+        }
+        
+        .btn-mobi{
+            display: inline;
+            position: relative;
+            top: -10px
+        }
     }
 }

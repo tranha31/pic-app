@@ -3,11 +3,12 @@ import classNames from 'classnames/bind';
 import { headerRoutes } from "@/routes";
 import { Link } from 'react-router-dom';
 import Tippy from '@tippyjs/react/headless';
-
+import Button from '@/components/base/Button';
 
 const cx = classNames.bind(styles);
 
 function Header() {
+
     return (
         <div className={cx('header', 'd-flex')}>
             <div className={cx('logo')}></div>
@@ -44,16 +45,19 @@ function Header() {
                     <div className={cx('small-nav-bar', 'd-none')}>
                     </div>
                 </Tippy>
-                
             </div>
-            
-            
-            <div className={cx('user-option')}>
 
+            <div className={cx('user-option', 'flex-1')}>
+                <div className={cx('btn-desktop')}>
+                    <Button className={cx('login-btn')} primary>Login</Button>
+                    <Button className={cx('logout-btn', 'd-none')} normal>Logout</Button>
+                </div>
+                <div className={cx('btn-mobi')}>
+                    <Button className={cx('login-btn-small')} small primary>Login</Button>
+                    <Button className={cx('logout-btn-small', 'd-none')} small normal>Logout</Button>
+                </div>
             </div>
         </div>
-        
-        
     );
 }
 
