@@ -1,0 +1,85 @@
+.content{
+    width: calc(100vw - 200px);
+    height: 100%;
+    padding: 20px;
+    overflow: auto;
+
+    .content-container{
+        width: 100%;
+        height: auto;
+        flex-wrap: wrap;
+
+        .content-picture{
+            width: 300px;
+            height: 550px;
+            margin-right: 20px;
+            margin-bottom: 20px;
+
+            .image{
+                height: 400px;
+                width: 100%;
+                padding: 20px;
+                background-repeat: no-repeat;
+                background-size: cover;
+                background-image: url('../../../../assets/imgs/socute.jpg');
+            }
+
+            .info{
+                width: 100%;
+                height: calc(100% - 400px);
+                padding: 20px;
+                background-color: #0e1d38;
+                color: #fff;
+
+                & > div{
+                    padding-bottom: 5px;
+                }
+
+                .name{
+                    font-size: 18px;
+                    font-family: notosans-bold;
+                    color: #fff200;
+                }
+
+                .price, .author{
+                    font-family: notosans-bold;
+                }
+            }
+
+            &:hover{
+                cursor: pointer;
+
+                .info{
+                    display: none;
+                }
+
+                .image{
+                    width: 100%;
+                    height: 100%;
+                    transition-duration: 0.5s;
+                }
+            }
+            
+        }
+    }
+
+    .see-more{
+        width: 100%;
+        background-color: transparent;
+        height: 50px;
+        padding-bottom: 5px;
+        justify-content: center;
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    .content{
+        width: 100vw !important;
+        height: calc(100% - 40px) !important;
+
+        .see-more{
+            position: relative !important;
+            bottom: unset !important;
+        }
+    }
+}
