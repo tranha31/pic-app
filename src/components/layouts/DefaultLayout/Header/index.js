@@ -49,12 +49,12 @@ function Header() {
 
             <div className={cx('user-option', 'flex-1')}>
                 <div className={cx('btn-desktop')}>
-                    <Button className={cx('login-btn')} primary>Login</Button>
-                    <Button className={cx('logout-btn', 'd-none')} normal>Logout</Button>
+                    <Button className={cx('login-btn')} primary>Connect Metamask</Button>
+                    <Button className={cx('logout-btn', 'd-none')} normal>Disconnect</Button>
                 </div>
                 <div className={cx('btn-mobi')}>
-                    <Button className={cx('login-btn-small')} small primary>Login</Button>
-                    <Button className={cx('logout-btn-small', 'd-none')} small normal>Logout</Button>
+                    <Button className={cx('login-btn-small')} small primary>Connect Metamask</Button>
+                    <Button className={cx('logout-btn-small', 'd-none')} small normal>Disconnect</Button>
                 </div>
             </div>
         </div>

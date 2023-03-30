@@ -77,3 +77,55 @@
     flex: 1;
 }
 
+.justify-center{
+    justify-content: center;
+}
+
+.align-center{
+    align-items: center;
+}
+
+.s-24{
+    width: 24px;
+    height: 24px;
+}
+
+.s-32{
+    width: 32px;
+    height: 32px;
+}
+
+.icon{
+    background-repeat: no-repeat;
+    border-radius: 50px;
+    background-position: center;
+
+    &:hover{
+        cursor: pointer;
+        background-color: #babec5;
+    }
+}
+
+.icon-not-hover{
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.i-delete{
+    background-image: url("../../assets/imgs/delete-2-32.png");
+    background-size: 10px 10px;
+}
+
+.i-cart{
+    background-image: url("../../assets/imgs/cart-43-32.png");
+    background-size: 25px 25px;
+    margin-right: 8px;
+}
+
+.font-size-18{
+    font-size: 18px;
+}
+
+.font-bold{
+    font-weight: 700;
+}

@@ -48,16 +48,17 @@
 
             &:hover{
                 cursor: pointer;
+                box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+                border: 2px solid #fff200;
+                // .info{
+                //     display: none;
+                // }
 
-                .info{
-                    display: none;
-                }
-
-                .image{
-                    width: 100%;
-                    height: 100%;
-                    transition-duration: 0.5s;
-                }
+                // .image{
+                //     width: 100%;
+                //     height: 100%;
+                //     transition-duration: 0.5s;
+                // }
             }
             
         }
@@ -70,6 +71,47 @@
         padding-bottom: 5px;
         justify-content: center;
     }
+
+    .content-image-detail{
+        width: 100%;
+        height: 100%;
+        padding-bottom: 16px;
+        flex-direction: row;
+
+        .image-content{
+            display: flex;
+
+            .image{
+                flex: 1;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-size: contain;
+                border: 1px solid #fff200;
+                background-image: url("../../../../assets/imgs/socute.jpg");
+                background-color: #0e1d38;
+            }
+        }
+
+        .detail{
+            margin-left: 20px;
+
+            .image-detail{
+                justify-content: center;
+
+                .image-detail-title{
+                    font-size: 25px;
+                    font-weight: 700;
+                }
+    
+                .image-detail-detail{
+                    padding-top: 5px;
+                    font-size: 15px;
+                }
+            }
+            
+
+        }
+    }
 }
 
 @media only screen and (max-width: 768px) {
@@ -80,6 +122,14 @@
         .see-more{
             position: relative !important;
             bottom: unset !important;
+        }
+
+        .content-image-detail{
+            flex-direction: column !important;
+
+            .detail{
+                margin-left: 0px;
+            }
         }
     }
 }

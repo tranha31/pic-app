@@ -30,8 +30,7 @@ function Home() {
                     })
                 }
             </div>
-            {isDefault && <Market/>}
-            {!isDefault && <Sell/> }
+            {isDefault ? <Market/> : <Sell/>}
         </div>
     );
 }
