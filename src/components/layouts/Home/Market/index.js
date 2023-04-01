@@ -15,8 +15,8 @@ function Market() {
             <div className={cx('detail', 'flex-1', 'd-flex', 'flex-column')}>
                 <div className={cx('image-detail', 'flex-1', 'd-flex', 'flex-column')}>
                     <p className={cx('image-detail-title')}>Test image</p>
+                    <p className={cx('image-detail-detail', 'price')}>Price: 5 eth</p>
                     <p className={cx('image-detail-detail')}>The girl is so cute</p>
-                    <p className={cx('image-detail-detail')}>Price: 5 eth</p>
                     <p className={cx('image-detail-detail')}>Author: 0x544846531979656564619</p>
                 </div>
                 <Button className={cx('d-flex')} primary 
@@ -57,7 +57,7 @@ function Market() {
                 <Button className={cx('see-more-btn')} primary>See more</Button>
             </div>
 
-            <PopupDetail title={"View image"} child={imageDetail}/>
+            {/* <PopupDetail title={"View image"} child={imageDetail} scale={{height: "90%", width: "55%"}}/> */}
         </div>
     );
 }

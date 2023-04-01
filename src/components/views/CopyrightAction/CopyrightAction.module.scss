@@ -1,0 +1,28 @@
+.copyright-wrapper{
+    padding-bottom: 16px;
+
+    .background-image{
+        background-image: url("../../../assets/imgs/image-2-128.png");
+        background-repeat: no-repeat;
+        background-position: center;
+        width: 250px;
+        height: 250px;
+        border: 2px dashed #fff200;
+        border-radius: 50%;
+        margin-bottom: 20px;
+
+        &:hover{
+            cursor: pointer;
+        }
+    }
+
+    .image-content .img-content{
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: auto;
+        width: 95%;
+        height: 95%;
+        border: 1px solid #fff200;
+    }
+}
+

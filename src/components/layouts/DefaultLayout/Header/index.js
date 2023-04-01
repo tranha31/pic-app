@@ -7,7 +7,11 @@ import Button from '@/components/base/Button';
 
 const cx = classNames.bind(styles);
 
-function Header() {
+function Header({callBackHandleCloseCopyright}) {
+
+    const handleCloseCopyright = (mode) => {
+        callBackHandleCloseCopyright(mode);
+    }
 
     return (
         <div className={cx('header', 'd-flex')}>
@@ -49,12 +53,12 @@ function Header() {
 
             <div className={cx('user-option', 'flex-1')}>
                 <div className={cx('btn-desktop')}>
-                    <Button className={cx('login-btn')} primary>Connect Metamask</Button>
-                    <Button className={cx('logout-btn', 'd-none')} normal>Disconnect</Button>
+                    <Button className={cx('login-btn')} primary onClick={() => {handleCloseCopyright(0);}}>Copyright registration</Button>
+                    <Button className={cx('logout-btn')} normal onClick={() => {handleCloseCopyright(1);}}>Check copyright</Button>
                 </div>
                 <div className={cx('btn-mobi')}>
-                    <Button className={cx('login-btn-small')} small primary>Connect Metamask</Button>
-                    <Button className={cx('logout-btn-small', 'd-none')} small normal>Disconnect</Button>
+                    <Button className={cx('login-btn-small')} small normal onClick={() => {handleCloseCopyright(0);}}>Copyright registration</Button>
+                    <Button className={cx('logout-btn-small', 'd-none')} small normal onClick={() => {handleCloseCopyright(1);}}>Check copyright</Button>
                 </div>
             </div>
         </div>
