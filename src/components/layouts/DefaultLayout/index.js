@@ -5,7 +5,7 @@ import Header from "./Header";
 function DefaultLayout({children}) {
 
     const [copyrightMode, setCopyrightMode] = useState(0);
-    const [showCopyright, setShowCopyright] = useState(true);
+    const [showCopyright, setShowCopyright] = useState(false);
 
     const handleCloseCopyright = (state) => {
         setShowCopyright(state)

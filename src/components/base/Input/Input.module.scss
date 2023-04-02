@@ -1,0 +1,49 @@
+.input-wrapper{
+    margin-bottom: 5px;
+
+    .title{
+        padding-bottom: 5px;
+
+        span{
+            color: red;
+            margin-left: 5px;
+        }
+    }
+
+    input{
+        padding: 5px;
+        caret-color: #fff200;
+        border: 1px solid #babec5;
+        border-radius: 5px;
+        height: 40px;
+
+        &:focus{
+            border: 1px solid #fff200;
+        }
+    }
+
+    textarea{
+        resize: vertical;
+        padding: 5px;
+        caret-color: #fff200;
+        border: 1px solid #babec5;
+        border-radius: 5px;
+        height: 100px;
+
+        &:focus{
+            border: 1px solid #fff200;
+        }
+    }
+
+    input.error, textarea.error{
+        border-color: red;
+    }
+
+    input.number{
+        text-align: right;
+    }
+}
+
+.enter-info{
+    margin-bottom: 10px;
+}

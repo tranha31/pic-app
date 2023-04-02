@@ -1,6 +1,6 @@
 import styles from './CopyrightAction.module.scss';
 import classNames from 'classnames/bind';
-import { Fragment, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import PopupDetail from '@/components/base/PopupDetail';
 import Button from '@/components/base/Button';
 

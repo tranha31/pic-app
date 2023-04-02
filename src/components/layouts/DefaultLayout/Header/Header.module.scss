@@ -73,6 +73,7 @@
         height: 45%;
         width: 100%;
         padding-top: 5px;
+        padding-bottom: 2px;
 
         .menu-item{
             padding: 5px;
@@ -85,6 +86,12 @@
 
         .menu-item:hover{
             background-color: #fff200;
+            color: #fff;
+            border-radius: 5px;
+        }
+
+        .menu-item.active{
+            background-color: #0e1d38;
             color: #fff;
             border-radius: 5px;
         }
@@ -119,6 +126,11 @@
             color: #fff;
         }
     }
+
+    .menu-item-tippy.active{
+        background-color: #0e1d38;
+        color: #fff;
+    }
 }
 
 .user-option{
@@ -149,7 +161,16 @@
         .btn-mobi{
             display: inline;
             position: relative;
-            top: -10px
+            top: 0px;
+
+            .logout-btn-small{
+                margin-left: 0px;
+                padding: 1px;
+            }
+
+            .login-btn-small{
+                padding: 1px;
+            }
         }
     }
 }

@@ -2,10 +2,13 @@ import styles from './Market.module.scss';
 import classNames from 'classnames/bind';
 import Button from '@/components/base/Button';
 import PopupDetail from '@/components/base/PopupDetail';
+import { useState } from 'react';
 
 const cx = classNames.bind(styles);
 
 function Market() {
+
+    const [showDetail, setShowDetail] = useState(false);
 
     var imageDetail = (
         <div className={cx('content-image-detail', 'd-flex')}>
@@ -33,7 +36,7 @@ function Market() {
     return (
         <div className={cx('content', 'd-flex', 'flex-column')}>
             <div className={cx('content-container', 'd-flex')}>
-                <div className={cx('content-picture', 'd-flex', 'flex-column')}>
+                <div className={cx('content-picture', 'd-flex', 'flex-column')} onClick={() => {setShowDetail(true)}}>
                     <div className={cx('image')}></div>
                     <div className={cx('info', 'd-flex', 'flex-column')}>
                         <div className={cx('name')}>Test image</div>
@@ -56,8 +59,8 @@ function Market() {
             <div className={cx('see-more', 'd-flex')}>
                 <Button className={cx('see-more-btn')} primary>See more</Button>
             </div>
-
-            {/* <PopupDetail title={"View image"} child={imageDetail} scale={{height: "90%", width: "55%"}}/> */}
+            {showDetail && <PopupDetail title={"View image"} child={imageDetail} scale={{height: "90%", width: "55%"}} eventCallBack={() => {setShowDetail(false)}}/>}
+            
         </div>
     );
 }

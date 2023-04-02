@@ -4,10 +4,13 @@ import { headerRoutes } from "@/routes";
 import { Link } from 'react-router-dom';
 import Tippy from '@tippyjs/react/headless';
 import Button from '@/components/base/Button';
+import { useLocation } from 'react-router-dom'
 
 const cx = classNames.bind(styles);
 
 function Header({callBackHandleCloseCopyright}) {
+
+    const location = useLocation();
 
     const handleCloseCopyright = (mode) => {
         callBackHandleCloseCopyright(mode);
@@ -24,8 +27,9 @@ function Header({callBackHandleCloseCopyright}) {
                 </div>
                 <div className={cx('nav-bar', 'd-flex')}>
                     {headerRoutes.map((router, index) => {
+                        var isActive = location.pathname == router.path
                         return (
-                            <Link to={router.path} key={index} className={cx('menu-item')}>{router.name}</Link>
+                            <Link to={router.path} key={index} className={cx('menu-item', isActive ? 'active' : '')}>{router.name}</Link>
                         );  
                     })
                     }
@@ -38,8 +42,9 @@ function Header({callBackHandleCloseCopyright}) {
                     render={attrs => (
                         <div className={cx('small-menu-tippy', 'd-flex', 'flex-column')} tabIndex="-1" {...attrs}>
                             {headerRoutes.map((router, index) => {
+                                var isActive = location.pathname == router.path
                                 return (
-                                    <Link to={router.path} key={index} className={cx('menu-item-tippy')}>{router.name}</Link>
+                                    <Link to={router.path} key={index} className={cx('menu-item-tippy', isActive ? 'active' : '')}>{router.name}</Link>
                                 );  
                             })
                             }
@@ -58,7 +63,7 @@ function Header({callBackHandleCloseCopyright}) {
                 </div>
                 <div className={cx('btn-mobi')}>
                     <Button className={cx('login-btn-small')} small normal onClick={() => {handleCloseCopyright(0);}}>Copyright registration</Button>
-                    <Button className={cx('logout-btn-small', 'd-none')} small normal onClick={() => {handleCloseCopyright(1);}}>Check copyright</Button>
+                    <Button className={cx('logout-btn-small')} small normal onClick={() => {handleCloseCopyright(1);}}>Check copyright</Button>
                 </div>
             </div>
         </div>

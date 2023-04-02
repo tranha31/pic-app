@@ -1,0 +1,110 @@
+.sell-content{
+
+    .step-1{
+        padding: 16px 10px 10px 10px;
+        height: calc(100% - 50px);
+
+        .step-title{
+            padding-bottom: 16px;
+        }
+
+        .list-image{
+            height: calc(100% - 20px);
+            overflow: auto;
+
+            .content-container{
+                width: 100%;
+                height: auto;
+                flex-wrap: wrap;
+    
+                .content-image{
+                    width: 300px;
+                    height: 550px;
+                    margin-right: 20px;
+                    margin-bottom: 20px;
+                    position: relative;
+                    background-repeat: no-repeat;
+                    background-size: cover;
+                    background-image: url('../../../../assets/imgs/socute.jpg');
+    
+                    &:hover{
+                        cursor: pointer;
+                        border: 1px solid #fff200;
+                    }
+                }
+
+                .content-image.active{
+                    border: 2px solid #fff200;
+
+                    &::after{
+                        content: "";
+                        background-image: url("../../../../assets/imgs/ok-32.png");
+                        background-repeat: no-repeat;
+                        background-size: cover;
+                        position: absolute;
+                        top: 5px;
+                        right: 5px;
+                        display: flex;
+                        width: 20px;
+                        height: 20px;
+                    }
+                }
+            }
+        }
+        
+    }
+
+    .step-2{
+        padding: 16px 10px 10px 10px;
+        height: calc(100% - 50px);
+
+        .image-content{
+            width: 100%;
+            height: 100%;
+            background-repeat: no-repeat;
+            background-size: auto;
+            background-image: url('../../../../assets/imgs/socute.jpg');
+            background-position: center;
+            border: 1px dashed #fff200;
+            margin-right: 15px;
+        }
+
+        .detail-content{
+            border: 1px dashed #fff200;
+            border-radius: 5px;
+            padding: 20px;
+
+            .detail-content-title{
+                margin-bottom: 20px;
+            }
+        }
+    }
+
+    .sell-content-footer{
+        padding-right: 10px;
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    .sell-content{
+        width: 100vw !important;
+        height: calc(100% - 40px) !important;
+
+        .content-container{
+            justify-content: center;
+
+            .see-more{
+                position: relative !important;
+                bottom: unset !important;
+            }
+        }
+
+        .step-2{
+            flex-direction: column;
+
+            .image-content{
+                margin-bottom: 15px;
+            }
+        }
+    }
+}

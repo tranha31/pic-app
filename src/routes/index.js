@@ -24,4 +24,5 @@ const homeRoutes = [
     {path: '/sell', name: 'Sell'},
 ]
 
+
 export {publicRoutes, privateRoutes, headerRoutes, homeRoutes};

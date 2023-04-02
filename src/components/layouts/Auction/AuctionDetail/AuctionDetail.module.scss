@@ -1,0 +1,61 @@
+.auction-detail-wrapper{
+    padding-bottom: 20px;
+
+    .auction-image{
+
+        .image{
+            flex: 1;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: contain;
+            border: 1px solid #fff200;
+            background-image: url("../../../../assets/imgs/socute.jpg");
+            background-color: #0e1d38;
+        }
+    }
+
+    .auction-detail{
+        margin-left: 20px;
+        overflow: auto;
+
+        .highest-info{
+            padding-bottom: 10px;
+            border-bottom: 1px solid #fff200;
+
+            .highest-price{
+                font-size: 20px;
+                margin-bottom: 10px;
+                color: red;
+            }
+        }
+
+        .timing{
+            padding: 10px 0;
+            border-bottom: 1px solid #fff200;
+
+            div{
+                margin-bottom: 5px;
+            }
+
+            .time-remaing{
+                color: red;
+                padding-top: 10px;
+            }
+        }
+
+        .your-bet{
+            padding: 10px 0;
+            border-bottom: 1px solid #fff200;
+        }
+
+        .history{
+            height: 55%;
+            overflow: auto;
+            padding: 10px 0;
+
+            .history-detail{
+                margin-bottom: 10px;
+            }
+        }
+    }
+}
