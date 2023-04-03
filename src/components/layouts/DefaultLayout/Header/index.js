@@ -1,6 +1,6 @@
 import styles from './Header.module.scss';
 import classNames from 'classnames/bind';
-import { headerRoutes } from "@/routes";
+import { headerRoutes, homeRoutes, profileRoutes } from "@/routes";
 import { Link } from 'react-router-dom';
 import Tippy from '@tippyjs/react/headless';
 import Button from '@/components/base/Button';
@@ -15,19 +15,34 @@ function Header({callBackHandleCloseCopyright}) {
     const handleCloseCopyright = (mode) => {
         callBackHandleCloseCopyright(mode);
     }
+    const lstDisableSearch = ["sell", "auction"];
+    const disabledSearch = lstDisableSearch.filter((e) => { return location.pathname.includes(e)}).length > 0 ? true : false;
+
+    const routeInHome = homeRoutes.filter(e => { return e.path == location.pathname }).length > 0
+    const routeInProfile = profileRoutes.filter(e => { return e.path == location.pathname }).length > 0
 
     return (
         <div className={cx('header', 'd-flex')}>
             <div className={cx('logo')}></div>
             <div className={cx('menu-box', 'd-flex', 'flex-column')}>
-                <div className={cx('search-box', 'd-flex')}>
+                <div className={cx('search-box', 'd-flex', disabledSearch ? 'disabled' : '')}>
                     <div className={cx('search-icon')}></div>
-                    <input className={cx('search-input')} />
+                    <input className={cx('search-input')} disabled={disabledSearch ? "disabled" : ""}/>
                     <div className={cx('search-delete', 'd-none')}>x</div>
                 </div>
                 <div className={cx('nav-bar', 'd-flex')}>
                     {headerRoutes.map((router, index) => {
-                        var isActive = location.pathname == router.path
+                        var isActive = false;
+                        if(router.path == "/" && routeInHome){
+                            isActive = true;
+                        }
+                        else if(router.path == "/my_collection" && routeInProfile){
+                            isActive = true;
+                        }
+                        else if(location.pathname == router.path){
+                            isActive = true;
+                        }
+
                         return (
                             <Link to={router.path} key={index} className={cx('menu-item', isActive ? 'active' : '')}>{router.name}</Link>
                         );  

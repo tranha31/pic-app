@@ -65,6 +65,10 @@
         }
     }
 
+    .search-box.disabled{
+        background-color: #fafafa;
+    }
+
     .search-box:focus-within{
         border-color: #fff200;
     }

@@ -7,6 +7,8 @@ const publicRoutes = [
     {path: '/my_collection', component: Profile},
     {path: '/auction', component: Auction},
     {path: '/sell', component: Home},
+    {path: '/my_auction', component: Profile},
+    {path: '/my_request', component: Profile}
 ];
 
 const privateRoutes = [
@@ -24,5 +26,10 @@ const homeRoutes = [
     {path: '/sell', name: 'Sell'},
 ]
 
+const profileRoutes = [
+    {path: '/my_collection', name: 'Collection'},
+    {path: '/my_auction', name: 'Auction'},
+    {path: '/my_request', name: 'Request'},
+]
 
-export {publicRoutes, privateRoutes, headerRoutes, homeRoutes};
+export {publicRoutes, privateRoutes, headerRoutes, homeRoutes, profileRoutes};

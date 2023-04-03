@@ -10,7 +10,7 @@ const cx = classNames.bind(styles);
 function AuctionDetail({eventCallBack}) {
 
     const [startDate, setStartDate] = useState(new Date("2023/04/02"));
-    const [endDate, setEndDate] = useState(new Date("2023/04/04 23:59:59"));
+    const [endDate, setEndDate] = useState(new Date("2023/04/30 23:59:59"));
     const [timeRDay, setTimeRDay] = useState("");
     const [timeRHour, setTimeRHour] = useState("");
     const [timeRMinute, setTimeRMinute] = useState("");
