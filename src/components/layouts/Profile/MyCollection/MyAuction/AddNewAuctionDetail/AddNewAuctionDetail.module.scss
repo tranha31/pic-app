@@ -1,0 +1,75 @@
+.auction-detail-wrapper{
+    padding-bottom: 20px;
+    .auction-image{
+        .upload-image{
+            border: 1px dashed #fff200;
+            border-radius: 5px;
+
+            .background-image{
+                background-image: url("../../../../../../assets/imgs/image-2-128.png");
+                background-repeat: no-repeat;
+                background-position: center;
+                width: 250px;
+                height: 250px;
+                border: 2px dashed #fff200;
+                border-radius: 50%;
+                margin-bottom: 20px;
+
+                &:hover{
+                    cursor: pointer;
+                }
+            }
+        }
+
+        .image-content .img-content{
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: auto;
+            width: 95%;
+            height: 95%;
+            border: 1px solid #fff200;
+            background-image: url("../../../../../../assets/imgs/socute.jpg");
+        }
+    }
+
+    .auction-detail{
+        margin-left: 10px;
+        border: 1px dashed #fff200;
+        padding: 10px;
+        border-radius: 5px;
+
+        .date-picker-wrapper{
+            margin-bottom: 10px;
+            width: 100%;
+
+            .title-date-picker{
+                margin-bottom: 8px;
+            }
+    
+            .date-picker{
+                border: 1px solid #babec5;
+                border-radius: 5px;
+                height: 40px;
+                padding-left: 5px;
+                caret-color: #fff200;
+    
+                &:focus{
+                    border: 1px solid #fff200;
+                }
+            }
+        }
+
+        
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    .auction-detail-wrapper{
+        flex-direction: column;
+
+        .auction-detail{
+            margin-left: 0;
+            margin-top: 5px;
+        }
+    }
+}

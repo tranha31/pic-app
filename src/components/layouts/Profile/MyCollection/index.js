@@ -2,12 +2,14 @@ import Button from '@/components/base/Button';
 import styles from './MyCollection.module.scss';
 import classNames from 'classnames/bind';
 import { Fragment, useState } from 'react';
+import MyAuction from './MyAuction';
+import ParticipatingRoom from './ParticipantingRoom';
 
 const cx = classNames.bind(styles);
 
 function MyCollection() {
 
-    const [tab, setTab] = useState(0);
+    const [tab, setTab] = useState(2);
 
     const goToTab = (index) => {
         setTab(index);
@@ -18,8 +20,8 @@ function MyCollection() {
             <div className={cx('tab-wrapper', 'd-flex', 'w-full')}>
                 <div className={cx('tab-item', tab == 0 ? 'active' : "")} onClick={() => {goToTab(0)}}>Collection</div>
                 <div className={cx('tab-item', tab == 1 ? 'active' : "")} onClick={() => {goToTab(1)}}>Images for sale</div>
-                <div className={cx('tab-item', tab == 2 ? 'active' : "")} onClick={() => {goToTab(2)}}>Auction room</div>
-                <div className={cx('tab-item', tab == 3 ? 'active' : "")} onClick={() => {goToTab(3)}}>Bet list</div>
+                <div className={cx('tab-item', tab == 2 ? 'active' : "")} onClick={() => {goToTab(2)}}>My Auction room</div>
+                <div className={cx('tab-item', tab == 3 ? 'active' : "")} onClick={() => {goToTab(3)}}>Participating Auction room</div>
             </div>
 
             <div className={cx('collection-content', 'd-flex', 'flex-column', 'flex-1')}>
@@ -70,6 +72,14 @@ function MyCollection() {
                             <Button normal disabled>Edit</Button>
                         </div>
                     </Fragment>
+                )}
+
+                { tab == 2 && (
+                    <MyAuction />
+                )}
+
+                {tab == 3 && (
+                    <ParticipatingRoom />
                 )}
                 
             </div>        

@@ -1,0 +1,38 @@
+.list-image-wrapper{
+    height: calc(100% - 50px);
+    flex-wrap: wrap;
+    overflow: auto;
+
+    .content-image{
+        width: 200px;
+        height: 300px;
+        margin-right: 20px;
+        margin-bottom: 20px;
+        position: relative;
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-image: url('../../../../../../assets/imgs/socute.jpg');
+
+        &:hover{
+            cursor: pointer;
+            border: 1px solid #fff200;
+        }
+    }
+
+    .content-image.active{
+        border: 2px solid #fff200;
+
+        &::after{
+            content: "";
+            background-image: url("../../../../../../assets/imgs/ok-32.png");
+            background-repeat: no-repeat;
+            background-size: cover;
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            display: flex;
+            width: 20px;
+            height: 20px;
+        }
+    }
+}

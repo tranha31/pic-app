@@ -4,8 +4,8 @@
         border-bottom: 1px solid #babec5;
 
         .tab-item{
-            padding: 20px 10px;
-            width: 150px;
+            padding: 20px 0px;
+            width: 165px;
             text-align: center;
 
             &:hover{
@@ -19,6 +19,10 @@
             border-bottom: 2px solid #0e1d38;
             font-weight: 700;
         }
+    }
+
+    .collection-content{
+        height: calc(100% - 57px);
     }
 
     .list-image{

@@ -1,18 +1,22 @@
-import Button from '@/components/base/Button';
-import styles from './MyAuction.module.scss';
+import styles from './ParticipatingRoom.module.scss';
 import classNames from 'classnames/bind';
 import { useState } from 'react';
 import DatePicker from "react-datepicker";
-import AddNewAutionDetail from './AddNewAuctionDetail';
+import Button from '@/components/base/Button';
+import AuctionDetail from '@/components/layouts/Auction/AuctionDetail';
 
 const cx = classNames.bind(styles);
 
-function MyAuction() {
+function ParticipatingRoom() {
 
     const [startDate, setStartDate] = useState(new Date())
     const [endDate, setEndDate] = useState(new Date())
 
     const [showDetail, setShowDetail] = useState(false);
+
+    const callBackDetail = (state) => {
+        setShowDetail(false);
+    }
 
     return ( 
         <div className={cx('auction-wrapper', 'd-flex', 'flex-column')}>
@@ -39,9 +43,7 @@ function MyAuction() {
                     </div>
                     <Button primary className={cx('fit-content')}>Filter</Button>
                     <div className={cx('flex-1')}></div>
-                    <Button normal disabled>Delete</Button>
-                    <Button normal disabled>Edit</Button>
-                    <Button primary onClick={() => {setShowDetail(true)}}>Add new</Button>
+                    <Button primary onClick={() => {setShowDetail(true)}}>Edit</Button>
                 </div>
                 
             </div>
@@ -71,9 +73,10 @@ function MyAuction() {
                 <Button className={cx('see-more-btn')} primary>See more</Button>
             </div>
 
-            {showDetail && <AddNewAutionDetail callBackEvent={(state) => {setShowDetail(state)}}/>}
+            {showDetail && <AuctionDetail eventCallBack={callBackDetail}/>}
+            
         </div>
     );
 }
 
-export default MyAuction;
+export default ParticipatingRoom;
