@@ -1,0 +1,77 @@
+.notification-wrapper{
+    position: absolute;
+    bottom: 50px;
+    left: 10px;
+    z-index: 5;
+
+    .bell{
+        height: 50px;
+        width: 50px;
+        background-color: #000;
+        border-radius: 50%;
+        cursor: pointer;
+        background-image: url("../../../assets/imgs/bell-3-24.png");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: auto;
+        box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+        position: relative;
+
+        .new{
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: red;
+            border-radius: 50%;
+            right: 5px;
+            top: 10px;
+        }
+    }
+
+    .notification-content{
+        height: 400px;
+        width: 300px;
+        position: relative;
+        background-color: #fff;
+        border: 1px solid #fff200;
+        border-radius: 5px;
+
+        .notify-header{
+            height: 40px;
+            background-color: #0e1d38;
+            border-top-right-radius: 5px;
+            border-top-left-radius: 5px;
+            cursor: move;
+
+            .close-notify{
+                height: 20px;
+                width: 20px;
+                background-image: url("../../../assets/imgs/close-window-32.png");
+                background-repeat: no-repeat;
+                background-position: center;
+                background-size: cover;
+                cursor: pointer;
+            }
+        }
+
+        .notify-content{
+            padding: 5px;
+            overflow: auto;
+
+            .item-notify{
+                height: 50px;
+                margin-bottom: 10px;
+
+                .image{
+                    height: 50px;
+                    width: 50px;
+                    background-repeat: no-repeat;
+                    background-position: center;
+                    background-size: cover;
+                    background-image: url("../../../assets/imgs/socute.jpg");
+                    margin-right: 5px;
+                }
+            }
+        }
+    }
+}

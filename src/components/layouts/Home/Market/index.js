@@ -35,7 +35,7 @@ function Market() {
 
     return (
         <div className={cx('content', 'd-flex', 'flex-column')}>
-            <div className={cx('content-container', 'd-flex')}>
+            <div className={cx('content-container', 'd-flex', 'flex-1')}>
                 <div className={cx('content-picture', 'd-flex', 'flex-column')} onClick={() => {setShowDetail(true)}}>
                     <div className={cx('image')}></div>
                     <div className={cx('info', 'd-flex', 'flex-column')}>

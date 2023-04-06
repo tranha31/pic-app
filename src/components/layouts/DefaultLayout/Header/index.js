@@ -15,7 +15,7 @@ function Header({callBackHandleCloseCopyright}) {
     const handleCloseCopyright = (mode) => {
         callBackHandleCloseCopyright(mode);
     }
-    const lstDisableSearch = ["sell", "auction"];
+    const lstDisableSearch = ["sell", "auction", "my_collection", "my_request"];
     const disabledSearch = lstDisableSearch.filter((e) => { return location.pathname.includes(e)}).length > 0 ? true : false;
 
     const routeInHome = homeRoutes.filter(e => { return e.path == location.pathname }).length > 0

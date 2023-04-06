@@ -1,0 +1,148 @@
+.collection-wrapper{
+
+    .tab-wrapper{
+        border-bottom: 1px solid #babec5;
+
+        .tab-item{
+            padding: 20px 0px;
+            width: 165px;
+            text-align: center;
+
+            &:hover{
+                cursor: pointer;
+                color: #fff200;
+            }
+        }
+
+        .tab-item.active{
+            color: #0e1d38;
+            border-bottom: 2px solid #0e1d38;
+            font-weight: 700;
+        }
+    }
+
+    .collection-content{
+        height: calc(100% - 57px);
+    }
+
+    .list-image{
+        height: calc(100% - 57px);
+        overflow: auto;
+        padding: 10px;
+
+        .content-container{
+            width: 100%;
+            height: auto;
+            flex-wrap: wrap;
+
+            .content-image{
+                width: 200px;
+                height: 300px;
+                margin-right: 20px;
+                margin-bottom: 20px;
+                position: relative;
+                background-repeat: no-repeat;
+                background-size: cover;
+                background-image: url('../../../../assets/imgs/socute.jpg');
+
+                &:hover{
+                    cursor: pointer;
+                    border: 1px solid #fff200;
+                }
+            }
+
+            .content-image.active{
+                border: 2px solid #fff200;
+
+                &::after{
+                    content: "";
+                    background-image: url("../../../../assets/imgs/ok-32.png");
+                    background-repeat: no-repeat;
+                    background-size: cover;
+                    position: absolute;
+                    top: 5px;
+                    right: 5px;
+                    display: flex;
+                    width: 20px;
+                    height: 20px;
+                }
+            }
+        }
+
+        .content-picture{
+            width: 250px;
+            height: 365px;
+            margin-right: 20px;
+            margin-bottom: 20px;
+            position: relative;
+
+            .image{
+                height: 245px;
+                width: 100%;
+                padding: 20px;
+                background-repeat: no-repeat;
+                background-size: cover;
+                background-image: url('../../../../assets/imgs/socute.jpg');
+            }
+
+            .info{
+                width: 100%;
+                height: calc(100% - 245px);
+                padding: 20px;
+                background-color: #0e1d38;
+                color: #fff;
+
+                & > div{
+                    padding-bottom: 5px;
+                }
+
+                .name{
+                    font-size: 18px;
+                    font-family: notosans-bold;
+                    color: #fff200;
+                }
+
+                .price, .author{
+                    font-family: notosans-bold;
+                }
+            }
+
+            &:hover{
+                cursor: pointer;
+                box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+                border: 2px solid #fff200;
+            }
+            
+        }
+
+        .content-picture.active{
+            border: 2px solid #fff200;
+
+            &::after{
+                content: "";
+                background-image: url("../../../../assets/imgs/ok-32.png");
+                background-repeat: no-repeat;
+                background-size: cover;
+                position: absolute;
+                top: 5px;
+                right: 5px;
+                display: flex;
+                width: 20px;
+                height: 20px;
+            }
+        }
+    }
+
+    .sell-content-footer{
+        padding-right: 10px;
+    }
+
+    .processing{
+        width: 150px;
+        height: 150px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+}

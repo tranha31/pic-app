@@ -9,7 +9,7 @@ const cx = classNames.bind(styles);
 
 function MyCollection() {
 
-    const [tab, setTab] = useState(2);
+    const [tab, setTab] = useState(0);
 
     const goToTab = (index) => {
         setTab(index);
