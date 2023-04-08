@@ -1,0 +1,31 @@
+.navigation-wrapper{
+    height: 62px;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 10px;
+    border-top: 1px solid #babec5;
+
+    .btn-navigaiton{
+        margin-left: 25px;
+
+        .item-navigiton{
+            width: 25px;
+            height: 25px;
+            border: 1px solid #babec5;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 5px;
+
+            &:hover{
+                background-color: #babec5;
+                cursor: pointer;
+            }
+        }
+
+        .item-navigiton.active{
+            background-color: #ccc;
+        }
+    }
+}

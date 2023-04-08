@@ -1,0 +1,112 @@
+.request-wrapper{
+    width: calc(100% - 200px);
+
+    .content{
+        height: calc(100% - 60px);
+        padding: 10px;
+
+        .header{
+            border-bottom: 1px solid #babec5;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+            .filter{
+                align-items: end;
+    
+                .title-date-picker{
+                    margin-bottom: 8px;
+                }
+    
+                .date-picker{
+                    border: 1px solid #babec5;
+                    border-radius: 5px;
+                    height: 40px;
+                    padding-left: 5px;
+                    caret-color: #fff200;
+    
+                    &:focus{
+                        border: 1px solid #fff200;
+                    }
+                }
+    
+            }
+        }
+
+        .td-stt{
+            width: 100px;
+            text-align: center;
+        }
+
+        .td-date{
+            width: 200px;
+        }
+
+        .td-function{
+            width: 100px;
+            text-align: center;
+
+            div{
+                color: blue;
+                &:hover{
+                    cursor: pointer;
+                    text-decoration: underline;
+                }
+            }
+        }
+
+        table{
+            border-collapse: collapse;
+        }
+
+        table td, table th{
+            border: 1px solid #babec5;
+            height: 30px;
+        }
+
+        table th{
+            border-bottom: none;
+        }
+
+        table td{
+            padding: 5px;
+        }
+
+        .table-content{
+            max-height: calc(100% - 31px);
+            overflow: auto;
+        }
+    }
+
+    .detail-wrapper{
+        .wrapper-content{
+            border: 1px dashed #fff200;
+            border-radius: 5px;
+            padding: 10px;
+
+            .image-request{
+                width: 400px;
+                height: 650px;
+                background-color: #0e1d38;
+                background-repeat: no-repeat;
+                background-position: center;
+                background-size: contain;
+                background-image: url('../../../../assets/imgs/socute.jpg');
+            }
+
+            .image-similar{
+                flex-wrap: wrap;
+                overflow: auto;
+                margin-top: 10px;
+
+                .item-similar{
+                    width: 280px;
+                    height: 300px;
+                    margin-right: 10px;
+                    background-repeat: no-repeat;
+                    background-position: center;
+                    background-size: contain;
+                    background-image: url('../../../../assets/imgs/socute.jpg');
+                }
+            }
+        }
+    }
+}

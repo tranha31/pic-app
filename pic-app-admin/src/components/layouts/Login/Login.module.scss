@@ -1,0 +1,47 @@
+.login-wrapper{
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+
+    .black-background{
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        background-color: #000;
+        opacity: 0.4;
+    }
+
+    .popup-detail-content{
+        background-color: #fff;
+        z-index: 1;
+        border-radius: 5px;
+        width: 450px;
+        height: 500px;
+        padding: 10px;
+        
+        .title{
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            padding-top: 5px;
+            border-bottom: 1px solid #babec5;
+            cursor: move;
+        }
+
+        .input{
+            height: 40px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #babec5;
+            border-radius: 5px;
+            padding: 5px;
+            caret-color: #babec5;
+        }
+    }
+}

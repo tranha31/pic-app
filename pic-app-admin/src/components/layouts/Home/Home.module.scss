@@ -1,0 +1,100 @@
+.home-container{
+    width: 100%;
+    background-color: #fff;
+    height: 100vh;
+
+    .menu-bar{
+        height: 100%;
+        width: 200px;
+        background-color: #0e1d38;
+        flex-direction: column;
+        z-index: 2;
+
+        .menu-item{
+            width: 100%;
+            height: 40px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+
+            .icon{
+                width: 20px;
+                height: 100%;
+                margin-right: 10px;
+                background-repeat: no-repeat;
+                background-size: contain;
+            }
+
+            .item{
+                color: #fff;
+                text-decoration: none;
+                font-family: notosans-bold;
+            }
+
+            .icon.Collection{
+                background-image: url('../../../assets/imgs/image-yellow.png');
+            }
+
+            .icon.Sell{
+                background-image: url('../../../assets/imgs/upload-yellow.png');
+                
+            }
+
+            .icon.AppealRequest{
+                background-image: url('../../../assets/imgs/message-32.png');
+                
+            }
+
+            .icon.Signature{
+                background-image: url('../../../assets/imgs/edit-9-32.png');
+                
+            }
+
+            .icon.Logout{
+                background-image: url('../../../assets/imgs/account-logout-32.png');
+                
+            }
+
+            &:hover{
+                cursor: pointer;
+                background-color: rgba(255,255,255,0.2);
+            }
+
+            &.active{
+                background-color: rgba(255,255,255,0.2);
+            }
+        }
+    }
+
+    
+}
+
+@media only screen and (max-width: 768px) {
+    .home-container{
+        flex-direction: column;
+
+        .menu-bar{
+            width: 100vw !important;
+            height: 40px !important;
+            flex-direction: row !important;
+    
+            .menu-item{
+                width: 100px !important;
+    
+                .icon{
+                    display: none;
+                }
+            }
+        }
+
+        .content{
+            width: 100vw !important;
+            height: calc(100% - 40px) !important;
+
+            .see-more{
+                position: relative !important;
+                bottom: unset !important;
+            }
+        }
+    }
+}
