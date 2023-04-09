@@ -1,0 +1,13 @@
+D:\Blockchain\pic-app\BE.PICBIN.API\BE.PICBIN.DL\bin\Debug\netcoreapp3.1\BE.PICBIN.DL.exe
+D:\Blockchain\pic-app\BE.PICBIN.API\BE.PICBIN.DL\bin\Debug\netcoreapp3.1\BE.PICBIN.DL.deps.json
+D:\Blockchain\pic-app\BE.PICBIN.API\BE.PICBIN.DL\bin\Debug\netcoreapp3.1\BE.PICBIN.DL.runtimeconfig.json
+D:\Blockchain\pic-app\BE.PICBIN.API\BE.PICBIN.DL\bin\Debug\netcoreapp3.1\BE.PICBIN.DL.runtimeconfig.dev.json
+D:\Blockchain\pic-app\BE.PICBIN.API\BE.PICBIN.DL\bin\Debug\netcoreapp3.1\BE.PICBIN.DL.dll
+D:\Blockchain\pic-app\BE.PICBIN.API\BE.PICBIN.DL\bin\Debug\netcoreapp3.1\BE.PICBIN.DL.pdb
+D:\Blockchain\pic-app\BE.PICBIN.API\BE.PICBIN.DL\obj\Debug\netcoreapp3.1\BE.PICBIN.DL.GeneratedMSBuildEditorConfig.editorconfig
+D:\Blockchain\pic-app\BE.PICBIN.API\BE.PICBIN.DL\obj\Debug\netcoreapp3.1\BE.PICBIN.DL.AssemblyInfoInputs.cache
+D:\Blockchain\pic-app\BE.PICBIN.API\BE.PICBIN.DL\obj\Debug\netcoreapp3.1\BE.PICBIN.DL.AssemblyInfo.cs
+D:\Blockchain\pic-app\BE.PICBIN.API\BE.PICBIN.DL\obj\Debug\netcoreapp3.1\BE.PICBIN.DL.csproj.CoreCompileInputs.cache
+D:\Blockchain\pic-app\BE.PICBIN.API\BE.PICBIN.DL\obj\Debug\netcoreapp3.1\BE.PICBIN.DL.dll
+D:\Blockchain\pic-app\BE.PICBIN.API\BE.PICBIN.DL\obj\Debug\netcoreapp3.1\BE.PICBIN.DL.pdb
+D:\Blockchain\pic-app\BE.PICBIN.API\BE.PICBIN.DL\obj\Debug\netcoreapp3.1\BE.PICBIN.DL.genruntimeconfig.cache

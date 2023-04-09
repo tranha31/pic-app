@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v3.1",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v3.1": {
+      "BE.PICBIN.DL/1.0.0": {
+        "runtime": {
+          "BE.PICBIN.DL.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "BE.PICBIN.DL/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
