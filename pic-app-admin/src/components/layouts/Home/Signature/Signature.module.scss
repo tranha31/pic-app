@@ -31,4 +31,8 @@
     table td{
         padding: 5px;
     }
+
+    .tb-content{
+        max-height: calc(100% - 31px);
+    }
 }

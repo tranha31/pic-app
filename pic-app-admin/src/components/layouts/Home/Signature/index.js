@@ -36,7 +36,7 @@ function Signature() {
                     
                 </table>
 
-                <table style={{overflow: "auto"}}>
+                <table className={cx('tb-content')} style={{overflow: "auto"}}>
                     <tr>
                         <td style={{width: "100px", textAlign: "center"}}>1</td>
                         <td>0xABC55454545454545454544</td>
