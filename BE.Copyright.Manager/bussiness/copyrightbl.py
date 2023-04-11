@@ -140,34 +140,6 @@ class CopyrightBL:
             tmp = tmp + 1
 
     '''
-    Biến đổi theo chiều ngược lại
-    Phục vụ cho việc check xem ảnh đã có chữ ký hay chưa
-    Trong trường hợp ảnh bị đảo ngược
-    (11/4/2023)
-    '''
-    def dctYchanelRevert(self, YChanel):
-        ldct = []
-        for i in range(0, 121, 8):
-            for j in range(0, 129, 8):
-                MT = np.zeros((8, 8))
-                for k in range(i, i + 8):
-                    for l in range(j, j + 8):
-                        MT[k % 8][l % 8] = YChanel[k][l]
-                D = self.dct(MT)
-                ldct.append(D)
-        # Bổ sung thêm 8 ô tiếp theo cho đủ 280 ô
-        m = 128
-        for n in range(0, 57, 8):
-            MT = np.zeros((8, 8))
-            for k in range(m, m + 8):
-                for l in range(n, n + 8):
-                    MT[k % 8][l % 8] = YChanel[k][l]
-            D = self.dct(MT)
-            ldct.append(D)
-
-        return ldct
-
-    '''
     Nhúng chữ ký lên ảnh
     Thuật toán Digital watermarking
     Luôn lấy điểm (5,2) và (4,3) để nhúng
@@ -272,22 +244,26 @@ class CopyrightBL:
         
         #Kiểm cho trường hợp đảo ngược ảnh
         #Kiểm tra góc trên trái
-        L5 = self.dctYchanelRevert(YChanel)
+        YChanelFlip = np.flip(YChanel, 1)
+        L5 = self.dctYchanel(YChanelFlip)
         if(not(self.checkWatermarking(L5))):
             return False
         
         #Kiểm tra góc trên phải
-        L6 = self.dctYchanelRevert(YChanel2)
+        YChanel2Flip = np.rot90(YChanelFlip)
+        L6 = self.dctYchanel(YChanel2Flip)
         if(not(self.checkWatermarking(L6))):
             return False
         
         #Kiểm tra góc dưới phải
-        L7 = self.dctYchanelRevert(YChanel3)
+        YChanel3Flip = np.rot90(YChanel2Flip)
+        L7 = self.dctYchanel(YChanel3Flip)
         if(not(self.checkWatermarking(L7))):
             return False
         
         #Kiểm tra góc dưới trái
-        L8 = self.dctYchanelRevert(YChanel4)
+        YChanel4Flip = np.rot90(YChanel3Flip)
+        L8 = self.dctYchanel(YChanel4Flip)
         if(not(self.checkWatermarking(L8))):
             return False
         
@@ -370,31 +346,40 @@ class CopyrightBL:
     '''
     def handleGetSignInImage(self, YChanel):
         signs = []
+
+        YChanelFlip = np.flip(YChanel, 1)
+
         L = self.dctYchanel(YChanel)
         sign1 = self.getWatermarking(L)
 
-        L5 = self.dctYchanelRevert(YChanel)
+        L5 = self.dctYchanel(YChanelFlip)
         sign5 = self.getWatermarking(L5)
 
         YChanel2 = np.rot90(YChanel)
+        YChanel2Flip = np.rot90(YChanelFlip)
+
         L2 = self.dctYchanel(YChanel2)
         sign2 = self.getWatermarking(L2)
 
-        L6 = self.dctYchanelRevert(YChanel2)
+        L6 = self.dctYchanel(YChanel2Flip)
         sign6 = self.getWatermarking(L6)
         
         YChanel3 = np.rot90(YChanel2)
+        YChanel3Flip = np.rot90(YChanel2Flip)
+
         L3 = self.dctYchanel(YChanel3)
         sign3 = self.getWatermarking(L3)
 
-        L7 = self.dctYchanelRevert(YChanel3)
+        L7 = self.dctYchanel(YChanel3Flip)
         sign7 = self.getWatermarking(L7)
         
         YChanel4 = np.rot90(YChanel3)
+        YChanel4Flip = np.rot90(YChanel3Flip)
+
         L4 = self.dctYchanel(YChanel4)
         sign4 = self.getWatermarking(L4)
 
-        L8 = self.dctYchanelRevert(YChanel4)
+        L8 = self.dctYchanel(YChanel4Flip)
         sign8 = self.getWatermarking(L8)
         
         if(sign1 != None):
