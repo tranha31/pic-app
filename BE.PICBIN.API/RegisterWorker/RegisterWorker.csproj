@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>dotnet-RegisterWorker-9146DFAE-409A-41A5-8213-9094BB036869</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.28" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BE.PICBIN.BL\BE.PICBIN.BL.csproj" />
+    <ProjectReference Include="..\BE.PICBIN.DL\BE.PICBIN.DL.csproj" />
+  </ItemGroup>
+</Project>

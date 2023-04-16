@@ -14,7 +14,7 @@ namespace BE.PICBIN.BL
 
         public CallHTTPRequest() {}
 
-        public static async Task<object> CallHttp(string url, string method, Dictionary<string, object> param = null )
+        public static async Task<object> CallHttp(string url, string method, object param = null )
         {
             var result = new object();
             if (method == "GET")
@@ -24,8 +24,9 @@ namespace BE.PICBIN.BL
             }
             else if (method == "POST")
             {
-                var content = new FormUrlEncodedContent((IEnumerable<KeyValuePair<string, string>>)param);
-                var response = await client.PostAsync(url, content);
+                var json = JsonConvert.SerializeObject(param);
+                var data = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await client.PostAsync(url, data);
                 result = response.Content.ReadAsStringAsync().Result;
             }
 

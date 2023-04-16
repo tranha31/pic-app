@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BE.PICBIN.BL\BE.PICBIN.BL.csproj" />
+    <ProjectReference Include="..\BE.PICBIN.DL\BE.PICBIN.DL.csproj" />
   </ItemGroup>
 
 
