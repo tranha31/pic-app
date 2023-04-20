@@ -83,10 +83,10 @@ namespace RegisterWorker
                     var serviceResult = JsonConvert.DeserializeObject<ServiceResult>(result.ToString());
                     if (serviceResult.Success)
                     {
+                        var dataRegister = JsonConvert.DeserializeObject<RegisterContent>(serviceResult.Data.ToString());
                         CopyrightBL oBL = new CopyrightBL(_configuration);
 
-                        var caption = "New caption"; //Fix tam mai sua sau
-                        await oBL.AddNewCopyrightImage(data.Sign, caption, serviceResult.Data.ToString());
+                        await oBL.AddNewCopyrightImage(data.Sign, dataRegister.Caption, dataRegister.Image);
 
                         await oBL.HandleDeleteRegisterRequest(data.ID);
                         //Ban thong bao
@@ -98,7 +98,7 @@ namespace RegisterWorker
                         //Ban thong bao
                     }
                 }
-                
+
             }
             catch (Exception ex)
             {
@@ -107,5 +107,11 @@ namespace RegisterWorker
         }
 
 
+    }
+
+    public class RegisterContent
+    {
+        public string Image { get; set; }
+        public string Caption { get; set; }
     }
 }

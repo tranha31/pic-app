@@ -9,6 +9,14 @@
 /pic-app-admin/.pnp
 /pic-app-client/.pnp.js
 
+/BE.Copyright.Manager/models/imagecaption/descriptions.txt
+/BE.Copyright.Manager/models/imagecaption/Flickr_8k.trainImages.txt
+/BE.Copyright.Manager/models/imagecaption/glove.6B.200d.txt
+/BE.Copyright.Manager/models/imagecaption/model_30_200_0.h5
+
+/BE.PICBIN.API/BE.PICBIN.API/bin
+/BE.PICBIN.API/RegisterWorker/bin
+
 # testing
 /pic-app-client/coverage
 /pic-app-admin/coverage

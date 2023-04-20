@@ -3,6 +3,7 @@ import numpy as np
 from PIL import Image as im
 import io
 import base64
+from .imagecaptionbl import ImageCaptionBL
 
 class CopyrightBL:
 
@@ -10,8 +11,10 @@ class CopyrightBL:
     Y = 0
     Cb = 1
     Cr = 2
+    oImageCaptionBL = None
 
     def __init__(self) -> None:
+        self.oImageCaptionBL = ImageCaptionBL()
         pass
     
     '''
@@ -202,12 +205,19 @@ class CopyrightBL:
         
         s = self.hexToBinary(sign)
         if(self.handleValidateImage(imYCbCr[:, :, self.Y])):
+            caption = self.oImageCaptionBL.createImageCaption(base64_string)
+            # TODO: Check tương đồng ảnh: so sánh caption để lấy ảnh. xử lý trong bl khác
             L = self.dctYchanel(imYCbCr[:, :, self.Y])
             self.watermarking(L, s)
             self.idctYchanel(imYCbCr[:, :, self.Y], L)
-            # im.fromarray(imYCbCr[:,:,Y], "L").show()
-            result = self.outImage(imYCbCr[:, :, self.Y], imYCbCr[:, :, self.Cb], imYCbCr[:, :, self.Cr])
-            return result
+            
+            imageResult = self.outImage(imYCbCr[:, :, self.Y], imYCbCr[:, :, self.Cb], imYCbCr[:, :, self.Cr])
+            
+            result = {
+                "image" : imageResult,
+                "caption" : caption
+            }
+            return str(result)
         else:
             return "Image was had sign"
             
