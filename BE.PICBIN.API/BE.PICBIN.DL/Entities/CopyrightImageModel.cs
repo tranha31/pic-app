@@ -13,5 +13,6 @@ namespace BE.PICBIN.DL.Entities
         public string ID { get; set; }
         public string RefID { get; set; }
         public string ImageContent { get; set; }
+        public string ImageContentMarked { get; set; }
     }
 }

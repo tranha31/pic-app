@@ -86,7 +86,7 @@ namespace RegisterWorker
                         var dataRegister = JsonConvert.DeserializeObject<RegisterContent>(serviceResult.Data.ToString());
                         CopyrightBL oBL = new CopyrightBL(_configuration);
 
-                        await oBL.AddNewCopyrightImage(data.Sign, dataRegister.Caption, dataRegister.Image);
+                        await oBL.AddNewCopyrightImage(data.Sign, dataRegister.Caption, dataRegister.Image, dataRegister.ImageMark);
 
                         await oBL.HandleDeleteRegisterRequest(data.ID);
                         //Ban thong bao
@@ -112,6 +112,7 @@ namespace RegisterWorker
     public class RegisterContent
     {
         public string Image { get; set; }
+        public string ImageMark { get; set; }
         public string Caption { get; set; }
     }
 }

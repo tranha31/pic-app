@@ -9,5 +9,7 @@ namespace BE.PICBIN.DL.Entities
         public string ImageID { get; set; }
         public string UserPublicKey { get; set; }
         public string Caption { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime ModifiedDate { get; set; }
     }
 }

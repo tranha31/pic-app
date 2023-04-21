@@ -16,6 +16,14 @@
 
 /BE.PICBIN.API/BE.PICBIN.API/bin
 /BE.PICBIN.API/RegisterWorker/bin
+/BE.PICBIN.API/BE.PICBIN.BL/bin
+/BE.PICBIN.API/BE.PICBIN.DL/bin
+
+
+/BE.PICBIN.API/BE.PICBIN.API/obj
+/BE.PICBIN.API/RegisterWorker/obj
+/BE.PICBIN.API/BE.PICBIN.BL/obj
+/BE.PICBIN.API/BE.PICBIN.DL/obj
 
 # testing
 /pic-app-client/coverage

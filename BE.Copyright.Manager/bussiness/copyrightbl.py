@@ -4,6 +4,7 @@ from PIL import Image as im
 import io
 import base64
 from .imagecaptionbl import ImageCaptionBL
+from repositories.dlcopyright import DLCopyright
 
 class CopyrightBL:
 
@@ -12,9 +13,11 @@ class CopyrightBL:
     Cb = 1
     Cr = 2
     oImageCaptionBL = None
+    oDL = None
 
     def __init__(self) -> None:
         self.oImageCaptionBL = ImageCaptionBL()
+        self.oDL = DLCopyright()
         pass
     
     '''
@@ -206,22 +209,53 @@ class CopyrightBL:
         s = self.hexToBinary(sign)
         if(self.handleValidateImage(imYCbCr[:, :, self.Y])):
             caption = self.oImageCaptionBL.createImageCaption(base64_string)
-            # TODO: Check tương đồng ảnh: so sánh caption để lấy ảnh. xử lý trong bl khác
-            L = self.dctYchanel(imYCbCr[:, :, self.Y])
-            self.watermarking(L, s)
-            self.idctYchanel(imYCbCr[:, :, self.Y], L)
+
+            if self.checkImageSimilar(base64_string, caption):
+                L = self.dctYchanel(imYCbCr[:, :, self.Y])
+                self.watermarking(L, s)
+                self.idctYchanel(imYCbCr[:, :, self.Y], L)
+                
+                imageResult = self.outImage(imYCbCr[:, :, self.Y], imYCbCr[:, :, self.Cb], imYCbCr[:, :, self.Cr])
+                
+                imgdata = base64.b64decode(base64_string)
+                image = im.open(io.BytesIO(imgdata))
+                imageView = self.markConfirmIntoImage(image)
+
+                result = {
+                    "caption" : caption,
+                    "image" : imageResult,
+                    "imageMark": imageView
+                    
+                }
+                return str(result)
             
-            imageResult = self.outImage(imYCbCr[:, :, self.Y], imYCbCr[:, :, self.Cb], imYCbCr[:, :, self.Cr])
+            else:
+                return "Image has similar"
             
-            result = {
-                "image" : imageResult,
-                "caption" : caption
-            }
-            return str(result)
         else:
             return "Image was had sign"
             
-        
+    '''
+    Đóng dấu đã xác nhận lên ảnh để view trên ui
+    (20/4/2023)
+    '''
+    def markConfirmIntoImage(self, image):
+        mark = im.open('check_mark (1).png', 'r')
+        mark = mark.convert("RGBA")
+
+        image.paste(mark, (20, 20), mark)
+
+        buffer = io.BytesIO()
+        image.save(buffer, format="PNG")
+        buffer.seek(0)
+        myimage = buffer.getvalue()
+        t = base64.b64encode(myimage)
+        t = str(t)
+        t = t[2:]
+        t = t[:-1]
+        r = "data:image/png;base64," + t
+
+        return r
         
     '''
     Xử lý kiểm tra ảnh
@@ -229,55 +263,69 @@ class CopyrightBL:
     (11/4/2023)
     '''    
     def handleValidateImage(self, YChanel):
+        lstSign = []
+
         #Kiểm tra góc trên bên trái
         L = self.dctYchanel(YChanel)
-        if(not(self.checkWatermarking(L))):
-            return False
+        sign = self.checkWatermarking(L) 
+        if(type(sign) == str):
+            lstSign.append(sign)
         
         #Kiểm tra góc trên bên phải
         YChanel2 = np.rot90(YChanel)
         L2 = self.dctYchanel(YChanel2)
-        if(not(self.checkWatermarking(L2))):
-            return False
-        
+        sign = self.checkWatermarking(L2) 
+        if(type(sign) == str):
+            lstSign.append(sign)
+
         #Kiểm tra góc dưới bên phải
         YChanel3 = np.rot90(YChanel2)
         L3 = self.dctYchanel(YChanel3)
-        if(not(self.checkWatermarking(L3))):
-            return False
+        sign = self.checkWatermarking(L3) 
+        if(type(sign) == str):
+            lstSign.append(sign)
         
         #Kiểm tra góc dưới bên trái
         YChanel4 = np.rot90(YChanel3)
         L4 = self.dctYchanel(YChanel4)
-        if(not(self.checkWatermarking(L4))):
-            return False
-        
+        sign = self.checkWatermarking(L4) 
+        if(type(sign) == str):
+            lstSign.append(sign)
+
         #Kiểm cho trường hợp đảo ngược ảnh
         #Kiểm tra góc trên trái
         YChanelFlip = np.flip(YChanel, 1)
         L5 = self.dctYchanel(YChanelFlip)
-        if(not(self.checkWatermarking(L5))):
-            return False
-        
+        sign = self.checkWatermarking(L5) 
+        if(type(sign) == str):
+            lstSign.append(sign)
+
         #Kiểm tra góc trên phải
         YChanel2Flip = np.rot90(YChanelFlip)
         L6 = self.dctYchanel(YChanel2Flip)
-        if(not(self.checkWatermarking(L6))):
-            return False
-        
+        sign = self.checkWatermarking(L6) 
+        if(type(sign) == str):
+            lstSign.append(sign)
+
         #Kiểm tra góc dưới phải
         YChanel3Flip = np.rot90(YChanel2Flip)
         L7 = self.dctYchanel(YChanel3Flip)
-        if(not(self.checkWatermarking(L7))):
-            return False
+        sign = self.checkWatermarking(L7) 
+        if(type(sign) == str):
+            lstSign.append(sign)
         
         #Kiểm tra góc dưới trái
         YChanel4Flip = np.rot90(YChanel3Flip)
         L8 = self.dctYchanel(YChanel4Flip)
-        if(not(self.checkWatermarking(L8))):
-            return False
+        sign = self.checkWatermarking(L8) 
+        if(type(sign) == str):
+            lstSign.append(sign)
         
-        return True
+
+        if(len(lstSign) == 0):
+            return True
+        else:
+            return self.oDL.checkExistSign(lstSign)
     
     '''
     Kiểm tra trong ảnh đã có chữ ký hay chưa
@@ -304,10 +352,8 @@ class CopyrightBL:
                 return True
             else:
                 sign2 += chr(digit[i])
-        
-        #TODO: Gọi DB để kiểm tra xem đã có chữ ký sign2 hay chưa. Tạm cứ trả về True
 
-        return False
+        return sign2
 
 
     '''
@@ -418,6 +464,14 @@ class CopyrightBL:
         
         return signs
     
+    '''
+    Kiểm tra độ tương đồng về ảnh
+    (22/4/2023)
+    '''
+    def checkImageSimilar(self, base64string, caption):
+        lstImage = self.oImageCaptionBL.getListImageForCheck(caption)
+
+        return False
 
 
 

@@ -64,13 +64,13 @@ namespace BE.PICBIN.BL
         /// <param name="caption"></param>
         /// <param name="contentImage"></param>
         /// <returns></returns>
-        public async Task AddNewCopyrightImage(string sign, string caption, string contentImage)
+        public async Task AddNewCopyrightImage(string sign, string caption, string contentImage, string imageMarked)
         {
             var image = new CopyrightImage() { UserPublicKey = sign, Caption = caption };
             CopyrightDL oDL = new CopyrightDL(Configuration);
             try
             {
-                await oDL.AddNewImage(image, contentImage);
+                await oDL.AddNewImage(image, contentImage, imageMarked);
             }
             catch(Exception ex)
             {

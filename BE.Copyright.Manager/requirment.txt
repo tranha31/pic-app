@@ -1,0 +1,10 @@
+python-dotenv
+flask
+Flask-Cors
+blueprint
+numpy
+keras
+sentence_transformers
+sklearn
+mysql-connector-python
+pymongo

@@ -25,7 +25,7 @@ def addCopyrightImage():
     }
 
     result = oCopyrightBL.embedWatermarking(base64Image, sign)  
-    if result == "Sign invalid" or result == "Image is not size enough" or result == "Image was had sign":
+    if result == "Sign invalid" or result == "Image is not size enough" or result == "Image was had sign" or result == "Image has similar":
         serviceResult["error"] = result
         serviceResult["success"] = False
     
