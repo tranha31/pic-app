@@ -45,5 +45,31 @@ namespace BE.PICBIN.API.Controllers
 
             return Ok(result);
         }
+
+        /// <summary>
+        /// Xoá yêu cầu bị từ chối
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost("register/reject/delete")]
+        public async Task<IActionResult> DeleteRejectRegister(string id)
+        {
+            CopyrightBL oBL = new CopyrightBL(_config);
+            ServiceResult result = new ServiceResult();
+            try
+            {
+                var check = await oBL.HandleDeleteRejectRegister(id);
+                result.Success = check;
+
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                NLogBL nLog = new NLogBL(_config);
+                nLog.InsertLog(ex.Message, ex.StackTrace);
+            }
+
+            return Ok(result);
+        }
     }
 }

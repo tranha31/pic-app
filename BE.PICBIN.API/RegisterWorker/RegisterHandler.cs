@@ -94,7 +94,7 @@ namespace RegisterWorker
                     else
                     {
                         CopyrightBL oBL = new CopyrightBL(_configuration);
-                        await oBL.HandleRejectRegisterRequest(data.ID);
+                        await oBL.HandleRejectRegisterRequest(data.ID, serviceResult);
                         //Ban thong bao
                     }
                 }

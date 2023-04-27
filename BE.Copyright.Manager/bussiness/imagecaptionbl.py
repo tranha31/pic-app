@@ -60,7 +60,7 @@ class ImageCaptionBL:
         
         lstResult = []
         for i in range(len(lstCaption)):
-            if float(similarValue[i]) > 0.6:
+            if float(similarValue[i]) > 0.4:
                 result = {
                     "ImageID": lstImage[i]["ImageID"],
                     "PublicKey": lstImage[i]["UserPublicKey"]

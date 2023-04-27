@@ -73,12 +73,19 @@ namespace BE.PICBIN.DL
             await collection.DeleteOneAsync(filter);
         }
 
+        public async Task DeleteManyAsync<T>(FilterDefinition<T> filter, string collectionName)
+        {
+            var collection = mongoDB.GetCollection<T>(collectionName);
+            await collection.DeleteManyAsync(filter);
+        }
+
         #endregion
 
         #region MySQL
 
-        public void ExcuteProcMySQL(string procName, DynamicParameters parameters, ref List<string> listOutput)
+        public bool ExcuteProcMySQL(string procName, DynamicParameters parameters, ref List<string> listOutput)
         {
+            var result = true;
             _dbConnection = new MySqlConnection(MySQLConnection);
             _dbConnection.Open();
             using (var transaction = _dbConnection.BeginTransaction())
@@ -104,6 +111,7 @@ namespace BE.PICBIN.DL
                 }
                 catch (Exception e)
                 {
+                    result = false;
                     transaction.Rollback();
                 }
                 finally
@@ -112,6 +120,49 @@ namespace BE.PICBIN.DL
                     _dbConnection.Close();
                 }
             }
+
+            return result;
+        }
+
+        public bool ExcuteCommandMySQL(string sql, DynamicParameters parameters, ref List<string> listOutput)
+        {
+            var result = true;
+            _dbConnection = new MySqlConnection(MySQLConnection);
+            _dbConnection.Open();
+            using (var transaction = _dbConnection.BeginTransaction())
+            {
+                try
+                {
+                    _dbConnection.Execute(sql, parameters, commandType: CommandType.Text, transaction: transaction);
+
+                    if (listOutput != null && listOutput.Count > 0)
+                    {
+                        List<string> lstTempOutput = new List<string>();
+                        for (var i = 0; i < listOutput.Count; i++)
+                        {
+                            var output = parameters.Get<object>(listOutput[i]).ToString();
+                            lstTempOutput.Add(output);
+                        }
+
+                        listOutput.Clear();
+                        listOutput = lstTempOutput;
+                    }
+
+                    transaction.Commit();
+
+                }
+                catch (Exception e)
+                {
+                    result = false;
+                    transaction.Rollback();
+                }
+                finally
+                {
+                    transaction.Dispose();
+                    _dbConnection.Close();
+                }
+            }
+            return result;
         }
 
         #endregion

@@ -27,3 +27,25 @@ class DLCopyright(DLBase):
         cursor.execute(query)
         records = cursor.fetchall()
         return records
+    
+    def getImageContent(self, listID):
+        collection = self.dbMongo["CopyrightImage"]
+        data = collection.find({"RefID" : {"$in" : listID}})
+
+        imageContent = []
+        imageID = []
+        if data is not None:
+            for image in data:
+                content = image.get("ImageContent")
+                content = content.replace("data:image/png;base64,", "")
+
+                id = image.get("RefID")
+                imageID.append(id)
+                imageContent.append(content)
+
+        result = {
+            "contents": imageContent,
+            "ids": imageID
+        }
+
+        return result

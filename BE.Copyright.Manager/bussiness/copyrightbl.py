@@ -4,6 +4,7 @@ from PIL import Image as im
 import io
 import base64
 from .imagecaptionbl import ImageCaptionBL
+from .imagesimilarbl import ImageSimilarBL
 from repositories.dlcopyright import DLCopyright
 
 class CopyrightBL:
@@ -13,13 +14,29 @@ class CopyrightBL:
     Cb = 1
     Cr = 2
     oImageCaptionBL = None
+    oImageSimilarBL = None
     oDL = None
 
     def __init__(self) -> None:
         self.oImageCaptionBL = ImageCaptionBL()
+        self.oImageSimilarBL = ImageSimilarBL()
         self.oDL = DLCopyright()
         pass
     
+    """
+    Kiểm tra ảnh có phải là ảnh đa mức xám không
+    (24/4/2023)
+    """
+    def isGreyScale(self, img):
+        img = img.convert('RGB')
+        w, h = img.size
+        for i in range(w):
+            for j in range(h):
+                r, g, b = img.getpixel((i,j))
+                if r != g != b: 
+                    return False
+        return True
+
     '''
     Convert từ chuỗi base64 string sang mảng điểm ảnh
     (11/4/2023)
@@ -27,6 +44,11 @@ class CopyrightBL:
     def inputImage(self, base64_string):
         imgdata = base64.b64decode(base64_string)
         image = im.open(io.BytesIO(imgdata))
+
+        checkGrey = self.isGreyScale(image)
+        if checkGrey:
+            return False
+
         ycbcr = image.convert('YCbCr')
 
         YCbCr = list(ycbcr.getdata())  # flat list of tuples
@@ -201,6 +223,9 @@ class CopyrightBL:
             return "Sign invalid"
         
         imYCbCr = self.inputImage(base64_string)
+
+        if type(imYCbCr) == bool:
+            return "Image cannot be greyscale"
         
         # Minsize = (144 x 144)
         if imYCbCr.shape[0] < 144 or imYCbCr.shape[1] < 144:
@@ -209,8 +234,9 @@ class CopyrightBL:
         s = self.hexToBinary(sign)
         if(self.handleValidateImage(imYCbCr[:, :, self.Y])):
             caption = self.oImageCaptionBL.createImageCaption(base64_string)
+            check = self.checkImageSimilar(base64_string, caption)
 
-            if self.checkImageSimilar(base64_string, caption):
+            if type(check) == bool and check:
                 L = self.dctYchanel(imYCbCr[:, :, self.Y])
                 self.watermarking(L, s)
                 self.idctYchanel(imYCbCr[:, :, self.Y], L)
@@ -224,13 +250,19 @@ class CopyrightBL:
                 result = {
                     "caption" : caption,
                     "image" : imageResult,
-                    "imageMark": imageView
+                    "imageMark": imageView,
+                    "error": ""
                     
                 }
-                return str(result)
+                return result
             
             else:
-                return "Image has similar"
+                result = {
+                    "data" : check,
+                    "error": "Image has similar"
+                }
+
+                return result
             
         else:
             return "Image was had sign"
@@ -362,6 +394,9 @@ class CopyrightBL:
     '''
     def getSignInImage(self, base64_string):
         imYCbCr = self.inputImage(base64_string)
+        if type(imYCbCr) == bool:
+            return False
+        
         signs = self.handleGetSignInImage(imYCbCr[:, :, self.Y])
         return signs
 
@@ -469,9 +504,17 @@ class CopyrightBL:
     (22/4/2023)
     '''
     def checkImageSimilar(self, base64string, caption):
-        lstImage = self.oImageCaptionBL.getListImageForCheck(caption)
+        lstImageID = self.oImageCaptionBL.getListImageForCheck(caption)
 
-        return False
+        lstID = []
+        for image in lstImageID:
+            lstID.append(image["ImageID"])
+        
+        result = self.oImageSimilarBL.handleCheckSimilar(lstID, base64string)
+        if len(result) == 0:
+            return True
+        else:
+            return result
 
 
 

@@ -25,12 +25,17 @@ def addCopyrightImage():
     }
 
     result = oCopyrightBL.embedWatermarking(base64Image, sign)  
-    if result == "Sign invalid" or result == "Image is not size enough" or result == "Image was had sign" or result == "Image has similar":
+    if type(result) == dict and result["error"] == "Image has similar":
+        serviceResult["error"] = "Image has similar"
+        serviceResult["success"] = False
+        serviceResult["data"] = result["data"]
+
+    elif result == "Sign invalid" or result == "Image is not size enough" or result == "Image was had sign" or result == "Image cannot be greyscale":
         serviceResult["error"] = result
         serviceResult["success"] = False
     
     else:
-        serviceResult["data"] = result
+        serviceResult["data"] = str(result)
     
     serviceResult = json.dumps(serviceResult, ensure_ascii=False)
     return Response(response=serviceResult, status=200, mimetype="application/json")
@@ -48,7 +53,11 @@ def checkCopyrightImage():
     }
 
     result = oCopyrightBL.getSignInImage(base64Image)  
-    serviceResult["data"] = result
+    if type(result) == bool:
+        serviceResult["success"] = False
+        serviceResult["error"] = "Image cannot be greyscale"
+    else:
+        serviceResult["data"] = result
         
     serviceResult = json.dumps(serviceResult, ensure_ascii=False)
     return Response(response=serviceResult, status=200, mimetype="application/json")
