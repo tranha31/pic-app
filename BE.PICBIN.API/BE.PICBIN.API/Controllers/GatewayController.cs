@@ -32,7 +32,7 @@ namespace BE.PICBIN.API.Controllers
             ServiceResult result = new ServiceResult();
             try
             {
-                oBL.HanleAddNewRegisterRequest(registerRequest.Sign, registerRequest.Image);
+                oBL.HandleAddNewRegisterRequest(registerRequest.Sign, registerRequest.Image);
                 result.Success = true;
                 
             }
@@ -60,6 +60,30 @@ namespace BE.PICBIN.API.Controllers
             {
                 var check = await oBL.HandleDeleteRejectRegister(id);
                 result.Success = check;
+
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                NLogBL nLog = new NLogBL(_config);
+                nLog.InsertLog(ex.Message, ex.StackTrace);
+            }
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Upload register request
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("copyright/check")]
+        public async Task<IActionResult> CopyrightCheck([FromBody] CheckRequest image)
+        {
+            CopyrightBL oBL = new CopyrightBL(_config);
+            ServiceResult result = new ServiceResult();
+            try
+            {
+                result = await oBL.HandlCheckCopyright(image.Image);
 
             }
             catch (Exception ex)

@@ -39,25 +39,3 @@ def addCopyrightImage():
     
     serviceResult = json.dumps(serviceResult, ensure_ascii=False)
     return Response(response=serviceResult, status=200, mimetype="application/json")
-
-
-@copyright.route("/copyright/check", methods=['POST'])
-@cross_origin()
-def checkCopyrightImage():
-    _json = request.json
-    base64Image = _json["image"]
-    serviceResult = {
-        "error" : "",
-        "success": True,
-        "data" : ""
-    }
-
-    result = oCopyrightBL.getSignInImage(base64Image)  
-    if type(result) == bool:
-        serviceResult["success"] = False
-        serviceResult["error"] = "Image cannot be greyscale"
-    else:
-        serviceResult["data"] = result
-        
-    serviceResult = json.dumps(serviceResult, ensure_ascii=False)
-    return Response(response=serviceResult, status=200, mimetype="application/json")

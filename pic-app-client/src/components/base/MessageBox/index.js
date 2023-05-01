@@ -23,10 +23,10 @@ function MessageBox({type, title, message, scale, child, eventCallBack}) {
                         <p className={cx('popup-detail-title')}>{title}</p>
                     </div>
                     <div className={cx('popup-detail-body', 'd-flex', 'flex-1', 'flex-column')}>
-                        <div className={cx('message', 'flex-1')}>{message}</div>
+                        <div className={cx('message', 'flex-1')} style={{overflow: "auto"}}>{message}</div>
                         <div className={cx('d-flex')}>
                             <div className={'flex-1'}></div>
-                            <Button normal onClick={()=>{closePopup()}}>Cancel</Button>
+                            <Button normal onClick={()=>{closePopup()}}>Close</Button>
                             {child}
                         </div>
                     </div>

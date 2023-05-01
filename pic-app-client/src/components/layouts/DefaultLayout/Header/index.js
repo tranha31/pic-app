@@ -4,7 +4,7 @@ import { headerRoutes, homeRoutes, profileRoutes } from "@/routes";
 import { Link } from 'react-router-dom';
 import Tippy from '@tippyjs/react/headless';
 import Button from '@/components/base/Button';
-import { useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
 

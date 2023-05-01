@@ -11,9 +11,20 @@ namespace BE.PICBIN.DL.Entities
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string ID { get; set; }
+
+        [BsonElement("RefID")]
         public string RefID { get; set; }
+
+        [BsonElement("UserPublicKey")]
         public string UserPublicKey { get; set; }
+
+        [BsonElement("Status")]
         public int Status { get; set; }
+
+        [BsonElement("ImageContent")]
         public string ImageContent { get; set; }
+
+        [BsonElement("DateTime")]
+        public DateTime CreatedDate { get; set; }
     }
 }

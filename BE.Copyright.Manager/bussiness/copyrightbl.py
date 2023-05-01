@@ -385,20 +385,7 @@ class CopyrightBL:
             else:
                 sign2 += chr(digit[i])
 
-        return sign2
-
-
-    '''
-    Lấy chữ ký trong ảnh
-    (11/4/2023)
-    '''
-    def getSignInImage(self, base64_string):
-        imYCbCr = self.inputImage(base64_string)
-        if type(imYCbCr) == bool:
-            return False
-        
-        signs = self.handleGetSignInImage(imYCbCr[:, :, self.Y])
-        return signs
+        return sign2.lower()
 
     '''
     Lấy text trong ảnh
@@ -430,74 +417,7 @@ class CopyrightBL:
 
         return sign2 
 
-    '''
-    Xử lý lấy chữ ký trong ảnh
-    Kiểm tra ở 4 góc + 2 chiều xuôi và ngược
-    (11/4/2023)
-    '''
-    def handleGetSignInImage(self, YChanel):
-        signs = []
-
-        YChanelFlip = np.flip(YChanel, 1)
-
-        L = self.dctYchanel(YChanel)
-        sign1 = self.getWatermarking(L)
-
-        L5 = self.dctYchanel(YChanelFlip)
-        sign5 = self.getWatermarking(L5)
-
-        YChanel2 = np.rot90(YChanel)
-        YChanel2Flip = np.rot90(YChanelFlip)
-
-        L2 = self.dctYchanel(YChanel2)
-        sign2 = self.getWatermarking(L2)
-
-        L6 = self.dctYchanel(YChanel2Flip)
-        sign6 = self.getWatermarking(L6)
-        
-        YChanel3 = np.rot90(YChanel2)
-        YChanel3Flip = np.rot90(YChanel2Flip)
-
-        L3 = self.dctYchanel(YChanel3)
-        sign3 = self.getWatermarking(L3)
-
-        L7 = self.dctYchanel(YChanel3Flip)
-        sign7 = self.getWatermarking(L7)
-        
-        YChanel4 = np.rot90(YChanel3)
-        YChanel4Flip = np.rot90(YChanel3Flip)
-
-        L4 = self.dctYchanel(YChanel4)
-        sign4 = self.getWatermarking(L4)
-
-        L8 = self.dctYchanel(YChanel4Flip)
-        sign8 = self.getWatermarking(L8)
-        
-        if(sign1 != None):
-            signs.append(sign1)
-
-        if(sign2 != None):
-            signs.append(sign2)
-        
-        if(sign3 != None):
-            signs.append(sign3)
-
-        if(sign4 != None):
-            signs.append(sign4)
-
-        if(sign5 != None):
-            signs.append(sign5)
-
-        if(sign6 != None):
-            signs.append(sign6)
-
-        if(sign7 != None):
-            signs.append(sign7)
-
-        if(sign8 != None):
-            signs.append(sign8)
-        
-        return signs
+    
     
     '''
     Kiểm tra độ tương đồng về ảnh

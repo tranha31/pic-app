@@ -2,6 +2,7 @@
 using BE.PICBIN.DL;
 using BE.PICBIN.DL.Entities;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -26,9 +27,8 @@ namespace BE.PICBIN.BL
         /// <summary>
         /// Xử lý đẩy yêu cầu vào queue
         /// </summary>
-        /// <param name="sign"></param>
         /// <param name="content"></param>
-        public void HanleAddNewRegisterRequest(string sign, string content)
+        public void HandleAddNewRegisterRequest(string sign, string content)
         {
             var id = Guid.NewGuid().ToString();
             RegisterRequest registerRequest = new RegisterRequest() { ID = id, Sign = sign, Image = content };
@@ -42,7 +42,8 @@ namespace BE.PICBIN.BL
                     RefID = id,
                     UserPublicKey = sign,
                     ImageContent = content,
-                    Status = 0
+                    Status = 0,
+                    CreatedDate = DateTime.Now
                 };
 
                 RegisterRequestDL oDL = new RegisterRequestDL(Configuration);
@@ -156,12 +157,34 @@ namespace BE.PICBIN.BL
 
             return true;
         }
+
+        /// <summary>
+        /// Xử lý kiểm tra xem ảnh đẫ có chữ ký hay chưa
+        /// </summary>
+        /// <param name="image"></param>
+        public async Task<ServiceResult> HandlCheckCopyright(string image)
+        {
+            Dictionary<string, string> param = new Dictionary<string, string>();
+            param.Add("image", image);
+
+            var copyRightUrl = Configuration.GetSection("CopyrightOtherService").Value;
+            var url = copyRightUrl + "/copyright/check";
+
+            var result = await CallHTTPRequest.CallHttp(url, "POST", param);
+            var serviceResult = JsonConvert.DeserializeObject<ServiceResult>(result.ToString());
+            return serviceResult;
+        }
     }
 
     public class RegisterRequest
     {
         public string ID { get; set; }
         public string Sign { get; set; }
+        public string Image { get; set; }
+    }
+
+    public class CheckRequest
+    {
         public string Image { get; set; }
     }
 }

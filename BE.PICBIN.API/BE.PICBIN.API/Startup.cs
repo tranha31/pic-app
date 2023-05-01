@@ -29,8 +29,6 @@ namespace BE.PICBIN.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
-
             var appNameSpace = Configuration.GetSection("AppURL").Value;
             var adminNameSpace = Configuration.GetSection("AdminURL").Value;
 
@@ -41,6 +39,7 @@ namespace BE.PICBIN.API
             }));
 
             services.AddControllers();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "BE.PICBIN.APP", Version = "v1" });
@@ -68,6 +67,11 @@ namespace BE.PICBIN.API
 
             app.UseRouting();
 
+            app.UseCors(builder => builder
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -75,10 +79,7 @@ namespace BE.PICBIN.API
                 endpoints.MapControllers();
             });
 
-            app.UseCors(builder => builder
-                .AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader());
+            
         }
     }
 }

@@ -79,6 +79,14 @@ namespace BE.PICBIN.DL
             await collection.DeleteManyAsync(filter);
         }
 
+        public async Task<List<T>> GetDataAsync<T>(FilterDefinition<T> filter, string collectionName, int start, int length)
+        {
+            var collection = mongoDB.GetCollection<T>(collectionName);
+            var data = await collection.Find(filter).Skip(start).Limit(length).ToListAsync();
+
+            return data;
+        }
+
         #endregion
 
         #region MySQL

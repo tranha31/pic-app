@@ -126,6 +126,15 @@
     margin-right: 8px;
 }
 
+.i-empty{
+    background-image: url("../../assets/imgs/empty-data.png");
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 200px;
+    height: 200px;
+    background-size: contain;
+}
+
 .font-size-18{
     font-size: 18px;
 }
@@ -152,4 +161,8 @@
 
 .mr-16{
     margin-right: 16px;
+}
+
+.mb-8{
+    margin-bottom: 8px;
 }
