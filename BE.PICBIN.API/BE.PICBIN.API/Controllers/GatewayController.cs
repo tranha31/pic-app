@@ -51,7 +51,7 @@ namespace BE.PICBIN.API.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpPost("register/reject/delete")]
+        [HttpDelete("register/reject/delete")]
         public async Task<IActionResult> DeleteRejectRegister(string id)
         {
             CopyrightBL oBL = new CopyrightBL(_config);
@@ -84,6 +84,53 @@ namespace BE.PICBIN.API.Controllers
             try
             {
                 result = await oBL.HandlCheckCopyright(image.Image);
+
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                NLogBL nLog = new NLogBL(_config);
+                nLog.InsertLog(ex.Message, ex.StackTrace);
+            }
+
+            return Ok(result);
+        }
+
+        [HttpPost("register/move/queue")]
+        public async Task<IActionResult> ManualPushRegisterToQueue()
+        {
+            CopyrightBL oBL = new CopyrightBL(_config);
+            ServiceResult result = new ServiceResult();
+            try
+            {
+                await oBL.MoveRegisterToQueue();
+                result.Success = true;
+
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                NLogBL nLog = new NLogBL(_config);
+                nLog.InsertLog(ex.Message, ex.StackTrace);
+            }
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Thêm mới yêu cầu kháng cáo
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("request/appeal/add")]
+        public async Task<IActionResult> SendAppealRequest(string id)
+        {
+            CopyrightBL oBL = new CopyrightBL(_config);
+            ServiceResult result = new ServiceResult();
+            try
+            {
+                var check = await oBL.HandleAddAppealRequest(id);
+                result.Success = check;
 
             }
             catch (Exception ex)

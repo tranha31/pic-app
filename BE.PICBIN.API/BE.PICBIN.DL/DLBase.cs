@@ -61,6 +61,12 @@ namespace BE.PICBIN.DL
             await collection.InsertOneAsync(data);
         }
 
+        public async Task InsertManyAsync<T>(List<T> data, string collectionName)
+        {
+            var collection = mongoDB.GetCollection<T>(collectionName);
+            await collection.InsertManyAsync(data);
+        }
+
         public async Task UpdateOneAsync<T>(FilterDefinition<T> filter, UpdateDefinition<T> update, string collectionName)
         {
             var collection = mongoDB.GetCollection<T>(collectionName);
@@ -83,6 +89,14 @@ namespace BE.PICBIN.DL
         {
             var collection = mongoDB.GetCollection<T>(collectionName);
             var data = await collection.Find(filter).Skip(start).Limit(length).ToListAsync();
+
+            return data;
+        }
+
+        public async Task<List<T>> GetAllDataAsync<T>(FilterDefinition<T> filter, string collectionName)
+        {
+            var collection = mongoDB.GetCollection<T>(collectionName);
+            var data = await collection.Find(filter).ToListAsync();
 
             return data;
         }
@@ -171,6 +185,40 @@ namespace BE.PICBIN.DL
                 }
             }
             return result;
+        }
+
+        public IEnumerable<T> QueryCommandMySQL<T>(string sql, DynamicParameters parameters, ref List<string> listOutput)
+        {
+            _dbConnection = new MySqlConnection(MySQLConnection);
+            _dbConnection.Open();
+            try
+            {
+                var data = _dbConnection.Query<T>(sql, parameters, commandType: CommandType.Text);
+
+                if (listOutput != null && listOutput.Count > 0)
+                {
+                    List<string> lstTempOutput = new List<string>();
+                    for (var i = 0; i < listOutput.Count; i++)
+                    {
+                        var output = parameters.Get<object>(listOutput[i]).ToString();
+                        lstTempOutput.Add(output);
+                    }
+
+                    listOutput.Clear();
+                    listOutput = lstTempOutput;
+                }
+
+                return data;
+
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+            finally
+            {
+                _dbConnection.Close();
+            }
         }
 
         #endregion

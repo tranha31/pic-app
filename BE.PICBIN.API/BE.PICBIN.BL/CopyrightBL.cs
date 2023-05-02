@@ -2,6 +2,7 @@
 using BE.PICBIN.DL;
 using BE.PICBIN.DL.Entities;
 using Microsoft.Extensions.Configuration;
+using MongoDB.Driver;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
@@ -173,6 +174,48 @@ namespace BE.PICBIN.BL
             var result = await CallHTTPRequest.CallHttp(url, "POST", param);
             var serviceResult = JsonConvert.DeserializeObject<ServiceResult>(result.ToString());
             return serviceResult;
+        }
+
+        public async Task MoveRegisterToQueue()
+        {
+            FilterDefinition<RegisterRequestModel> filter = Builders<RegisterRequestModel>.Filter.Eq(x => x.Status, 0);
+            CopyrightDL oDL = new CopyrightDL(Configuration);
+            List<RegisterRequestModel> registers = await oDL.GetAllRegisterRequest(filter);
+
+            if(registers != null && registers.Count > 0)
+            {
+                RegisterQueue registerQueue = new RegisterQueue(Configuration);
+                foreach (var item in registers)
+                {
+                    RegisterRequest registerRequest = new RegisterRequest() { ID = item.RefID, Sign = item.UserPublicKey, Image = item.ImageContent };
+                    registerQueue.PushObjectToQueue(registerRequest);
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// Kháng cáo yêu cầu bị từ chối
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<bool> HandleAddAppealRequest(string id)
+        {
+            if (id == null)
+            {
+                return false;
+            }
+
+            List<string> ids = id.Split(';').ToList();
+            if (ids.Count == 0)
+            {
+                return false;
+            }
+
+            RegisterRequestDL oDL = new RegisterRequestDL(Configuration);
+            await oDL.HandleAddAppealRequest(ids);
+
+            return true;
         }
     }
 

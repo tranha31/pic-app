@@ -199,6 +199,55 @@
         left: 50%;
         transform: translate(-50%, -50%);
     }
+
+    .detail-wrapper{
+        .wrapper-content{
+            border: 1px dashed #fff200;
+            border-radius: 5px;
+            padding: 10px;
+
+            .image-request{
+                width: 400px;
+                height: 650px;
+                background-color: #0e1d38;
+                background-repeat: no-repeat;
+                background-position: center;
+                background-size: contain;
+            }
+
+            .image-similar{
+                flex-wrap: wrap;
+                overflow: auto;
+                margin-top: 10px;
+
+                .item-similar{
+                    width: 280px;
+                    height: 300px;
+                    margin-right: 10px;
+                    background-repeat: no-repeat;
+                    background-position: center;
+                    background-size: contain;
+                }
+            }
+        }
+    }
+
+    .refresh{
+        width: 30px;
+        height: 30px;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-image: url("../../../../assets/imgs/refresh.png");
+        margin-right: 15px;
+        margin-top: 14px;
+        background-size: 19px;
+
+        &:hover{
+            border: 1px solid #babec5;
+            border-radius: 2px;
+            cursor: pointer;
+        }
+    }
 }
 
 @media only screen and (max-width: 768px) {

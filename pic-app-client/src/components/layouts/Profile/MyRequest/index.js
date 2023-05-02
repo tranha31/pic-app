@@ -11,8 +11,10 @@ import Tippy from '@tippyjs/react/headless';
 import DatePicker from "react-datepicker";
 import Select from 'react-select';
 import CollectionAPI from '@/api/collection';
+import CopyrightAPI from '@/api/copyright';
 import Metamask from '@/api/metamask';
 import Loading from '@/components/base/Loading';
+import PopupDetail from '@/components/base/PopupDetail';
 
 const cx = classNames.bind(styles);
 
@@ -20,7 +22,7 @@ function MyRequest() {
 
     const [tab, setTab] = useState(0);
     const [title, setTitle] = useState("Warning");
-    const [message, setMessage] = useState("Are you sure you want to send an appeal?")
+    const [message, setMessage] = useState("We only send rejected image requests due to similarity. Are you sure you want to send an appeal?")
     const [showMessage, setShowMessage] = useState(false);
     const [paramRequestStatus, setParamRequestStatus] = useState(-1);
     const [curIndex, setCurIndex] = useState(0);
@@ -40,9 +42,45 @@ function MyRequest() {
     const [startDate, setStartDate] = useState(new Date(curDate.setDate(curDate.getDate() - 30)));
     const [endDate, setEndDate] = useState(new Date());
     const [showLoading, setShowLoading] = useState(false);
+    const [showDetail, setShowDetail] = useState(false);
+    const [showBoxReject, setShowBoxReject] = useState(false);
+    const [messageReject, setMessageReject] = useState("");
+    const [imageSimilar, setImageSimilar] = useState();
+    const [imageSimilars, setImageSimilars] = useState([]);
+    const [selectedItem, setSelectedItem] = useState([]);
+    const [currentID, setCurrentID] = useState("");
+    const [selectedAppeal, setSelectedAppeal] = useState([]);
 
     const submitBtn = (
         <Button primary onClick={() => {handleSubmitRequest()}}>Submit</Button>
+    )
+
+    const viewReject = (
+        <div className={cx('detail-wrapper', 'd-flex', 'flex-column', 'flex-1')}>
+            <div className={cx('content', 'd-flex', 'flex-1')}>
+                <div className={cx('flex-1', 'd-flex', 'wrapper-content', 'align-center', 'justify-center', 'flex-column')} style={{marginRight: "15px"}}>
+                    <div className={cx('font-bold', 'font-size-18')} style={{marginBottom: "15px"}}>Requested image</div>
+                    <div className={cx('image-request')} style={{backgroundImage: imageSimilar}}></div>
+                </div>
+                <div className={cx('flex-2', 'd-flex', 'flex-column', 'wrapper-content')}>
+                    <div className={cx('font-bold', 'font-size-18')}>Similar images</div>
+                    <div className={cx('flex-1', 'd-flex', 'image-similar')}>
+                        {
+                            imageSimilars.map((e, index) => {
+                                return <div key={index} className={cx('item-similar')} style={{backgroundImage: "url('" + e + "')"}}></div>
+                            })
+                        }
+
+                    </div>
+                </div>
+            </div>
+            <div className={cx('footer', 'd-flex', 'w-full')} style={{padding: "10px 0px"}}>
+                <div className={cx('flex-1')}></div>
+                <Button normal onClick={() => setShowDetail(false)}>Close</Button>
+                <Button normal onClick={() => deleteRequestInForm()}>Delete</Button>
+                <Button primary onClick={() => sendAppealRequestInForm()}>Submit appeal</Button>
+            </div>
+        </div>
     )
 
     useEffect(() => {
@@ -67,11 +105,6 @@ function MyRequest() {
 
     const goToTab = (index) => {
         setTab(index);
-    }
-
-    const handleSubmitRequest = () => {
-        setShowMessage(false);
-        toast.success("Send request success!")
     }
 
     const handleChangeRequestStatus = (v) => {
@@ -102,12 +135,27 @@ function MyRequest() {
         }
     }
 
+    const handleRefresh = async () => {
+        debugger
+        var data = await handlePagingData(0);
+        if(data !== false){
+            if(tab === 0){
+                setImageSimilar("");
+                setImageSimilars([...[]])
+                setCurrentID("")
+                setSelectedAppeal([...[]])
+                setSelectedItem([...[]])
+                setRegisterRequests([...data])
+            }
+            
+        }
+    }
+
     const loadMoreData = async () => {
         var index = curIndex + 20;
         setCurIndex(index);
         if(tab === 0){
             var curData = registerRequests;
-            setRegisterRequests([...[]]);
             var data = await handlePagingData(index);
             if(data !== false){
                 var merData = [...curData, ...data]
@@ -175,13 +223,226 @@ function MyRequest() {
         var registers = data.map((e, i) => {
             var contentImage = "url('data:image/png;base64," + e.imageContent + "')"; 
             return {
+                "id": e.refID,
                 "status" : e.status,
-                "active" : false,
-                "image" : contentImage
+                "image" : contentImage,
+                "error": e.error
             }
         })
 
         return registers;
+    }
+
+    const hanldeViewDetailReject = async (id, error, status, image) => {
+        if(status === 0) {return;}
+        if(error === "Image has similar"){
+            try{
+                setShowLoading(true);
+                const api = new CollectionAPI();
+                var param = {
+                    id: id,
+                }
+                
+                var res = await api.getImageSimilar(param);
+                if(res.data.success){
+                    var data = res.data.data;
+                    setImageSimilar(image);
+                    setImageSimilars([...[]]);
+                    setImageSimilars([...data]);
+                    setCurrentID(id);
+                    setShowDetail(true);
+                }
+                else{
+                    toast.error("Something wrong! Please try again!")
+                }
+
+                setShowLoading(false);
+            }
+            catch(err){
+                toast.warning("Something wrong! Please try again!");
+            }
+        }
+        else{
+            setMessageReject(error);
+            setShowBoxReject(true);
+        }
+    }
+
+    const handleChooseRequest = (id, status, error) => {
+        if(status === 0){
+            return;
+        }
+        else{
+            var index = selectedItem.indexOf(id);
+            var temp = selectedItem;
+            if(index > -1){
+                temp.splice(index, 1);
+            }
+            else{
+                temp.push(id);
+            }
+            setSelectedItem([...[]]);
+            setSelectedItem([...temp]);
+
+            if(error === "Image has similar"){
+                index = selectedAppeal.indexOf(id);
+                temp = selectedAppeal;
+                if(index > -1){
+                    temp.splice(index, 1);
+                }
+                else{
+                    temp.push(id);
+                }
+                setSelectedAppeal([...[]]);
+                setSelectedAppeal([...temp]);
+            }
+        }
+    }
+
+    const deleteRequest = async () => {
+        var ids = "";
+        for(var i=0; i<selectedItem.length; i++){
+            ids = ids + selectedItem[i] + ";"
+        }
+
+        ids = ids.substring(0, ids.length - 1);
+
+        try {
+            const api = new CopyrightAPI();
+            var param = {
+                id: ids,
+            }
+            
+            var res = await api.deleteRequestReject(param);
+            if(res.data.success){
+                setSelectedItem([...[]]);
+                setSelectedAppeal([...[]]);
+                var temp = registerRequests;
+                temp = temp.filter((e, ind) => {
+                    return !ids.includes(e.id);
+                })
+                setRegisterRequests([...temp]);
+                toast.success("Delete request success!");
+            }
+        } catch (error) {
+            toast.warning("Something wrong! Please try again!");
+        }
+    }
+
+    const deleteRequestInForm = async () => {
+        try {
+            const api = new CopyrightAPI();
+            var param = {
+                id: currentID,
+            }
+            
+            var res = await api.deleteRequestReject(param);
+            if(res.data.success){
+                var tempSeleted = selectedItem;
+                var indexSelected = tempSeleted.indexOf(currentID);
+                if(indexSelected > -1){
+                    tempSeleted.splice(indexSelected, 1);
+                }
+                setSelectedItem([...tempSeleted]);
+
+                tempSeleted = selectedAppeal;
+                indexSelected = tempSeleted.indexOf(currentID);
+                if(indexSelected > -1){
+                    tempSeleted.splice(indexSelected, 1);
+                }
+                setSelectedAppeal([...tempSeleted]);
+
+                var temp = registerRequests;
+                temp = temp.filter((e, ind) => {
+                    return e.id != currentID;
+                })
+                setRegisterRequests([...temp]);
+                handleCallBackDetailReject();
+                toast.success("Delete request success!");
+            }
+        } catch (error) {
+            toast.warning("Something wrong! Please try again!");
+        }
+    }
+
+    const handleSubmitRequest = async () => {
+        setShowMessage(false);
+        var ids = "";
+        for(var i=0; i<selectedAppeal.length; i++){
+            ids = ids + selectedAppeal[i] + ";"
+        }
+
+        ids = ids.substring(0, ids.length - 1);
+
+        try {
+            const api = new CopyrightAPI();
+            var param = {
+                id: ids,
+            }
+            
+            var res = await api.sendAppealRequest(param);
+            if(res.data.success){
+                setSelectedAppeal([...[]]);
+
+                var tempSeleted = selectedItem;
+                tempSeleted = tempSeleted.filter((e, ind) => {
+                    return !ids.includes(e);
+                })
+                setSelectedItem([...tempSeleted]);
+
+                var temp = registerRequests;
+                temp = temp.filter((e, ind) => {
+                    return !ids.includes(e.id);
+                })
+                setRegisterRequests([...temp]);
+                toast.success("Send request success!");
+            }
+        } catch (error) {
+            toast.warning("Something wrong! Please try again!");
+        }
+    }
+
+    const sendAppealRequestInForm = async () => {
+        try {
+            const api = new CopyrightAPI();
+            var param = {
+                id: currentID,
+            }
+            
+            var res = await api.sendAppealRequest(param);
+            if(res.data.success){
+                var tempSeleted = selectedItem;
+                var indexSelected = tempSeleted.indexOf(currentID);
+                if(indexSelected > -1){
+                    tempSeleted.splice(indexSelected, 1);
+                }
+                setSelectedItem([...tempSeleted]);
+
+                tempSeleted = selectedAppeal;
+                indexSelected = tempSeleted.indexOf(currentID);
+                if(indexSelected > -1){
+                    tempSeleted.splice(indexSelected, 1);
+                }
+                setSelectedAppeal([...tempSeleted]);
+
+                var temp = registerRequests;
+                temp = temp.filter((e, ind) => {
+                    return e.id != currentID;
+                })
+                setRegisterRequests([...temp]);
+                handleCallBackDetailReject();
+                toast.success("Send request success!");
+            }
+        } catch (error) {
+            toast.warning("Something wrong! Please try again!");
+        }
+    }
+
+    const handleCallBackDetailReject = (state) => {
+        setImageSimilar("");
+        setImageSimilars([...[]])
+        setCurrentID("")
+        setShowDetail(false)
     }
 
     return ( 
@@ -190,7 +451,7 @@ function MyRequest() {
                 <div className={cx('tab-item', tab == 0 ? 'active' : "")} onClick={() => {goToTab(0)}}>Registration request</div>
                 <div className={cx('tab-item', tab == 1 ? 'active' : "")} onClick={() => {goToTab(1)}}>Request an appeal</div>
                 <div className={cx('flex-1')}></div>
-
+                <div className={cx('refresh')} onClick={() => {handleRefresh()}}></div>
                 <Tippy
                     visible={showFilter}
                     interactive
@@ -262,7 +523,10 @@ function MyRequest() {
                                     (
                                         registerRequests.map((e, index) => {
                                             return (
-                                                <div key={index} className={cx('content-image', e.active ? 'active' : '')} title='Processing' style={{backgroundImage: e.image}}>
+                                                <div key={index} className={cx('content-image', selectedItem.indexOf(e.id) > -1 ? 'active' : '')} style={{backgroundImage: e.image}}
+                                                onDoubleClick={() => {hanldeViewDetailReject(e.id, e.error, e.status, e.image)}}
+                                                onClick={() => {handleChooseRequest(e.id, e.status, e.error)}}
+                                                >
                                                     {e.status === 0 && <img src={logo} className={cx('processing')} alt="loading..." />}
                                                     {e.status === 2 && <img src={reject} className={cx('processing')} alt="loading..." />}
                                                 </div>
@@ -278,15 +542,19 @@ function MyRequest() {
                                     )
                                 }
 
-                                
                             </div>
                         </div>
 
-                        <div className={cx('sell-content-footer', 'd-flex', 'w-full')}>
-                            <div className={cx('flex-1')}></div>
+                        <div className={cx('sell-content-footer', 'd-flex', 'w-full', 'align-center')}>
+                            <div className={cx('flex-1', 'font-bold', 'underline', 'font-italic', 'pl-10')}>Click duplex on rejected request to see detail</div>
                             <Button normal onClick={() => loadMoreData()}>See more</Button>
-                            <Button primary onClick={() => {setShowMessage(true)}}>Submit appeal</Button>
+                            {selectedItem.length > 0 && <Button normal onClick={() => {deleteRequest()}}>Delete</Button>}
+                            {selectedAppeal.length > 0 && <Button primary onClick={() => {setShowMessage(true)}}>Submit appeal</Button>}
+                            
                         </div>
+                        
+                        {showBoxReject && <MessageBox title={"Reason for reject"} message={messageReject} scale={{height: "200px", width: "450px"}} eventCallBack={() => {setShowBoxReject(false)}}/>}
+                        {showDetail && <PopupDetail title={"Request detail"} scale={{height: "95%", width: "85%"}} child={viewReject} eventCallBack={handleCallBackDetailReject}/>}
                         {showMessage && <MessageBox type={"warning"} title={title} message={message} scale={{height: "200px", width: "450px"}} child={submitBtn} eventCallBack={closePopup}/>}
                         
                     </Fragment>

@@ -1,6 +1,7 @@
 ﻿using BE.PICBIN.DL.Entities;
 using Dapper;
 using Microsoft.Extensions.Configuration;
+using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -38,6 +39,13 @@ namespace BE.PICBIN.DL
                 CopyrightImageModel copyrightImage = new CopyrightImageModel() { RefID = id, ImageContent = content, ImageContentMarked = imageMarked };
                 await InsertOneAsync<CopyrightImageModel>(copyrightImage, MongoCollection);
             }
+        }
+
+        public async Task<List<RegisterRequestModel>> GetAllRegisterRequest(FilterDefinition<RegisterRequestModel> filter)
+        {
+            List<RegisterRequestModel> data = await GetAllDataAsync<RegisterRequestModel>(filter, "RegisterRequest");
+
+            return data;
         }
     }
 }

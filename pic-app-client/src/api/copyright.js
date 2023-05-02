@@ -21,6 +21,24 @@ class CopyrightAPI {
     async addNewRegisterRequest(body){
         return await init.post(`${this.controler}/register/add`, body);
     }
+
+    /**
+     * Xoá các request bị từ chối
+     * @param {*} param 
+     * @returns 
+     */
+    async deleteRequestReject(param){
+        return await init.delete(`${this.controler}/register/reject/delete`, {params: param})
+    }
+
+    /**
+     * Gửi yêu cầu kháng cáo
+     * @param {*} param 
+     * @returns 
+     */
+    async sendAppealRequest(param){
+        return await init.get(`${this.controler}/request/appeal/add`, {params: param})
+    }
 }
 
 export default CopyrightAPI

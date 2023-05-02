@@ -28,7 +28,7 @@ namespace BE.PICBIN.DL
         public async Task HandleRejectRegisterRequest(string id, RegisterReject registerReject)
         {
             var filter = Builders<RegisterRequestModel>.Filter.Eq(s => s.RefID, id);
-            var update = Builders<RegisterRequestModel>.Update.Set(s => s.Status, 2);
+            var update = Builders<RegisterRequestModel>.Update.Set(s => s.Status, 2).Set(s => s.Error, registerReject.ReasonReject);
 
             await UpdateOneAsync<RegisterRequestModel>(filter, update, MongoCollection);
 
@@ -87,6 +87,29 @@ namespace BE.PICBIN.DL
                 var filter = Builders<RegisterRequestModel>.Filter.In(s => s.RefID, id);
                 await DeleteManyAsync<RegisterRequestModel>(filter, MongoCollection);
             }
+        }
+
+        public async Task HandleAddAppealRequest(List<string> id)
+        {
+            var filter = Builders<RegisterRequestModel>.Filter.In(s => s.RefID, id);
+
+            var data = await GetAllDataAsync<RegisterRequestModel>(filter, MongoCollection);
+            List<AppealRegisterModel> appealRegisters = new List<AppealRegisterModel>();
+            foreach (var item in data)
+            {
+                AppealRegisterModel appeal = new AppealRegisterModel()
+                {
+                    Status = 0,
+                    CreatedDate = DateTime.Now,
+                    RefID = item.RefID,
+                    UserPublicKey = item.UserPublicKey,
+                    ImageContent = item.ImageContent
+                };
+
+                appealRegisters.Add(appeal);
+            }
+            await InsertManyAsync<AppealRegisterModel>(appealRegisters, "AppealRequest");
+            await DeleteManyAsync<RegisterRequestModel>(filter, MongoCollection);
         }
     }
 }

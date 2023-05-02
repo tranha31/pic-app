@@ -13,8 +13,6 @@ class ImageSimilarBL:
         pass
 
     def handleCheckSimilar(self, listID, base64_string):
-        print(listID)
-
         imageSim = self.getImageSimilar(listID)
         imageTest = self.oModel.readImage(base64_string)
         

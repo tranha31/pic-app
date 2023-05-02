@@ -143,6 +143,14 @@
     font-weight: 700;
 }
 
+.underline{
+    text-decoration: underline;
+}
+
+.font-italic{
+    font-style: italic;
+}
+
 .w-full{
     width: 100%;
 }
@@ -165,4 +173,8 @@
 
 .mb-8{
     margin-bottom: 8px;
+}
+
+.pl-10{
+    padding-left: 10px;
 }

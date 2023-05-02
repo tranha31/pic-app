@@ -26,5 +26,8 @@ namespace BE.PICBIN.DL.Entities
 
         [BsonElement("DateTime")]
         public DateTime CreatedDate { get; set; }
+        
+        [BsonElement("Error")]
+        public string Error { get; set; }
     }
 }

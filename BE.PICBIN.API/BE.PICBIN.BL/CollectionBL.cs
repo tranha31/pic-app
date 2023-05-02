@@ -67,5 +67,44 @@ namespace BE.PICBIN.BL
             return serviceResult;
 
         }
+
+        /// <summary>
+        /// Lấy danh sách ảnh tương đồng
+        /// </summary>
+        /// <param name="id">id của request</param>
+        /// <returns></returns>
+        public async Task<ServiceResult> GetImageSimilar(string id)
+        {
+            ServiceResult serviceResult = new ServiceResult();
+
+            try
+            {
+                CollectionDL oDL = new CollectionDL(Configuration);
+                var data = oDL.GetImageSimilarID(id);
+                if(data != null && data.Count > 0)
+                {
+                    FilterDefinition<CopyrightImageModel> filter = Builders<CopyrightImageModel>.Filter.In(x => x.RefID, data);
+                    var images = await oDL.GetAllImageSimilar(filter);
+                    if(images != null && images.Count > 0)
+                    {
+                        List<string> contentImage = new List<string>();
+                        foreach (var item in images)
+                        {
+                            contentImage.Add(item.ImageContentMarked);
+                        }
+
+                        serviceResult.Success = true;
+                        serviceResult.Data = contentImage;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                serviceResult.Success = false;
+                NLogBL nLog = new NLogBL(Configuration);
+                nLog.InsertLog(ex.Message, ex.StackTrace);
+            }
+            return serviceResult;
+        }
     }
 }

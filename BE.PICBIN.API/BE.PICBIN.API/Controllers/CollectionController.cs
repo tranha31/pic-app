@@ -43,5 +43,30 @@ namespace BE.PICBIN.API.Controllers
 
             return Ok(result);
         }
+
+        /// <summary>
+        /// Lấy các ảnh tương đồng
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("image/similar")]
+        public async Task<IActionResult> GetImageSimilar(string id)
+        {
+            ServiceResult result = new ServiceResult();
+            try
+            {
+                CollectionBL oBL = new CollectionBL(_config);
+                result = await oBL.GetImageSimilar(id);
+
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                NLogBL nLog = new NLogBL(_config);
+                nLog.InsertLog(ex.Message, ex.StackTrace);
+            }
+
+            return Ok(result);
+        }
     }
 }
