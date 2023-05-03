@@ -21,6 +21,15 @@ class CollectionAPI {
     async getImageSimilar(param){
         return await init.get(`${this.controler}/image/similar`, {params: param});
     }
+
+    /**
+     * Lấy danh sách yêu cầu kháng cáo
+     * @param {string} param : điều kiện lọc
+     * @returns 
+     */
+    async getAppealRequestPaging(param){
+        return await init.get(`${this.controler}/appeal/request/paging`, {params: param});
+    }
 }
 
 export default CollectionAPI

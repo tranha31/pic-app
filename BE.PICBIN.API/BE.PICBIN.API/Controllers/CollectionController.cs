@@ -68,5 +68,53 @@ namespace BE.PICBIN.API.Controllers
 
             return Ok(result);
         }
+
+        /// <summary>
+        /// Upload register request
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("appeal/request/paging")]
+        public async Task<IActionResult> AppealRegister(string key, int start, int length, DateTime fromDate, DateTime toDate)
+        {
+            ServiceResult result = new ServiceResult();
+            try
+            {
+                CollectionBL oBL = new CollectionBL(_config);
+                result = await oBL.GetRequestAppealPaging(key, start, length, fromDate, toDate);
+
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                NLogBL nLog = new NLogBL(_config);
+                nLog.InsertLog(ex.Message, ex.StackTrace);
+            }
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Upload register request
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("appeal/request/all/paging")]
+        public async Task<IActionResult> AppealAllRegister(int start, int length, DateTime fromDate, DateTime toDate)
+        {
+            ServiceResult result = new ServiceResult();
+            try
+            {
+                CollectionBL oBL = new CollectionBL(_config);
+                result = await oBL.GetRequestAppealAllPaging(start, length, fromDate, toDate);
+
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                NLogBL nLog = new NLogBL(_config);
+                nLog.InsertLog(ex.Message, ex.StackTrace);
+            }
+
+            return Ok(result);
+        }
     }
 }

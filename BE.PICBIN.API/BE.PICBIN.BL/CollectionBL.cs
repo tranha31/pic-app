@@ -106,5 +106,80 @@ namespace BE.PICBIN.BL
             }
             return serviceResult;
         }
+
+        /// <summary>
+        /// Lấy danh sách yêu cầu kháng cáo theo user
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="length"></param>
+        /// <param name="fromDate"></param>
+        /// <param name="toDate"></param>
+        /// <returns></returns>
+        public async Task<ServiceResult> GetRequestAppealPaging(string key, int start, int length, DateTime fromDate, DateTime toDate)
+        {
+            ServiceResult serviceResult = new ServiceResult();
+
+            var fUser = Builders<AppealRegisterModel>.Filter.Eq(x => x.UserPublicKey, key);
+            var fFromDate = Builders<AppealRegisterModel>.Filter.Gte<DateTime>(x => x.CreatedDate, fromDate);
+            var fToDate = Builders<AppealRegisterModel>.Filter.Lte<DateTime>(x => x.CreatedDate, toDate);
+
+            FilterDefinition<AppealRegisterModel> combineFilters;
+
+            combineFilters = Builders<AppealRegisterModel>.Filter.And(fUser, fFromDate, fToDate);
+
+            try
+            {
+                CollectionDL oDL = new CollectionDL(Configuration);
+                var data = await oDL.GetAppealRequestPaging(combineFilters, start, length);
+                serviceResult.Success = true;
+                serviceResult.Data = data;
+            }
+            catch (Exception ex)
+            {
+                serviceResult.Success = false;
+                NLogBL nLog = new NLogBL(Configuration);
+                nLog.InsertLog(ex.Message, ex.StackTrace);
+            }
+
+            return serviceResult;
+
+        }
+
+        /// <summary>
+        /// Lấy danh sách yêu cầu kháng cáo của tất cả user
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="length"></param>
+        /// <param name="fromDate"></param>
+        /// <param name="toDate"></param>
+        /// <returns></returns>
+        public async Task<ServiceResult> GetRequestAppealAllPaging(int start, int length, DateTime fromDate, DateTime toDate)
+        {
+            ServiceResult serviceResult = new ServiceResult();
+
+            var fFromDate = Builders<AppealRegisterModel>.Filter.Gte<DateTime>(x => x.CreatedDate, fromDate);
+            var fToDate = Builders<AppealRegisterModel>.Filter.Lte<DateTime>(x => x.CreatedDate, toDate);
+
+            FilterDefinition<AppealRegisterModel> combineFilters;
+
+            combineFilters = Builders<AppealRegisterModel>.Filter.And(fFromDate, fToDate);
+
+            try
+            {
+                CollectionDL oDL = new CollectionDL(Configuration);
+                var data = await oDL.GetAllAppealRequestPaging(combineFilters, start, length);
+                serviceResult.Success = true;
+                serviceResult.Data = data;
+            }
+            catch (Exception ex)
+            {
+                serviceResult.Success = false;
+                NLogBL nLog = new NLogBL(Configuration);
+                nLog.InsertLog(ex.Message, ex.StackTrace);
+            }
+
+            return serviceResult;
+
+        }
     }
 }

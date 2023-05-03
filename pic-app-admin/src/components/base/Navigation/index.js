@@ -1,6 +1,6 @@
 import styles from './Navigation.module.scss';
 import classNames from 'classnames/bind';
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import Select from 'react-select'
 
 const cx = classNames.bind(styles);
@@ -18,6 +18,7 @@ function Navigation({value, totalRecord, onCallBack}) {
 
     const [lstPage, setLstPage] = useState(() => {
         var btn = []
+        if(totalPage === 0) {return btn}
         if(totalPage < 5){
             for(var i=1; i<=totalPage; i++){
                 btn.push({page: i, active: false})
@@ -39,6 +40,7 @@ function Navigation({value, totalRecord, onCallBack}) {
 
     const setDefaultListPage = () => {
         var btn = []
+        if(totalPage === 0) {return btn}
         if(totalPage < 5){
             for(var i=1; i<=totalPage; i++){
                 btn.push({page: i, active: false})
@@ -121,6 +123,12 @@ function Navigation({value, totalRecord, onCallBack}) {
 
             setLstPage(...[btn])
         }
+
+        var obj = {
+            type : 1,
+            value: index - 1
+        }
+        onCallBack(obj)
     }
 
     
@@ -139,16 +147,21 @@ function Navigation({value, totalRecord, onCallBack}) {
                 onChange={(v) => changeSize(v)}
             />
             <div className={cx('btn-navigaiton', 'd-flex')}>
-                <div className={cx('item-navigiton')} onClick={() => choosePage(1)}>&lt;&lt;</div>
-                {lstPage.map((page, index) => {
-                    var isActive = page.active;
-                    return (
-                        <div key={index} className={cx('item-navigiton', isActive ? 'active' : '')} onClick={() => choosePage(page.page)}>{page.page}</div>
-                        
-                        );  
-                    })
-                }
-                <div className={cx('item-navigiton')} onClick={() => choosePage(totalPage)}>&gt;&gt;</div>
+                {lstPage.length > 0 && (
+                    <Fragment>
+                        <div className={cx('item-navigiton')} onClick={() => choosePage(1)}>&lt;&lt;</div>
+                        {lstPage.map((page, index) => {
+                            var isActive = page.active;
+                            return (
+                                <div key={index} className={cx('item-navigiton', isActive ? 'active' : '')} onClick={() => choosePage(page.page)}>{page.page}</div>
+                                
+                                );  
+                            })
+                        }
+                        <div className={cx('item-navigiton')} onClick={() => choosePage(totalPage)}>&gt;&gt;</div>
+                    </Fragment>
+                )}
+                
             </div>
         </div>
     );

@@ -27,6 +27,8 @@ function MyRequest() {
     const [paramRequestStatus, setParamRequestStatus] = useState(-1);
     const [curIndex, setCurIndex] = useState(0);
     const [registerRequests, setRegisterRequests] = useState([]);
+    const [appealRequests, setAppealRequests] = useState([]);
+    const [curAppealIndex, setCurAppealIndex] = useState(0);
     const [statusReq, setStatusReq] = useState({value: -1, label: 'All'}) 
 
     const requestStatus = [
@@ -41,6 +43,12 @@ function MyRequest() {
     
     const [startDate, setStartDate] = useState(new Date(curDate.setDate(curDate.getDate() - 30)));
     const [endDate, setEndDate] = useState(new Date());
+
+
+    const [showFilterAppeal, setShowFilterAppeal] = useState(false);
+    const [startDateAppeal, setStartDateAppeal] = useState(new Date(curDate.setDate(curDate.getDate() - 30)));
+    const [endDateAppeal, setEndDateAppeal] = useState(new Date());
+
     const [showLoading, setShowLoading] = useState(false);
     const [showDetail, setShowDetail] = useState(false);
     const [showBoxReject, setShowBoxReject] = useState(false);
@@ -77,8 +85,8 @@ function MyRequest() {
             <div className={cx('footer', 'd-flex', 'w-full')} style={{padding: "10px 0px"}}>
                 <div className={cx('flex-1')}></div>
                 <Button normal onClick={() => setShowDetail(false)}>Close</Button>
-                <Button normal onClick={() => deleteRequestInForm()}>Delete</Button>
-                <Button primary onClick={() => sendAppealRequestInForm()}>Submit appeal</Button>
+                {tab === 0 && <Button normal onClick={() => deleteRequestInForm()}>Delete</Button>}
+                {tab === 0 && <Button primary onClick={() => sendAppealRequestInForm()}>Submit appeal</Button>}
             </div>
         </div>
     )
@@ -87,16 +95,29 @@ function MyRequest() {
         getInitData();
     }, []);
 
+    useEffect(() => {
+        if(tab === 0 && registerRequests.length === 0){
+            handleRefresh();
+        }
+        else if(tab === 1 && appealRequests.length === 0){
+            handleRefresh();
+        }
+
+        setShowFilter(false);
+        setShowFilterAppeal(false);
+    }, [tab])
+
     const getInitData = async () => {
         var data = await handlePagingData(0);
-        if(tab === 0){
-            if(data !== false){
+        if(data !== false){
+            if(tab === 0){
                 setRegisterRequests([...data])
             }
+            else{
+                setAppealRequests([...data])
+            }
         }
-        else{
-
-        }
+        
     }
 
     const closePopup = (status) => {
@@ -122,21 +143,32 @@ function MyRequest() {
         setParamRequestStatus(-1);
     }
 
+    const refreshFilterAppeal = () => {
+        var curDate = new Date();
+        setStartDateAppeal(new Date(curDate.setDate(curDate.getDate() - 30)))
+        setEndDateAppeal(new Date())
+    }
+
     const filterData = async () => {
-        setShowFilter(false);
-        setCurIndex(0);
-        setRegisterRequests([...[]]);
         var data = await handlePagingData(0);
         if(data !== false){
             if(tab === 0){
+                setShowFilter(false);
+                setCurIndex(0);
+                setRegisterRequests([...[]]);
                 setRegisterRequests([...data])
             }
-            
+            else{
+                setShowFilterAppeal(false);
+                setCurAppealIndex(0);
+                setAppealRequests([...[]]);
+                setAppealRequests([...data]);
+            }
         }
+        
     }
 
     const handleRefresh = async () => {
-        debugger
         var data = await handlePagingData(0);
         if(data !== false){
             if(tab === 0){
@@ -147,14 +179,16 @@ function MyRequest() {
                 setSelectedItem([...[]])
                 setRegisterRequests([...data])
             }
-            
+            else{
+                setAppealRequests([...data])
+            }
         }
     }
 
     const loadMoreData = async () => {
-        var index = curIndex + 20;
-        setCurIndex(index);
         if(tab === 0){
+            var index = curIndex + 20;
+            setCurIndex(index);
             var curData = registerRequests;
             var data = await handlePagingData(index);
             if(data !== false){
@@ -162,7 +196,16 @@ function MyRequest() {
                 setRegisterRequests([...merData])
             }
         }
-
+        else{
+            index = curAppealIndex + 20;
+            setCurAppealIndex(index);
+            curData = appealRequests;
+            data = await handlePagingData(index);
+            if(data !== false){
+                var merData = [...curData, ...data]
+                setAppealRequests([...merData])
+            }
+        }
     }
 
     const handlePagingData = async (index) => {
@@ -182,7 +225,7 @@ function MyRequest() {
                 return handleGetRegisterRequest(index, address);
             }
             else{
-    
+                return handleGetAppealRequest(index, address);
             }
 
         }
@@ -201,8 +244,8 @@ function MyRequest() {
             start : index,
             length : 20,
             status : paramRequestStatus,
-            fromDate: startDate,
-            toDate: endDate,
+            fromDate: new Date(startDate.setHours(0,0,0,0)),
+            toDate: new Date(endDate.setHours(0,0,0,0)),
         }
         
         var res = await api.getRegisterRequestPaging(param);
@@ -231,6 +274,44 @@ function MyRequest() {
         })
 
         return registers;
+    }
+
+    const handleGetAppealRequest = async (index, address) => {
+        setShowLoading(true);
+        const api = new CollectionAPI();
+        var param = {
+            key: address,
+            start : index,
+            length : 20,
+            fromDate: new Date(startDateAppeal.setHours(0,0,0,0)),
+            toDate: new Date(endDateAppeal.setHours(0,0,0,0)),
+        }
+        
+        var res = await api.getAppealRequestPaging(param);
+        if(res.data.success){
+            var data = res.data.data;
+            var registers = convertDataAppealRequest(data);
+            setShowLoading(false);
+            return registers;
+        }
+        else{
+            setShowLoading(false);
+            toast.error("Something wrong! Please try again!")
+            return false;
+        }
+    }
+
+    const convertDataAppealRequest = (data) => {
+        var appeals = data.map((e, i) => {
+            var contentImage = "url('data:image/png;base64," + e.imageContent + "')"; 
+            return {
+                "id": e.refID,
+                "image" : contentImage,
+                "error": "Image has similar"
+            }
+        })
+
+        return appeals;
     }
 
     const hanldeViewDetailReject = async (id, error, status, image) => {
@@ -452,64 +533,113 @@ function MyRequest() {
                 <div className={cx('tab-item', tab == 1 ? 'active' : "")} onClick={() => {goToTab(1)}}>Request an appeal</div>
                 <div className={cx('flex-1')}></div>
                 <div className={cx('refresh')} onClick={() => {handleRefresh()}}></div>
-                <Tippy
-                    visible={showFilter}
-                    interactive
-                    placement="bottom"
-                    hideOnClick={false}
-                    offset={0}
-                    render={attrs => (
-                        <div className={cx('filter-box', 'd-flex', 'flex-column')} tabIndex="-1" {...attrs}>
-                            <div className={cx('filter-header', 'd-flex', 'mb-8')}>
-                                <div className={cx('icon-filter')}></div>
-                                <div className={cx('font-bold', 'font-size-18')}>Filter</div>
-                            </div>
-                            <div className={cx('filter-content', 'd-flex', 'flex-column', 'flex-1')}>
-                                <div className={cx('d-flex', 'w-full', 'mb-8')}>
-                                    <div className={cx('date-picker-wrapper', 'mr-8', 'w-half')}>
-                                        <p className={cx('title-date-picker', 'font-bold')}>From date</p>
-                                        <DatePicker 
-                                            className={cx('date-picker', 'w-full')} 
-                                            dateFormat="dd/MM/yyyy" 
-                                            selected={startDate} 
-                                            onChange={(date) => setStartDate(date)} 
-                                        />
-                                    </div>
+                {tab == 0 ? (
+                    <Tippy
+                        visible={showFilter}
+                        interactive
+                        placement="bottom"
+                        offset={0}
+                        render={attrs => (
+                            <div className={cx('filter-box', 'd-flex', 'flex-column')} tabIndex="-1" {...attrs}>
+                                <div className={cx('filter-header', 'd-flex', 'mb-8')}>
+                                    <div className={cx('icon-filter')}></div>
+                                    <div className={cx('font-bold', 'font-size-18')}>Filter</div>
+                                </div>
+                                <div className={cx('filter-content', 'd-flex', 'flex-column', 'flex-1')}>
+                                    <div className={cx('d-flex', 'w-full', 'mb-8')}>
+                                        <div className={cx('date-picker-wrapper', 'mr-8', 'w-half')}>
+                                            <p className={cx('title-date-picker', 'font-bold')}>From date</p>
+                                            <DatePicker 
+                                                className={cx('date-picker', 'w-full')} 
+                                                dateFormat="dd/MM/yyyy" 
+                                                selected={startDate} 
+                                                onChange={(date) => setStartDate(date)} 
+                                            />
+                                        </div>
 
-                                    <div className={cx('date-picker-wrapper', 'w-half')}>
-                                        <p className={cx('title-date-picker', 'font-bold')}>To date</p>
-                                        <DatePicker 
-                                            className={cx('date-picker', 'w-full')} 
-                                            dateFormat="dd/MM/yyyy" 
-                                            selected={endDate} 
-                                            onChange={(date) => setEndDate(date)} 
+                                        <div className={cx('date-picker-wrapper', 'w-half')}>
+                                            <p className={cx('title-date-picker', 'font-bold')}>To date</p>
+                                            <DatePicker 
+                                                className={cx('date-picker', 'w-full')} 
+                                                dateFormat="dd/MM/yyyy" 
+                                                selected={endDate} 
+                                                onChange={(date) => setEndDate(date)} 
+                                            />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div className={cx('font-bold', 'mb-8')}>Request status</div>
+                                        <Select 
+                                            options={requestStatus} 
+                                            isSearchable={false}
+                                            defaultValue={requestStatus[0]}
+                                            value={statusReq}
+                                            menuPlacement='auto'
+                                            onChange={(v) => handleChangeRequestStatus(v)}
                                         />
                                     </div>
                                 </div>
-                                <div>
-                                    <div className={cx('font-bold', 'mb-8')}>Request status</div>
-                                    <Select 
-                                        options={requestStatus} 
-                                        isSearchable={false}
-                                        defaultValue={requestStatus[0]}
-                                        value={statusReq}
-                                        menuPlacement='auto'
-                                        onChange={(v) => handleChangeRequestStatus(v)}
-                                    />
+
+                                <div className={cx('d-flex', 'w-full')}>
+                                    <div className={cx('flex-1')}></div>
+                                    <Button normal onClick={() => {setShowFilter(false)}}>Close</Button>
+                                    <Button normal onClick={() => {refreshFilter()}}>Refresh</Button>
+                                    <Button primary onClick={() => {filterData()}}>OK</Button>
                                 </div>
                             </div>
+                        )}
+                    >
+                        <div className={cx('filter')} onClick={() => {setShowFilter(true)}}></div>
+                    </Tippy>
+                ) : (
+                    <Tippy
+                        visible={showFilterAppeal}
+                        interactive
+                        placement="bottom"
+                        offset={0}
+                        render={attrs => (
+                            <div className={cx('filter-box', 'filter-appeal', 'd-flex', 'flex-column')} tabIndex="-1" {...attrs}>
+                                <div className={cx('filter-header', 'd-flex', 'mb-8')}>
+                                    <div className={cx('icon-filter')}></div>
+                                    <div className={cx('font-bold', 'font-size-18')}>Filter</div>
+                                </div>
+                                <div className={cx('filter-content', 'd-flex', 'flex-column', 'flex-1')}>
+                                    <div className={cx('d-flex', 'w-full', 'mb-8')}>
+                                        <div className={cx('date-picker-wrapper', 'mr-8', 'w-half')}>
+                                            <p className={cx('title-date-picker', 'font-bold')}>From date</p>
+                                            <DatePicker 
+                                                className={cx('date-picker', 'w-full')} 
+                                                dateFormat="dd/MM/yyyy" 
+                                                selected={startDateAppeal} 
+                                                onChange={(date) => setStartDateAppeal(date)} 
+                                            />
+                                        </div>
 
-                            <div className={cx('d-flex', 'w-full')}>
-                                <div className={cx('flex-1')}></div>
-                                <Button normal onClick={() => {setShowFilter(false)}}>Close</Button>
-                                <Button normal onClick={() => {refreshFilter()}}>Refresh</Button>
-                                <Button primary onClick={() => {filterData()}}>OK</Button>
+                                        <div className={cx('date-picker-wrapper', 'w-half')}>
+                                            <p className={cx('title-date-picker', 'font-bold')}>To date</p>
+                                            <DatePicker 
+                                                className={cx('date-picker', 'w-full')} 
+                                                dateFormat="dd/MM/yyyy" 
+                                                selected={endDateAppeal} 
+                                                onChange={(date) => setEndDateAppeal(date)} 
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className={cx('d-flex', 'w-full')}>
+                                    <div className={cx('flex-1')}></div>
+                                    <Button normal onClick={() => {setShowFilterAppeal(false)}}>Close</Button>
+                                    <Button normal onClick={() => {refreshFilterAppeal()}}>Refresh</Button>
+                                    <Button primary onClick={() => {filterData()}}>OK</Button>
+                                </div>
                             </div>
-                        </div>
-                    )}
-                >
-                    <div className={cx('filter')} onClick={() => {setShowFilter(true)}}></div>
-                </Tippy>
+                        )}
+                    >
+                        <div className={cx('filter')} onClick={() => {setShowFilterAppeal(true)}}></div>
+                    </Tippy>
+                )}
+                
                 
             </div>
 
@@ -552,9 +682,6 @@ function MyRequest() {
                             {selectedAppeal.length > 0 && <Button primary onClick={() => {setShowMessage(true)}}>Submit appeal</Button>}
                             
                         </div>
-                        
-                        {showBoxReject && <MessageBox title={"Reason for reject"} message={messageReject} scale={{height: "200px", width: "450px"}} eventCallBack={() => {setShowBoxReject(false)}}/>}
-                        {showDetail && <PopupDetail title={"Request detail"} scale={{height: "95%", width: "85%"}} child={viewReject} eventCallBack={handleCallBackDetailReject}/>}
                         {showMessage && <MessageBox type={"warning"} title={title} message={message} scale={{height: "200px", width: "450px"}} child={submitBtn} eventCallBack={closePopup}/>}
                         
                     </Fragment>
@@ -565,23 +692,40 @@ function MyRequest() {
                     <Fragment>
                         <div className={cx('list-image', 'd-flex', 'flex-column')}>
                             <div className={cx('content-container', 'd-flex', 'flex-1')}>
-                                <div className={cx('content-image')} title='Processing'>
-                                    <img src={logo} className={cx('processing')} alt="loading..." />
-                                </div>
-                                <div className={cx('content-image')} title='Rejected'>
-                                    <img src={logo} className={cx('processing')} />
-                                </div>
+                                {
+                                    appealRequests.length > 0 ? 
+                                    (
+                                        appealRequests.map((e, index) => {
+                                            return (
+                                                <div key={index} className={cx('content-image')} title='Processing' style={{backgroundImage: e.image}}
+                                                    onDoubleClick={() => {hanldeViewDetailReject(e.id, e.error, 2, e.image)}}
+                                                >
+                                                    <img src={logo} className={cx('processing')} alt="loading..." />
+                                                </div>
+                                            )
+                                        })
+                                    ) 
+                                    : 
+                                    (
+                                        <div className={cx('empty-data', 'd-flex', 'flex-1', 'flex-column', 'align-center', 'justify-center')}>
+                                            <div className={cx('i-empty')}></div>
+                                            <div className={cx('font-bold', 'font-size-18')}>No data</div>
+                                        </div>
+                                    )
+                                }
                             </div>
                         </div>
 
-                        <div className={cx('sell-content-footer', 'd-flex', 'w-full')}>
-                            <div className={cx('flex-1')}></div>
-                            <Button primary>See more</Button>
+                        <div className={cx('sell-content-footer', 'd-flex', 'w-full', 'align-center')}>
+                            <div className={cx('flex-1', 'font-bold', 'underline', 'font-italic', 'pl-10')}>Click duplex on rejected request to see detail</div>
+                            <Button normal onClick={() => loadMoreData()}>See more</Button>
                         </div>
                     </Fragment>
                     
                 )}
-            </div>        
+            </div>
+            {showBoxReject && <MessageBox title={"Reason for reject"} message={messageReject} scale={{height: "200px", width: "450px"}} eventCallBack={() => {setShowBoxReject(false)}}/>}
+            {showDetail && <PopupDetail title={"Request detail"} scale={{height: "95%", width: "85%"}} child={viewReject} eventCallBack={handleCallBackDetailReject}/>}        
             <ToastContainer/>
             {showLoading && <Loading />}
         </div>

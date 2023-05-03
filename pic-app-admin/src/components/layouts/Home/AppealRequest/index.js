@@ -1,29 +1,117 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Navigation from '../../../base/Navigation';
 import styles from './AppealRequest.module.scss';
 import classNames from 'classnames/bind';
 import DatePicker from "react-datepicker";
 import Button from '../../../base/Button';
 import PopupDetail from '../../../base/PopupDetail';
+import { ToastContainer, toast } from 'react-toastify';
+import Loading from '../../../base/Loading';
+import CollectionAPI from '../../../../api/collection';
+import "react-datepicker/dist/react-datepicker.css";
 
 const cx = classNames.bind(styles);
 
 function AppealRequest() {
 
     const [numberPerPage, setNumberPerPage] = useState({ value: '30', label: '30' })
-    const [startDate, setStartDate] = useState(new Date())
-    const [endDate, setEndDate] = useState(new Date())
+    var curDate = new Date();
+    
+    const [startDate, setStartDate] = useState(new Date(curDate.setDate(curDate.getDate() - 30)));
+    const [endDate, setEndDate] = useState(new Date());
 
     const [showDetail, setShowDetail] = useState(false)
+    const [currentIndex, setCurrentIndex] = useState(0)
+    const [showLoading, setShowLoading] = useState(false)
 
-    const changePage = (obj) => {
+    const [appealRequest, setAppealRequest] = useState([])
+    const [totalRecord, setTotalRecord] = useState(0);
+
+    const changePage = async (obj) => {
         if(obj.type == 0){
             setNumberPerPage(obj.value)
+            var count = Number.parseInt(obj.value.value);
+            var data = await handleGetData(currentIndex, count);
+            if(data){
+                setAppealRequest([...data])
+            }
+        }
+        else{
+            var curPage = obj.value;
+            count = Number.parseInt(numberPerPage.value)
+            var index = curPage * count;
+            setCurrentIndex(index);
+            data = await handleGetData(index, count);
+            if(data){
+                setAppealRequest([...data])
+            }
         }
     }
 
     const eventCallBack = (state) => {
         setShowDetail(false)
+    }
+
+    useEffect(() =>{
+        initData();
+    }, [])
+
+    const initData = async () => {
+        var data = await handleGetData(0, 30)
+        if(data){
+            setAppealRequest([...data])
+        }
+    }
+
+    const filter = async () => {
+        var count = Number.parseInt(numberPerPage.value)
+        var data = await handleGetData(currentIndex, count);
+        if(data){
+            setAppealRequest([...data])
+        }
+    }
+
+    const handleGetData = async (index, count) => {
+        setShowLoading(true);
+        const api = new CollectionAPI();
+        var param = {
+            start : index,
+            length : count,
+            fromDate: new Date(startDate.setHours(0,0,0,0)),
+            toDate: new Date(endDate.setHours(0,0,0,0)),
+        }
+        
+        var res = await api.getAllAppealRequestPaging(param);
+        if(res.data.success){
+            var data = res.data.data.data;
+            var registers = convertDataAppealRequest(data);
+
+            var totalR = res.data.data.totalRecord;
+            setTotalRecord(totalR);
+
+            setShowLoading(false);
+            return registers;
+        }
+        else{
+            setShowLoading(false);
+            toast.error("Something wrong! Please try again!")
+            return null;
+        }
+    }
+
+    const convertDataAppealRequest = (data) => {
+        var appeals = data.map((e, i) => {
+            var contentImage = "url('data:image/png;base64," + e.imageContent + "')"; 
+            var date = new Date(e.createdDate).toLocaleDateString('en-GB');;
+            return {
+                "id": e.refID,
+                "user": "0x" + e.userPublicKey,
+                "image" : contentImage,
+                "createdDate": date
+            }
+        })
+
+        return appeals;
     }
 
     const child = (
@@ -75,7 +163,7 @@ function AppealRequest() {
                                 onChange={(date) => setEndDate(date)} 
                             />
                         </div>
-                        <Button primary className={cx('fit-content')}>Filter</Button>
+                        <Button primary className={cx('fit-content')} onClick={() => {filter()}}>Filter</Button>
                     </div>
                 </div>
 
@@ -89,28 +177,36 @@ function AppealRequest() {
                         </tr>
                     </table>
                     <table className={cx('table-content', 'w-full')}>
-                        <tr>
-                            <td className={cx('td-stt')}>1</td>
-                            <td className={cx('td-author')}>0xABC55454545454545454544</td>
-                            <td className={cx('td-date')}>01/01/2023</td>
-                            <td className={cx('td-function')}>
-                                <div onClick={() => {setShowDetail(true)}}>View</div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td className={cx('td-stt')}>2</td>
-                            <td className={cx('td-author')}>0xABC55454545454545454544</td>
-                            <td className={cx('td-date')}>01/01/2023</td>
-                            <td className={cx('td-function')}>
-                                <div onClick={() => {setShowDetail(true)}}>View</div>
-                            </td>
-                        </tr>
+                        <tbody>
+                            {appealRequest.length > 0 ? (
+                                appealRequest.map((e, index) => {
+                                    return (
+                                        <tr key={index}>
+                                            <td className={cx('td-stt')}>{index + 1}</td>
+                                            <td className={cx('td-author')}>{e.user}</td>
+                                            <td className={cx('td-date')}>{e.createdDate}</td>
+                                            <td className={cx('td-function')}>
+                                                <div onClick={() => {setShowDetail(true)}}>View</div>
+                                            </td>
+                                        </tr>
+                                    )
+                                    
+                                })
+                            ) : (
+                                <tr>
+                                    <td colSpan={4}></td>
+                                </tr>
+                            )}
+                        </tbody>
+                        
+                        
                     </table>
                 </div>
             </div>
-            <Navigation value={numberPerPage} totalRecord={100} onCallBack={changePage}/>
+            <Navigation value={numberPerPage} totalRecord={totalRecord} onCallBack={changePage}/>
             {showDetail && <PopupDetail title={"Request detail"} scale={{height: "95%", width: "85%"}} child={child} eventCallBack={eventCallBack}/>}
-            
+            <ToastContainer/>
+            {showLoading && <Loading />}
         </div>
     );
 }

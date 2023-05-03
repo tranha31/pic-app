@@ -14,6 +14,7 @@ namespace BE.PICBIN.DL
     {
         public string MongoDBName = "picbin_repo";
         public string registerRequestCollection = "RegisterRequest";
+        public string appealRequestCollection = "AppealRequest";
 
         public CollectionDL(IConfiguration configuration) : base(configuration)
         {
@@ -55,6 +56,29 @@ namespace BE.PICBIN.DL
         {
             List<CopyrightImageModel> data = await GetAllDataAsync<CopyrightImageModel>(filter, "CopyrightImage");
             return data;
+        }
+
+        public async Task<List<AppealRegisterModel>> GetAppealRequestPaging(FilterDefinition<AppealRegisterModel> filter, int start, int length)
+        {
+            List<AppealRegisterModel> data = await GetDataAsync<AppealRegisterModel>(filter, appealRequestCollection, start, length);
+
+            data = data.OrderByDescending(x => x.CreatedDate).ToList();
+
+            return data;
+        }
+        
+        public async Task<PagingData> GetAllAppealRequestPaging(FilterDefinition<AppealRegisterModel> filter, int start, int length)
+        {
+            List<AppealRegisterModel> data = await GetAllDataAsync<AppealRegisterModel>(filter, appealRequestCollection);
+
+            data = data.OrderByDescending(x => x.CreatedDate).ToList();
+            var totalRecord = data.Count;
+            var totalPage = (int)Math.Ceiling(totalRecord / (float)length);
+            data = data.Skip(start).Take(length).ToList();
+
+            PagingData pagingData = new PagingData() { Data = data, TotalPage = totalPage, TotalRecord = totalRecord };
+            
+            return pagingData;
         }
     }
 }

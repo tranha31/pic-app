@@ -3,8 +3,6 @@ import styles from './Auction.module.scss';
 import classNames from 'classnames/bind';
 import { useState } from 'react';
 import DatePicker from "react-datepicker";
-
-import "react-datepicker/dist/react-datepicker.css";
 import AuctionDetail from './AuctionDetail';
 
 const cx = classNames.bind(styles);

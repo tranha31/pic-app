@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route} from "react-router-dom";
 import { publicRoutes } from "@/routes";
 import { DefaultLayout } from "@/components/layouts"
 import { Fragment, useEffect } from "react";
+import "react-datepicker/dist/react-datepicker.css";
 
 function App() {
   
