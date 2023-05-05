@@ -32,3 +32,26 @@ def checkCopyrightImage():
         
     serviceResult = json.dumps(serviceResult, ensure_ascii=False)
     return Response(response=serviceResult, status=200, mimetype="application/json")
+
+
+@copyright.route("/copyright/accept", methods=['POST'])
+@cross_origin()
+def addCopyrightImage():
+    _json = request.json
+    base64Image = _json["image"]
+    sign = _json["sign"] 
+    serviceResult = {
+        "error" : "",
+        "success": True,
+        "data" : ""
+    }
+
+    result = oCopyrightBL.embedWatermarking(base64Image, sign)  
+    if result == None:
+        serviceResult["success"] = False
+        serviceResult["error"] = "Error"
+    else:
+        serviceResult["data"] = str(result)
+        
+    serviceResult = json.dumps(serviceResult, ensure_ascii=False)
+    return Response(response=serviceResult, status=200, mimetype="application/json")

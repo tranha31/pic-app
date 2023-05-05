@@ -8,7 +8,10 @@ import PopupDetail from '../../../base/PopupDetail';
 import { ToastContainer, toast } from 'react-toastify';
 import Loading from '../../../base/Loading';
 import CollectionAPI from '../../../../api/collection';
+import CopyrightAPI from '../../../../api/copyright';
 import "react-datepicker/dist/react-datepicker.css";
+import 'react-toastify/dist/ReactToastify.css';
+import MessageBox from '../../../base/MessageBox';
 
 const cx = classNames.bind(styles);
 
@@ -26,6 +29,15 @@ function AppealRequest() {
 
     const [appealRequest, setAppealRequest] = useState([])
     const [totalRecord, setTotalRecord] = useState(0);
+
+    const [requestImage, setRequestImage] = useState("");
+    const [imageSimilars, setImageSimilars] = useState([]);
+    const [currentID, setCurrentID] = useState("");
+    const [currentUser, setCurrentUser] = useState("");
+
+    const [showMessasgeBox, setShowMessasgeBox] = useState(false)
+    const [title, setTitle] = useState("Warning");
+    const [message, setMessage] = useState("Are you sure you want to accept a request?")
 
     const changePage = async (obj) => {
         if(obj.type == 0){
@@ -49,6 +61,10 @@ function AppealRequest() {
     }
 
     const eventCallBack = (state) => {
+        setRequestImage("")
+        setImageSimilars([...[]])
+        setCurrentID("")
+        setCurrentUser("")
         setShowDetail(false)
     }
 
@@ -78,7 +94,7 @@ function AppealRequest() {
             start : index,
             length : count,
             fromDate: new Date(startDate.setHours(0,0,0,0)),
-            toDate: new Date(endDate.setHours(0,0,0,0)),
+            toDate: new Date(endDate.setHours(23,59,59,1000)),
         }
         
         var res = await api.getAllAppealRequestPaging(param);
@@ -102,7 +118,7 @@ function AppealRequest() {
     const convertDataAppealRequest = (data) => {
         var appeals = data.map((e, i) => {
             var contentImage = "url('data:image/png;base64," + e.imageContent + "')"; 
-            var date = new Date(e.createdDate).toLocaleDateString('en-GB');;
+            var date = new Date(e.createdDate).toLocaleDateString('en-GB');
             return {
                 "id": e.refID,
                 "user": "0x" + e.userPublicKey,
@@ -114,28 +130,129 @@ function AppealRequest() {
         return appeals;
     }
 
+    const handleViewRequest = async (id) => {
+        var item = appealRequest.find((e, i) => {
+            return e.id === id;
+        })
+
+        try{
+            setShowLoading(true);
+            const api = new CollectionAPI();
+            var param = {
+                id: id,
+            }
+            
+            var res = await api.getImageSimilar(param);
+            if(res.data.success){
+                var data = res.data.data;
+                if(item){
+                    setRequestImage(item.image);
+                    setCurrentUser(item.user)
+                }
+                setCurrentID(id)
+                setImageSimilars([...[]]);
+                setImageSimilars([...data]);
+                setShowDetail(true);
+            }
+            else{
+                toast.error("Something wrong! Please try again!")
+            }
+
+            setShowLoading(false);
+        }
+        catch(err){
+            toast.error("Something wrong! Please try again!")
+        }
+    }
+
+    const handleRejectRequest = async () => {
+        try{
+            const api = new CopyrightAPI();
+            var param = {
+                id: currentID,
+            }
+            
+            setShowLoading(true);
+            var res = await api.rejectRequest(param);
+            if(res.data.success){
+                var temp = appealRequest;
+                temp = temp.filter((e, ind) => {
+                    return e.id != currentID;
+                })
+                setAppealRequest([...temp]);
+                eventCallBack();
+                toast.success("Reject request success!");
+            }
+            else{
+                toast.error("Something wrong! Please try again!")
+            }
+
+            setShowLoading(false);
+        }
+        catch(err){
+            toast.error("Something wrong! Please try again!")
+        }
+        
+    }
+
+    const handleAcceptRequest = async () => {
+        try{
+            const api = new CopyrightAPI();
+            var id = currentID,
+                key = currentUser.substring(2);
+            
+            setShowLoading(true);
+            var res = await api.acceptRequest(id, key);
+            if(res.data.success){
+                var temp = appealRequest;
+                temp = temp.filter((e, ind) => {
+                    return e.id != currentID;
+                })
+                setAppealRequest([...temp]);
+                eventCallBack();
+                setShowMessasgeBox(false)
+                toast.success("Accept request success!");
+            }
+            else{
+                toast.error("Something wrong! Please try again!")
+            }
+
+            setShowLoading(false);
+        }
+        catch(err){
+            toast.error("Something wrong! Please try again!")
+        }
+    }
+
     const child = (
         <div className={cx('detail-wrapper', 'd-flex', 'flex-column', 'flex-1')}>
             <div className={cx('content', 'd-flex')}>
                 <div className={cx('flex-1', 'd-flex', 'wrapper-content', 'align-center', 'justify-center', 'flex-column')} style={{marginRight: "15px"}}>
                     <div className={cx('font-bold', 'font-size-18')} style={{marginBottom: "15px"}}>Requested image</div>
-                    <div className={cx('image-request')}></div>
+                    <div className={cx('image-request')} style={{backgroundImage: requestImage}}></div>
                 </div>
                 <div className={cx('flex-2', 'd-flex', 'flex-column', 'wrapper-content')}>
                     <div className={cx('font-bold', 'font-size-18')}>Similar images</div>
                     <div className={cx('flex-1', 'd-flex', 'image-similar')}>
-                        <div className={cx('item-similar')}></div>
-                        <div className={cx('item-similar')}></div>
+                        {
+                            imageSimilars.map((e, index) => {
+                                return <div key={index} className={cx('item-similar')} style={{backgroundImage: "url('" + e + "')"}}></div>
+                            })
+                        }
                     </div>
                 </div>
             </div>
             <div className={cx('footer', 'd-flex', 'w-full')}>
                 <div className={cx('flex-1')}></div>
-                <Button normal onClick={() => setShowDetail(false)}>Cancel</Button>
-                <Button normal>Reject</Button>
-                <Button primary>Accept</Button>
+                <Button normal onClick={() => eventCallBack()}>Cancel</Button>
+                <Button normal onClick={() => handleRejectRequest()}>Reject</Button>
+                <Button primary onClick={() => setShowMessasgeBox(true)}>Accept</Button>
             </div>
         </div>
+    )
+    
+    const submitBtn = (
+        <Button primary onClick={() => {handleAcceptRequest()}}>Accept</Button>
     )
 
     return ( 
@@ -186,7 +303,7 @@ function AppealRequest() {
                                             <td className={cx('td-author')}>{e.user}</td>
                                             <td className={cx('td-date')}>{e.createdDate}</td>
                                             <td className={cx('td-function')}>
-                                                <div onClick={() => {setShowDetail(true)}}>View</div>
+                                                <div onClick={() => {handleViewRequest(e.id)}}>View</div>
                                             </td>
                                         </tr>
                                     )
@@ -205,8 +322,9 @@ function AppealRequest() {
             </div>
             <Navigation value={numberPerPage} totalRecord={totalRecord} onCallBack={changePage}/>
             {showDetail && <PopupDetail title={"Request detail"} scale={{height: "95%", width: "85%"}} child={child} eventCallBack={eventCallBack}/>}
-            <ToastContainer/>
+            {showMessasgeBox && <MessageBox type={"warning"} title={title} message={message} scale={{height: "200px", width: "450px"}} child={submitBtn} eventCallBack={()=>{setShowMessasgeBox(false)}}/>}
             {showLoading && <Loading />}
+            <ToastContainer/>
         </div>
     );
 }

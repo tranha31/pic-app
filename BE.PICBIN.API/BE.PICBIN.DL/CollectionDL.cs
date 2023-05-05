@@ -80,5 +80,42 @@ namespace BE.PICBIN.DL
             
             return pagingData;
         }
+
+        public PagingData GetListUserPaging(int start, int length, string searchKey)
+        {
+            PagingData pagingData = new PagingData();
+
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add($"@Start", start);
+            parameters.Add($"@Length", length);
+            if(searchKey == null)
+            {
+                searchKey = "";
+            }
+            parameters.Add($"@SearchKey", "%" + searchKey + "%");
+
+            var sql = "SELECT * FROM copyrightsignature c WHERE LOWER(c.UserPublicKey) LIKE @SearchKey LIMIT @Start, @Length;";
+            List<string> listOutPut = null;
+
+            var result = QueryCommandMySQL<CopyrightSignature>(sql, parameters, ref listOutPut);
+            if (result != null)
+            {
+                var lstResult = new List<CopyrightSignature>(result);
+                pagingData.Data = lstResult;
+            }
+
+            sql = "SELECT COUNT(c.RefID) FROM copyrightsignature c WHERE c.UserPublicKey LIKE @SearchKey;";
+            var totalRecord = QueryCommandMySQL<int>(sql, parameters, ref listOutPut);
+            if (totalRecord != null)
+            {
+                var lstResult = new List<int>(totalRecord);
+                if(lstResult.Count > 0)
+                {
+                    pagingData.TotalRecord = lstResult[0];
+                }
+            }
+
+            return pagingData;
+        }
     }
 }

@@ -181,5 +181,34 @@ namespace BE.PICBIN.BL
             return serviceResult;
 
         }
+
+        /// <summary>
+        /// Lấy danh sách user
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="length"></param>
+        /// <param name="fromDate"></param>
+        /// <param name="toDate"></param>
+        /// <returns></returns>
+        public ServiceResult GetListUserPaging(int start, int length, string searchkey)
+        {
+            ServiceResult serviceResult = new ServiceResult();
+            try
+            {
+                CollectionDL oDL = new CollectionDL(Configuration);
+                var data = oDL.GetListUserPaging(start, length, searchkey);
+                serviceResult.Success = true;
+                serviceResult.Data = data;
+            }
+            catch (Exception ex)
+            {
+                serviceResult.Success = false;
+                NLogBL nLog = new NLogBL(Configuration);
+                nLog.InsertLog(ex.Message, ex.StackTrace);
+            }
+
+            return serviceResult;
+
+        }
     }
 }

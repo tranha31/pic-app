@@ -14,6 +14,11 @@
 /BE.Copyright.Manager/models/imagecaption/glove.6B.200d.txt
 /BE.Copyright.Manager/models/imagecaption/model_30_200_0.h5
 
+/BE.Other.Service/models/imagecaption/descriptions.txt
+/BE.Other.Service/models/imagecaption/Flickr_8k.trainImages.txt
+/BE.Other.Service/models/imagecaption/glove.6B.200d.txt
+/BE.Other.Service/models/imagecaption/model_30_200_0.h5
+
 /BE.PICBIN.API/BE.PICBIN.API/bin
 /BE.PICBIN.API/RegisterWorker/bin
 /BE.PICBIN.API/BE.PICBIN.BL/bin

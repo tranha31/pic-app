@@ -142,5 +142,58 @@ namespace BE.PICBIN.API.Controllers
 
             return Ok(result);
         }
+
+        /// <summary>
+        /// Từ chối yêu cầu
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("request/appeal/reject")]
+        public async Task<IActionResult> RejectAppealRequest(string id)
+        {
+            CopyrightBL oBL = new CopyrightBL(_config);
+            ServiceResult result = new ServiceResult();
+            try
+            {
+                var check = await oBL.HandleRejectAppealRequest(id);
+                result.Success = check;
+
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                NLogBL nLog = new NLogBL(_config);
+                nLog.InsertLog(ex.Message, ex.StackTrace);
+            }
+
+            return Ok(result);
+        }
+
+
+        /// <summary>
+        /// Chấp nhận yêu cầu
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost("request/appeal/accept")]
+        public async Task<IActionResult> AcceptAppealRequest(string id, string key)
+        {
+            CopyrightBL oBL = new CopyrightBL(_config);
+            ServiceResult result = new ServiceResult();
+            try
+            {
+                var check = await oBL.HandleAcceptAppealRequest(id, key);
+                result.Success = check;
+
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                NLogBL nLog = new NLogBL(_config);
+                nLog.InsertLog(ex.Message, ex.StackTrace);
+            }
+
+            return Ok(result);
+        }
     }
 }

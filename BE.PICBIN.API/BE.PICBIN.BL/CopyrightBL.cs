@@ -217,6 +217,71 @@ namespace BE.PICBIN.BL
 
             return true;
         }
+
+        /// <summary>
+        /// Từ chối yêu cầu kháng cáo
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<bool> HandleRejectAppealRequest(string id)
+        {
+            if (id == null)
+            {
+                return false;
+            }
+
+            List<string> ids = id.Split(';').ToList();
+            if (ids.Count == 0)
+            {
+                return false;
+            }
+
+            RegisterRequestDL oDL = new RegisterRequestDL(Configuration);
+            await oDL.HandleRejectAppealRequest(ids);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Từ chối yêu cầu kháng cáo
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<bool> HandleAcceptAppealRequest(string id, string key)
+        {
+            CopyrightDL oDL = new CopyrightDL(Configuration);
+            var request = await oDL.GetAppealRequest(id);
+            if(request == null)
+            {
+                return false;
+            }
+
+            var imageContent = request.ImageContent;
+
+            Dictionary<string, string> param = new Dictionary<string, string>();
+            param.Add("sign", key);
+            param.Add("image", imageContent);
+
+            var copyRightUrl = Configuration.GetSection("CopyrightOtherService").Value;
+            var url = copyRightUrl + "/copyright/accept";
+
+            var result = await CallHTTPRequest.CallHttp(url, "POST", param);
+
+            var serviceResult = JsonConvert.DeserializeObject<ServiceResult>(result.ToString());
+            if (!serviceResult.Success)
+            {
+                return false;
+            }
+
+            var dataRegister = JsonConvert.DeserializeObject<RegisterContent>(serviceResult.Data.ToString());
+
+            await AddNewCopyrightImage(key, dataRegister.Caption, dataRegister.Image, dataRegister.ImageMark);
+
+            RegisterRequestDL oRequestDL = new RegisterRequestDL(Configuration);
+            List<string> ids = new List<string>() { id };
+            await oRequestDL.HandleRejectAppealRequest(ids);
+            return true;
+        }
     }
 
     public class RegisterRequest
@@ -229,5 +294,12 @@ namespace BE.PICBIN.BL
     public class CheckRequest
     {
         public string Image { get; set; }
+    }
+
+    public class RegisterContent
+    {
+        public string Image { get; set; }
+        public string ImageMark { get; set; }
+        public string Caption { get; set; }
     }
 }

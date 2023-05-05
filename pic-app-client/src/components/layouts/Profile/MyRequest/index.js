@@ -245,7 +245,7 @@ function MyRequest() {
             length : 20,
             status : paramRequestStatus,
             fromDate: new Date(startDate.setHours(0,0,0,0)),
-            toDate: new Date(endDate.setHours(0,0,0,0)),
+            toDate: new Date(endDate.setHours(23,59,59,1000)),
         }
         
         var res = await api.getRegisterRequestPaging(param);
@@ -284,7 +284,7 @@ function MyRequest() {
             start : index,
             length : 20,
             fromDate: new Date(startDateAppeal.setHours(0,0,0,0)),
-            toDate: new Date(endDateAppeal.setHours(0,0,0,0)),
+            toDate: new Date(endDateAppeal.setHours(23,59,59,1000)),
         }
         
         var res = await api.getAppealRequestPaging(param);

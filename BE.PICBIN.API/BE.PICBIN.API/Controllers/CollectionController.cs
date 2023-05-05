@@ -116,5 +116,25 @@ namespace BE.PICBIN.API.Controllers
 
             return Ok(result);
         }
+
+        [HttpGet("user/paging")]
+        public IActionResult GetListUserPaging(int start, int length, string search)
+        {
+            ServiceResult result = new ServiceResult();
+            try
+            {
+                CollectionBL oBL = new CollectionBL(_config);
+                result = oBL.GetListUserPaging(start, length, search);
+
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                NLogBL nLog = new NLogBL(_config);
+                nLog.InsertLog(ex.Message, ex.StackTrace);
+            }
+
+            return Ok(result);
+        }
     }
 }

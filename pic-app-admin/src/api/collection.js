@@ -13,6 +13,23 @@ class CollectionAPI {
     async getAllAppealRequestPaging(param){
         return await init.get(`${this.controler}/appeal/request/all/paging`, {params: param});
     }
+
+    /**
+     * Lấy ảnh tương đồng của request bị từ chối
+     * @param {*} param: dk tim kiem 
+     */
+    async getImageSimilar(param){
+        return await init.get(`${this.controler}/image/similar`, {params: param});
+    }
+
+    /**
+     * Lấy ds user
+     * @param {*} param 
+     * @returns 
+     */
+    async getUserPaging(param){
+        return await init.get(`${this.controler}/user/paging`, {params: param});
+    }
 }
 
 export default CollectionAPI

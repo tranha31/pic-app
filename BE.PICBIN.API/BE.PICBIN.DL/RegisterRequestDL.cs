@@ -111,5 +111,44 @@ namespace BE.PICBIN.DL
             await InsertManyAsync<AppealRegisterModel>(appealRegisters, "AppealRequest");
             await DeleteManyAsync<RegisterRequestModel>(filter, MongoCollection);
         }
+
+        public async Task HandleRejectAppealRequest(List<string> id)
+        {
+            
+            DynamicParameters parameters = new DynamicParameters();
+            for (var i = 0; i < id.Count; i++)
+            {
+                parameters.Add($"@Id{i}", id[i].Trim());
+            }
+
+            var sql = "";
+
+            var s = new StringBuilder();
+            s.Append("Delete From RegisterReject r Where r.RefID IN (");
+
+            for (var i = 0; i < id.Count; i++)
+            {
+                if (i == id.Count - 1)
+                {
+                    s.Append($"@Id{i}); ");
+                }
+                else
+                {
+                    s.Append($"@Id{i}, ");
+                }
+            }
+
+            sql = s.ToString();
+            s.Clear();
+
+            List<string> listOutPut = null;
+
+            var result = ExcuteCommandMySQL(sql, parameters, ref listOutPut);
+            if (result)
+            {
+                var filter = Builders<AppealRegisterModel>.Filter.In(s => s.RefID, id);
+                await DeleteManyAsync<AppealRegisterModel>(filter, "AppealRequest");
+            }
+        }
     }
 }

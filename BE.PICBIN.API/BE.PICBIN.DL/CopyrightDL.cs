@@ -47,5 +47,16 @@ namespace BE.PICBIN.DL
 
             return data;
         }
+
+        public async Task<AppealRegisterModel> GetAppealRequest(string id)
+        {
+            var filter = Builders<AppealRegisterModel>.Filter.Eq(s => s.RefID, id);
+            var request = await GetAllDataAsync<AppealRegisterModel>(filter, "AppealRequest");
+            if(request != null && request.Count > 0)
+            {
+                return request[0];
+            }
+            return null;
+        } 
     }
 }
