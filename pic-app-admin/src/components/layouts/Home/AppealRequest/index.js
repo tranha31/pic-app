@@ -90,11 +90,13 @@ function AppealRequest() {
     const handleGetData = async (index, count) => {
         setShowLoading(true);
         const api = new CollectionAPI();
+        var fromDate = new Date(startDate)
+        var toDate = new Date(endDate)
         var param = {
             start : index,
             length : count,
-            fromDate: new Date(startDate.setHours(0,0,0,0)),
-            toDate: new Date(endDate.setHours(23,59,59,1000)),
+            fromDate: new Date(fromDate.setHours(0,0,0,0)),
+            toDate: new Date(toDate.setHours(23,59,59,1000)),
         }
         
         var res = await api.getAllAppealRequestPaging(param);

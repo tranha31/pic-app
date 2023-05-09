@@ -9,10 +9,12 @@ import CopyrightAPI from '@/api/copyright';
 import Loading from '@/components/base/Loading';
 import MessageBox from '@/components/base/MessageBox';
 import Metamask from '@/api/metamask';
+import { useLocation } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
 
 function CopyrightAction({mode, callBackEvent}) {
+    const location = useLocation();
 
     const [title, setTitle] = useState("Copyright registation");
 
@@ -67,6 +69,7 @@ function CopyrightAction({mode, callBackEvent}) {
     }
 
     const closePopup = (status) =>{
+        setSrcImg("");
         callBackEvent(status);
     }
 
@@ -121,6 +124,9 @@ function CopyrightAction({mode, callBackEvent}) {
             var response = await api.addNewRegisterRequest(request)
             if(response.data.success){
                 toast.success("Request sent successfully. Please wait for admin to process!")
+                if(location.pathname === "/my_request"){
+                    document.getElementById("reload-request").click()
+                }
             }
             else{
                 toast.error("Something wrong! Please try again!")

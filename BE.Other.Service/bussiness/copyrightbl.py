@@ -1,4 +1,5 @@
 from math import sqrt, cos, pi, floor
+import cv2
 import numpy as np
 from PIL import Image as im
 import io
@@ -38,11 +39,12 @@ class CopyrightBL:
     (24/4/2023)
     """
     def isGreyScale(self, img):
-        img = img.convert('RGB')
-        w, h = img.size
+        img_temp = img
+        img_temp = img_temp.convert('RGB')
+        w, h = img_temp.size
         for i in range(w):
             for j in range(h):
-                r, g, b = img.getpixel((i,j))
+                r, g, b = img_temp.getpixel((i,j))
                 if r != g != b: 
                     return False
         return True
@@ -59,120 +61,46 @@ class CopyrightBL:
         if checkGrey:
             return False
 
-        ycbcr = image.convert('YCbCr')
-
-        YCbCr = list(ycbcr.getdata())  # flat list of tuples
-        # reshape
-        imYCbCr = np.reshape(YCbCr, (image.size[1], image.size[0], 3))
-        # Convert 32-bit elements to 8-bit
-        imYCbCr = imYCbCr.astype(np.uint8)
-        return imYCbCr
+        imageRGB = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
+        
+        return imageRGB
     
-    
-    '''
-    Tính giá trị C
-    (11/4/2023)
-    '''
-    def C(self, u):
-        if u == 0:
-            return 1 / sqrt(2)
-        else:
-            return 1
 
-    '''
-    Chuyển ảnh từ miền không gian sang tần số
-    A: ma trận điểm ảnh 8x8
-    DCT: Ma trận điểm ảnh trong miền tần số
-    (11/4/2023)
-    '''
-    def dct(self, A):
-        DCT = np.zeros((8, 8))
-        for u in range(8):
-            for v in range(8):
-                sum = 0
-                for k in range(8):
-                    for l in range(8):
-                        sum = sum + A[k][l] * cos(pi * u * (2 * k + 1) / 16) * cos(pi * v * (2 * l + 1) / 16)
-                sum = sum * self.C(u) * self.C(v) / 4
-                DCT[u][v] = sum
-        return DCT
-    
-    '''
-    Chuyển từ miền tần số sang miền không gian
-    (11/4/2023)
-    '''
-    def idct(self, DCT):
-        A1 = np.zeros((8, 8))
-        for k in range(8):
-            for l in range(8):
-                sum = 0
-                for u in range(8):
-                    for v in range(8):
-                        sum = sum + cos(pi * u * (2 * k + 1) / 16) * cos(pi * v * (2 * l + 1) / 16) * DCT[u][v] * self.C(u) * self.C(v) / 4
-                A1[k][l] = int(round(sum))
-        return A1
-
-    '''
-    Chuyển kênh Y của ảnh từ miền không gian về miền tần số
-    Chỉ convert 280 ô ảnh 8x8: do kích thước chữ ký là 40: 17*16 + 1*8
-    (11/4/2023)
-    '''
-    def dctYchanel(self, YChanel):
-        ldct = []
+    def getSignBlock(self, RChannel):
+        block = []
         for i in range(0, 129, 8):
             for j in range(0, 121, 8):
-                MT = np.zeros((8, 8))
-                for k in range(i, i + 8):
-                    for l in range(j, j + 8):
-                        MT[k % 8][l % 8] = YChanel[k][l]
-                D = self.dct(MT)
-                ldct.append(D)
+                block.append(RChannel[i:i+8, j:j+8])
         # Bổ sung thêm 8 ô tiếp theo cho đủ 280 ô
         m = 128
         for n in range(0, 57, 8):
-            MT = np.zeros((8, 8))
-            for k in range(n, n + 8):
-                for l in range(m, m + 8):
-                    MT[k % 8][l % 8] = YChanel[k][l]
-            D = self.dct(MT)
-            ldct.append(D)
+            block.append(RChannel[n:n+8, m:m+8])
 
-        return ldct
+        return block
     
-    
-    '''
-    Convert kênh Y từ miền tần số về miền không gian
-    L: mảng điểm ảnh dct
-    (11/4/2023)
-    '''
-    def idctYchanel(self, YChanel, L):
-        tmp = 0
+    def mergeImage(self, RChannel, L):
+        temp = 0
         for i in range(0, 129, 8):
             for j in range(0, 121, 8):
-                MT = self.idct(L[tmp])
-                for k in range(i, i + 8):
-                    for l in range(j, j + 8):
-                        YChanel[k][l] = MT[k % 8][l % 8]
-                tmp = tmp + 1
+                RChannel[i:i+8, j:j+8] = L[temp]
+                temp = temp + 1
+        # Bổ sung thêm 8 ô tiếp theo cho đủ 280 ô
         m = 128
         for n in range(0, 57, 8):
-            MT = self.idct(L[tmp])
-            for k in range(n, n + 8):
-                for l in range(m, m + 8):
-                    YChanel[k][l] = MT[k % 8][l % 8]
-            tmp = tmp + 1
+            RChannel[n:n+8, m:m+8] = L[temp]
+            temp = temp + 1
 
-    
     def embedWatermarking(self, base64_string, sign):
         result = None
         try:
-            imYCbCr = self.inputImage(base64_string)
+            imRGB = self.inputImage(base64_string)
             s = self.hexToBinary(sign)
+            R, G, B = cv2.split(imRGB)
             caption = self.oImageCaptionBL.createImageCaption(base64_string)
-            L = self.dctYchanel(imYCbCr[:, :, self.Y])
-            self.watermarking(L, s)
-            self.idctYchanel(imYCbCr[:, :, self.Y], L)
-            imageResult = self.outImage(imYCbCr[:, :, self.Y], imYCbCr[:, :, self.Cb], imYCbCr[:, :, self.Cr])
+            sign_block = self.getSignBlock(R)
+            self.watermarking(sign_block, s)
+            self.mergeImage(R, sign_block)
+            imageResult = self.outImage(R, G, B)
             imgdata = base64.b64decode(base64_string)
             image = im.open(io.BytesIO(imgdata))
             imageView = self.markConfirmIntoImage(image)
@@ -197,6 +125,14 @@ class CopyrightBL:
         mark = im.open('check_mark (1).png', 'r')
         mark = mark.convert("RGBA")
 
+        width = image.size[1]
+
+        shape = (20, 20)
+        if(20 > width / 30):
+            shape = (int(width / 20), int(width / 20))
+
+        mark = mark.resize(shape)
+
         image.paste(mark, (20, 20), mark)
 
         buffer = io.BytesIO()
@@ -217,46 +153,32 @@ class CopyrightBL:
     Luôn lấy điểm (5,2) và (4,3) để nhúng
     (11/4/2023)
     '''
-    def watermarking(self, L, sign):
+    def watermarking(self, sign_block, sign):
         tmp = 0
-        # print(sign)
-        for i in range(len(L)):
-            D = L[i]
-            if sign[tmp] == '0' and D[5][2] < D[4][3]:
-                D[5][2], D[4][3] = D[4][3], D[5][2]
-            if sign[tmp] == '1' and D[5][2] >= D[4][3]:
-                D[5][2], D[4][3] = D[4][3], D[5][2]
-            if (D[5][2] > D[4][3]) and (D[5][2] - D[4][3]) < self.K:
-                D[5][2] = D[5][2] + self.K / 2
-                D[4][3] = D[4][3] - self.K / 2
-            if (D[5][2] <= D[4][3]) and (D[4][3] - D[5][2]) < self.K:
-                D[5][2] = D[5][2] - self.K / 2
-                D[4][3] = D[4][3] + self.K / 2
-            L[i] = D
+        for i in range(len(sign_block)):
+            D = sign_block[i]
+            if sign[tmp] == '1':
+                D[5][2] = 200
+            else:
+                D[5][2] = 100
 
             tmp = tmp + 1
 
     '''
     Convert byte to image
     Return base64 string
-    x is imYCbCr[:,:,Y], y is imYCbCr[:,:,Cb], z is imYCbCr[:,:,Cr]
     (11/4/2023)
     '''
-    def outImage(self, x, y, z):
-        out_img_y = im.fromarray(x, "L")
-        out_img_cb = im.fromarray(y, "L")
-        out_img_cr = im.fromarray(z, "L")
-        out_img = im.merge('YCbCr', [out_img_y, out_img_cb, out_img_cr]).convert('RGB')
+    def outImage(self, R, G, B):
+        out_img = cv2.merge([R, G, B])
 
-        buffer = io.BytesIO()
-        out_img.save(buffer, format="PNG")
-        buffer.seek(0)
-        myimage = buffer.getvalue()
-        t = base64.b64encode(myimage)
-        t = str(t)
-        t = t[2:]
-        t = t[:-1]
-        r = "data:image/png;base64," + t
+        _, im_arr = cv2.imencode('.png', out_img) 
+        im_bytes = im_arr.tobytes()
+        im_b64 = base64.b64encode(im_bytes)
+        im_b64 = str(im_b64)
+        im_b64 = im_b64[2:]
+        im_b64 = im_b64[:-1]
+        r = "data:image/png;base64," + im_b64
         return r
 
     '''
@@ -264,26 +186,30 @@ class CopyrightBL:
     (11/4/2023)
     '''
     def getSignInImage(self, base64_string):
-        imYCbCr = self.inputImage(base64_string)
-        if type(imYCbCr) == bool:
+        imgRGB = self.inputImage(base64_string)
+        if type(imgRGB) == bool:
             return False
         
-        signs = self.handleGetSignInImage(imYCbCr[:, :, self.Y])
+        R, G, B = cv2.split(imgRGB)
+        
+        signs = self.handleGetSignInImage(R)
         return signs
 
     '''
     Lấy text trong ảnh
     (11/4/2023)
     '''
-    def getWatermarking(self, D):
+    def getWatermarking(self, sign_block):
         sign1 = ""
-        for i in range(len(D)):
-            x1 = D[i][5][2]
-            x2 = D[i][4][3]
-            if (x1 > x2):
+        for i in range(len(sign_block)):
+            D = sign_block[i]
+            if D[5][2] == 200:
+                sign1 += "1"
+            elif D[5][2] == 100:
                 sign1 += "0"
             else:
                 sign1 += "1"
+
         digit = []
         sign2 = ""
         for i in range(len(sign1) // 7):
@@ -306,43 +232,45 @@ class CopyrightBL:
     Kiểm tra ở 4 góc + 2 chiều xuôi và ngược
     (11/4/2023)
     '''
-    def handleGetSignInImage(self, YChanel):
+    def handleGetSignInImage(self, R):
         signs = []
+        RChannel = np.copy(R)
+        RChannel_1 = np.copy(R)
 
-        YChanelFlip = np.flip(YChanel, 1)
+        RChannelFlip = np.flip(RChannel_1, 1)
 
-        L = self.dctYchanel(YChanel)
-        sign1 = self.getWatermarking(L)
+        sign_block = self.getSignBlock(RChannel)
+        sign1 = self.getWatermarking(sign_block)
 
-        L5 = self.dctYchanel(YChanelFlip)
-        sign5 = self.getWatermarking(L5)
+        sign_block = self.getSignBlock(RChannelFlip)
+        sign5 = self.getWatermarking(sign_block)
 
-        YChanel2 = np.rot90(YChanel)
-        YChanel2Flip = np.rot90(YChanelFlip)
+        RChannel2 = np.rot90(RChannel)
+        RChannelFlip2 = np.rot90(RChannelFlip)
 
-        L2 = self.dctYchanel(YChanel2)
-        sign2 = self.getWatermarking(L2)
+        sign_block = self.getSignBlock(RChannel2)
+        sign2 = self.getWatermarking(sign_block)
 
-        L6 = self.dctYchanel(YChanel2Flip)
-        sign6 = self.getWatermarking(L6)
+        sign_block = self.getSignBlock(RChannelFlip2)
+        sign6 = self.getWatermarking(sign_block)
         
-        YChanel3 = np.rot90(YChanel2)
-        YChanel3Flip = np.rot90(YChanel2Flip)
+        RChannel3 = np.rot90(RChannel2)
+        RChannelFlip3 = np.rot90(RChannelFlip2)
 
-        L3 = self.dctYchanel(YChanel3)
-        sign3 = self.getWatermarking(L3)
+        sign_block = self.getSignBlock(RChannel3)
+        sign3 = self.getWatermarking(sign_block)
 
-        L7 = self.dctYchanel(YChanel3Flip)
-        sign7 = self.getWatermarking(L7)
+        sign_block = self.getSignBlock(RChannelFlip3)
+        sign7 = self.getWatermarking(sign_block)
         
-        YChanel4 = np.rot90(YChanel3)
-        YChanel4Flip = np.rot90(YChanel3Flip)
+        RChannel4 = np.rot90(RChannel3)
+        RChannelFlip4 = np.rot90(RChannelFlip3)
 
-        L4 = self.dctYchanel(YChanel4)
-        sign4 = self.getWatermarking(L4)
+        sign_block = self.getSignBlock(RChannel4)
+        sign4 = self.getWatermarking(sign_block)
 
-        L8 = self.dctYchanel(YChanel4Flip)
-        sign8 = self.getWatermarking(L8)
+        sign_block = self.getSignBlock(RChannelFlip4)
+        sign8 = self.getWatermarking(sign_block)
         
         if(sign1 != None):
             signs.append(sign1)

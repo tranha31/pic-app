@@ -117,5 +117,50 @@ namespace BE.PICBIN.DL
 
             return pagingData;
         }
+
+        public List<CopyrightImage> GetListImageUserPaging(string key, int start, int length, DateTime fromDate, DateTime toDate, int status)
+        {
+            List<CopyrightImage> lstResult;
+
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add($"@Start", start);
+            parameters.Add($"@Length", length);
+            parameters.Add($"@Key", key);
+            parameters.Add($"@FromDate", fromDate);
+            parameters.Add($"@ToDate", toDate);
+            parameters.Add($"@Status", status);
+
+            List<string> listOutPut = null;
+
+            var result = QueryStoreMySQL<CopyrightImage>("Proc_ListImage_Paging", parameters, ref listOutPut);
+            if (result != null)
+            {
+                lstResult = new List<CopyrightImage>(result);
+                return lstResult;
+            }
+
+            return null;
+        }
+
+        public async Task<List<CopyrightImageModel>> GetImageCheckContent(List<string> ids)
+        {
+            FilterDefinition<CopyrightImageModel> filter = Builders<CopyrightImageModel>.Filter.In(x => x.RefID, ids);
+            List<CopyrightImageModel> data = await GetAllDataAsync<CopyrightImageModel>(filter, "CopyrightImage");
+
+            return data;
+        }
+
+        public async Task<string> GetImageContentByID(string id)
+        {
+            FilterDefinition<CopyrightImageModel> filter = Builders<CopyrightImageModel>.Filter.Eq(x => x.RefID, id);
+            List<CopyrightImageModel> data = await GetAllDataAsync<CopyrightImageModel>(filter, "CopyrightImage");
+
+            if(data != null && data.Count > 0)
+            {
+                return data[0].ImageContent;
+            }
+
+            return null;
+        }
     }
 }

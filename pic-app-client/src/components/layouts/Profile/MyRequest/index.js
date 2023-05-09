@@ -153,10 +153,15 @@ function MyRequest() {
         var data = await handlePagingData(0);
         if(data !== false){
             if(tab === 0){
-                setShowFilter(false);
+                setImageSimilar("");
+                setImageSimilars([...[]])
+                setCurrentID("")
+                setSelectedAppeal([...[]])
+                setSelectedItem([...[]])
                 setCurIndex(0);
                 setRegisterRequests([...[]]);
                 setRegisterRequests([...data])
+                setShowFilter(false);
             }
             else{
                 setShowFilterAppeal(false);
@@ -239,13 +244,15 @@ function MyRequest() {
     const handleGetRegisterRequest = async (index, address) => {
         setShowLoading(true);
         const api = new CollectionAPI();
+        var fromDate = new Date(startDate)
+        var toDate = new Date(endDate)
         var param = {
             key: address,
             start : index,
             length : 20,
             status : paramRequestStatus,
-            fromDate: new Date(startDate.setHours(0,0,0,0)),
-            toDate: new Date(endDate.setHours(23,59,59,1000)),
+            fromDate: new Date(fromDate.setHours(0,0,0,0)),
+            toDate: new Date(toDate.setHours(23,59,59,1000)),
         }
         
         var res = await api.getRegisterRequestPaging(param);
@@ -279,12 +286,14 @@ function MyRequest() {
     const handleGetAppealRequest = async (index, address) => {
         setShowLoading(true);
         const api = new CollectionAPI();
+        var fromDate = new Date(startDateAppeal)
+        var toDate = new Date(endDateAppeal)
         var param = {
             key: address,
             start : index,
             length : 20,
-            fromDate: new Date(startDateAppeal.setHours(0,0,0,0)),
-            toDate: new Date(endDateAppeal.setHours(23,59,59,1000)),
+            fromDate: new Date(fromDate.setHours(0,0,0,0)),
+            toDate: new Date(toDate.setHours(23,59,59,1000)),
         }
         
         var res = await api.getAppealRequestPaging(param);
@@ -532,7 +541,7 @@ function MyRequest() {
                 <div className={cx('tab-item', tab == 0 ? 'active' : "")} onClick={() => {goToTab(0)}}>Registration request</div>
                 <div className={cx('tab-item', tab == 1 ? 'active' : "")} onClick={() => {goToTab(1)}}>Request an appeal</div>
                 <div className={cx('flex-1')}></div>
-                <div className={cx('refresh')} onClick={() => {handleRefresh()}}></div>
+                <div className={cx('refresh')} onClick={() => {handleRefresh()}} id={"reload-request"}></div>
                 {tab == 0 ? (
                     <Tippy
                         visible={showFilter}

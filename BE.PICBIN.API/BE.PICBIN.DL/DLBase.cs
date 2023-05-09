@@ -221,6 +221,40 @@ namespace BE.PICBIN.DL
             }
         }
 
+        public IEnumerable<T> QueryStoreMySQL<T>(string procName, DynamicParameters parameters, ref List<string> listOutput)
+        {
+            _dbConnection = new MySqlConnection(MySQLConnection);
+            _dbConnection.Open();
+            try
+            {
+                var data = _dbConnection.Query<T>(procName, parameters, commandType: CommandType.StoredProcedure);
+
+                if (listOutput != null && listOutput.Count > 0)
+                {
+                    List<string> lstTempOutput = new List<string>();
+                    for (var i = 0; i < listOutput.Count; i++)
+                    {
+                        var output = parameters.Get<object>(listOutput[i]).ToString();
+                        lstTempOutput.Add(output);
+                    }
+
+                    listOutput.Clear();
+                    listOutput = lstTempOutput;
+                }
+
+                return data;
+
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+            finally
+            {
+                _dbConnection.Close();
+            }
+        }
+
         #endregion
     }
 }

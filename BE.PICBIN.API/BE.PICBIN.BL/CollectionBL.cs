@@ -145,6 +145,7 @@ namespace BE.PICBIN.BL
 
         }
 
+
         /// <summary>
         /// Lấy danh sách yêu cầu kháng cáo của tất cả user
         /// </summary>
@@ -210,5 +211,96 @@ namespace BE.PICBIN.BL
             return serviceResult;
 
         }
+
+        /// <summary>
+        /// Lấy ds ảnh của user
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="length"></param>
+        /// <param name="fromDate"></param>
+        /// <param name="toDate"></param>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        public async Task<ServiceResult> GetListImageUserPaging(string key, int start, int length, DateTime fromDate, DateTime toDate, int status)
+        {
+            ServiceResult serviceResult = new ServiceResult();
+            try
+            {
+                CollectionDL oDL = new CollectionDL(Configuration);
+                var data = oDL.GetListImageUserPaging(key, start, length, fromDate, toDate, status);
+
+                if(data == null || data.Count == 0)
+                {
+                    serviceResult.Success = true;
+                    return serviceResult;
+                }
+
+                List<string> ids = new List<string>();
+                foreach (var item in data)
+                {
+                    ids.Add(item.ImageID);
+                }
+
+                var imageContent = await oDL.GetImageCheckContent(ids);
+                if(imageContent == null || imageContent.Count == 0)
+                {
+                    serviceResult.Success = true;
+                    return serviceResult;
+                }
+
+                Dictionary<string, object> listData = new Dictionary<string, object>();
+                Dictionary<string, object> listImage = new Dictionary<string, object>();
+                for(var i=0; i<data.Count; i++)
+                {
+                    listData.Add(data[i].ImageID, data[i]);
+                    listImage.Add(imageContent[i].RefID, imageContent[i].ImageContentMarked);
+                }
+
+                List<object> result = new List<object>();
+                foreach (var item in data)
+                {
+                    var value = new
+                    {
+                        Infor = listData[item.ImageID],
+                        Image = listImage[item.ImageID]
+                    };
+
+                    result.Add(value);
+                }
+
+                serviceResult.Success = true;
+                serviceResult.Data = result;
+            }
+            catch (Exception ex)
+            {
+                serviceResult.Success = false;
+                NLogBL nLog = new NLogBL(Configuration);
+                nLog.InsertLog(ex.Message, ex.StackTrace);
+            }
+
+            return serviceResult;
+        }
+
+        /// <summary>
+        /// Lấy nội dung download
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<byte[]> GetImageDownload(string id)
+        {
+            byte[] bytes = null;
+            CollectionDL oDL = new CollectionDL(Configuration);
+            var data = await oDL.GetImageContentByID(id);
+
+            if(data != null)
+            {
+                data = data.Substring(22);
+                bytes = Convert.FromBase64String(data);
+            }
+
+            return bytes;
+        }
+
     }
 }

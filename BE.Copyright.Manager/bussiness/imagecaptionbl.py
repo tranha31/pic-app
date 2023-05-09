@@ -47,9 +47,9 @@ class ImageCaptionBL:
         lstImage = self.oDL.getAllImage()
 
         lstCaption = [caption]
-
+        lstResult = []
         if len(lstImage) == 0:
-            return None
+            return lstResult
         
         for image in lstImage:
             lstCaption.append(image["Caption"])
@@ -58,7 +58,7 @@ class ImageCaptionBL:
         lstCaption = lstCaption[1:]
         similarValue = similarValue[0]
         
-        lstResult = []
+        
         for i in range(len(lstCaption)):
             if float(similarValue[i]) > 0.4:
                 result = {

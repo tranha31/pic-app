@@ -4,7 +4,8 @@ import { Link } from 'react-router-dom';
 import { homeRoutes } from "@/routes";
 import { useLocation } from 'react-router-dom'
 import Market from './Market';
-import Sell from './Sell';
+// import Sell from './Sell';
+import Auction from './Auction';
 
 const cx = classNames.bind(styles);
 
@@ -30,7 +31,7 @@ function Home() {
                     })
                 }
             </div>
-            {isDefault ? <Market/> : <Sell/>}
+            {isDefault ? <Market/> : <Auction/>}
         </div>
     );
 }

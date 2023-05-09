@@ -3,7 +3,7 @@ import classNames from 'classnames/bind';
 import { useState } from 'react';
 import DatePicker from "react-datepicker";
 import Button from '@/components/base/Button';
-import AuctionDetail from '@/components/layouts/Auction/AuctionDetail';
+import AuctionDetail from '@/components/layouts/Home/Auction/AuctionDetail';
 
 const cx = classNames.bind(styles);
 

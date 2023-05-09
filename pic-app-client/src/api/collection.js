@@ -30,6 +30,25 @@ class CollectionAPI {
     async getAppealRequestPaging(param){
         return await init.get(`${this.controler}/appeal/request/paging`, {params: param});
     }
+
+    /**
+     * Lấy danh sách yêu cầu kháng cáo
+     * @param {string} param : điều kiện lọc
+     * @returns 
+     */
+    async getImagePaging(param){
+        return await init.get(`${this.controler}/collection/paging`, {params: param});
+    }
+
+    /**
+     * Lấy danh sách yêu cầu kháng cáo
+     * @param {string} param : điều kiện lọc
+     * @returns 
+     */
+    downloadImage(id){
+        var url = `${process.env.REACT_APP_BASE_URL}${this.controler}/collection/download?id=${id}`
+        window.open(url);
+    }
 }
 
 export default CollectionAPI

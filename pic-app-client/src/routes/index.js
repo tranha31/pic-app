@@ -1,11 +1,11 @@
 import Home from "@/components/layouts/Home";
 import Profile from "@/components/layouts/Profile";
-import Auction from "@/components/layouts/Auction";
+// import Auction from "@/components/layouts/Auction";
 
 const publicRoutes = [
     {path: '/', component: Home},
     {path: '/my_collection', component: Profile},
-    {path: '/auction', component: Auction},
+    {path: '/auction', component: Home},
     {path: '/sell', component: Home},
     {path: '/my_request', component: Profile}
 ];
@@ -16,13 +16,14 @@ const privateRoutes = [
 
 const headerRoutes = [
     {path: '/', name: 'Home'},
-    {path: '/auction', name: 'Auction'},
+    // {path: '/auction', name: 'Auction'},
     {path: '/my_collection', name: 'My Collection'},
 ]
 
 const homeRoutes = [
     {path: '/', name: 'Collection'},
-    {path: '/sell', name: 'Sell'},
+    {path: '/auction', name: 'Auction'},
+    // {path: '/sell', name: 'Sell'},
 ]
 
 const profileRoutes = [
