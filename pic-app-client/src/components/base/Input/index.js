@@ -17,6 +17,8 @@ function Input(
         disabled = false, 
         className,
         passProps,
+        inputRef,
+        callBackChange,
     }
 ) {
 
@@ -52,7 +54,10 @@ function Input(
     const [classesInput, setClassesInput] = useState(
         cx('input-wrapper', 'w-full', {["number"]: isNumber})
     )
-    const inputRef = useRef(null);
+
+    const [hasError, setHasError] = useState(false);
+
+    //const inputRef = useRef(null);
 
 
     const handleKeyPress = (evt) => {
@@ -92,6 +97,7 @@ function Input(
             setClassesInput(
                 cx('input-wrapper', 'w-full', 'error')
             )
+            setHasError(true)
         }
         else{
             setMessageError("");
@@ -99,6 +105,7 @@ function Input(
             setClassesInput(
                 cx('input-wrapper', 'w-full')
             )
+            setHasError(false)
         }
     }
 
@@ -109,6 +116,7 @@ function Input(
 
 
     const formatCurrency = (blur) => {
+        debugger
         var input_val = inputRef.current.value;
         if (input_val === "") { return; }
         
@@ -119,23 +127,16 @@ function Input(
         if (input_val.indexOf(".") >= 0) {
             var decimal_pos = input_val.indexOf(".");
             var left_side = input_val.substring(0, decimal_pos);
-            var right_side = input_val.substring(decimal_pos);
+            var right_side = input_val.substring(decimal_pos+1);
             left_side = formatNumber(left_side);
-            right_side = formatNumber(right_side);
+            //right_side = formatNumber(right_side);
             
-            if (blur === "blur") {
-                right_side += "00";
-            }
-
-            right_side = right_side.substring(0, 2);
+            right_side = right_side.substring(0, 10);
             input_val = left_side + "." + right_side;
 
         } else {
             input_val = formatNumber(input_val);
             
-            if (blur === "blur") {
-                input_val += ".00";
-            }
         }
         
         inputRef.current.value = input_val;
@@ -150,6 +151,10 @@ function Input(
             return <span style={{ backgroundColor: "#000", color: "#fff", padding: "5px 10px", borderRadius: "5px"}}>{messageError}</span>
         }
         return null
+    }
+
+    const handleChangeValue = (e) => {
+        callBackChange(e.target.value)
     }
     
     return ( 
@@ -166,9 +171,11 @@ function Input(
                     {...props} 
                     ref={inputRef}
                     value={value}
+                    error={hasError.toString()}
                     onKeyPress={handleKeyPress}
                     onKeyUp={handleKeyUp}
                     onBlur={handelBlur}
+                    onChange={handleChangeValue}
                 />
             </Tippy>
             

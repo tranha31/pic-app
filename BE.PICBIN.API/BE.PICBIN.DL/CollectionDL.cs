@@ -162,5 +162,42 @@ namespace BE.PICBIN.DL
 
             return null;
         }
+
+        public CopyrightImage GetCopyrightImage(string id)
+        {
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add($"@ID", id);
+
+            var sql = "SELECT * FROM copyrightimage c WHERE c.ImageID = @ID";
+            List<string> listOutPut = null;
+
+            var result = QueryCommandMySQL<CopyrightImage>(sql, parameters, ref listOutPut);
+            if (result != null)
+            {
+                var lstResult = new List<CopyrightImage>(result);
+                if(lstResult.Count > 0)
+                {
+                    CopyrightImage image = lstResult[0];
+                    return image;
+                }
+            }
+
+            return null;
+        }
+
+        public void AddNewSellImage(string key, string id, string name, string detail, float price)
+        {
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add("ImageID", id);
+            parameters.Add("Key", key);
+            parameters.Add("Caption", name);
+            parameters.Add("Detail", detail);
+            parameters.Add("Price", price);
+
+            var procName = "Proc_MarketItem_Insert";
+            List<string> listOutPut = null;
+
+            ExcuteProcMySQL(procName, parameters, ref listOutPut);
+        }
     }
 }

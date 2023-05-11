@@ -15,6 +15,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import saling from "../../../../assets/imgs/saling.png";
 import auctioning from "../../../../assets/imgs/auctioning.png";
 import PopupDetail from '@/components/base/PopupDetail';
+import Sell from './Sell';
 
 
 const cx = classNames.bind(styles);
@@ -45,6 +46,8 @@ function MyCollection() {
     const [selectedItem, setSelectedItem] = useState([]);
     const [curIndex, setCurIndex] = useState(0);
     const [currentImage, setCurrentImage] = useState("");
+
+    const [showSellDetail, setShowSellDetail] = useState(false);
 
     useEffect(() => {
         getInitData();
@@ -252,6 +255,33 @@ function MyCollection() {
         setShowDetail(true)
     }
 
+    const handleGoToSell = () => {
+        var image = listImage.find((e, i) => {
+            return e.id === selectedItem[0];
+        })
+        setCurrentImage(image.image)
+        setShowSellDetail(true);
+    }
+
+    const handleCallBackSellDetail = () => {
+        setShowSellDetail(false);
+
+        var lstImage = listImage;
+        lstImage = lstImage.map((e, i) => {
+            if(e.id == selectedItem[0]){
+                e.status = 1;
+            }
+
+            return e;
+        })
+        
+        setListImage([...[]])
+        setListImage([...listImage])
+        setSelectedItem([...[]])
+        setCurrentImage("");
+
+    }
+
     const viewImage = (
         <div className={cx('d-flex', 'flex-column', 'w-full')}>
             <div className={cx('image-show')} style={{backgroundImage: currentImage, border: "1px solid #fff200"}}></div>
@@ -370,8 +400,9 @@ function MyCollection() {
                             <div className={cx('flex-1')}></div>
                             <Button normal onClick={() => {loadMoreData()}}>See more</Button>
                             <Button normal disabled={selectedItem.length > 0 ? false : true} onClick={() => {handleDownloadData()}}>Download</Button>
-                            <Button primary disabled={selectedItem.length > 0 ? false : true}>Sell</Button>
+                            <Button primary disabled={selectedItem.length > 0 ? false : true} onClick={() => {handleGoToSell()}}>Sell</Button>
                         </div>
+                        
                     </Fragment>
                     
                 )}
@@ -417,6 +448,7 @@ function MyCollection() {
                 
             </div> 
             {showDetail && <PopupDetail title={"Image"} scale={{height: "85%", width: "65%"}} child={viewImage} eventCallBack={() =>setShowDetail(false)}/>} 
+            {showSellDetail && <Sell eventCallBackSell={handleCallBackSellDetail} imageContent={currentImage} imageID={selectedItem[0]}/>}
             {showLoading && <Loading/>}       
             <ToastContainer/>
         </div>

@@ -49,6 +49,10 @@ class CollectionAPI {
         var url = `${process.env.REACT_APP_BASE_URL}${this.controler}/collection/download?id=${id}`
         window.open(url);
     }
+
+    async addNewSell(key, id, name, detail, price){
+        return await init.post(`${this.controler}/collection/add/sell`, null, {params: {key, id, name, detail, price}})
+    }
 }
 
 export default CollectionAPI
