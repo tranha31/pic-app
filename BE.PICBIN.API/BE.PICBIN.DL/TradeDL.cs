@@ -36,7 +36,7 @@ namespace BE.PICBIN.DL
             ExcuteProcMySQL(procName, parameters, ref listOutPut);
         }
 
-        public List<MarketItem> GetListSellPaging(string key, int start, int length, DateTime fromDate, DateTime toDate)
+        public List<MarketItem> GetListSellPaging(string key, string searchKey, int start, int length, DateTime fromDate, DateTime toDate, int mode)
         {
             List<MarketItem> lstResult;
 
@@ -47,9 +47,39 @@ namespace BE.PICBIN.DL
             parameters.Add($"@FromDate", fromDate);
             parameters.Add($"@ToDate", toDate);
 
+            var where = string.Empty;
+            if (!string.IsNullOrEmpty(searchKey))
+            {
+                var lstSearch = searchKey.Split(' ').ToList();
+                where = " AND ( ";
+
+                for (var i = 0; i < lstSearch.Count; i++)
+                {
+                    parameters.Add($"@Search{i}", "%" + lstSearch[i] + "%");
+                    where += $" m.Caption LIKE @Search{i} OR m.Detail LIKE @Search{i} OR ";
+
+                    if (i == lstSearch.Count - 1)
+                    {
+                        where = where.Substring(0, where.Length - 3);
+                        where += " ) ";
+                    }
+                }
+            }
+
             List<string> listOutPut = null;
 
-            var result = QueryStoreMySQL<MarketItem>("Proc_MarketItem_GetListPaging", parameters, ref listOutPut);
+            string sql;
+            if(mode == 0)
+            {
+                sql = $"SELECT * FROM marketitem m WHERE m.UserPublicKey = @PublicKey AND (m.CreatedDate BETWEEN @FromDate AND @ToDate) {where} ORDER BY m.ModifiedDate LIMIT @Start, @Length;";
+
+            }
+            else
+            {
+                sql = $"SELECT * FROM marketitem m WHERE m.UserPublicKey <> @PublicKey AND (m.CreatedDate BETWEEN @FromDate AND @ToDate) {where} ORDER BY m.ModifiedDate LIMIT @Start, @Length;";
+            }
+
+            var result = QueryCommandMySQL<MarketItem>(sql, parameters, ref listOutPut);
             if (result != null)
             {
                 lstResult = new List<MarketItem>(result);
@@ -69,50 +99,6 @@ namespace BE.PICBIN.DL
 
             var result = ExcuteProcMySQL("Proc_MarketItem_Delete", parameters, ref listOutPut);
             return result;
-        }
-
-        public List<MarketItem> GetListSellPagingForHome(string key, string searchKey, int start, int length, DateTime fromDate, DateTime toDate)
-        {
-            List<MarketItem> lstResult;
-
-            DynamicParameters parameters = new DynamicParameters();
-            parameters.Add($"@Start", start);
-            parameters.Add($"@Length", length);
-            parameters.Add($"@PublicKey", key);
-            parameters.Add($"@FromDate", fromDate);
-            parameters.Add($"@ToDate", toDate);
-
-            var where = string.Empty;
-            if (!string.IsNullOrEmpty(searchKey))
-            {
-                var lstSearch = searchKey.Split(' ').ToList();
-                where = " AND ( ";
-
-                for(var i=0; i<lstSearch.Count; i++)
-                {
-                    parameters.Add($"@Search{i}", "%" + lstSearch[i] + "%");
-                    where += $" m.Caption LIKE @Search{i} OR m.Detail LIKE @Search{i} OR ";
-
-                    if(i == lstSearch.Count - 1)
-                    {
-                        where = where.Substring(0, where.Length - 3);
-                        where += " ) ";
-                    }
-                }
-            }
-
-            List<string> listOutPut = null;
-
-            var sql = $"SELECT * FROM marketitem m WHERE m.UserPublicKey <> @PublicKey AND (m.CreatedDate BETWEEN @FromDate AND @ToDate) {where} ORDER BY m.ModifiedDate LIMIT @Start, @Length;";
-
-            var result = QueryCommandMySQL<MarketItem>(sql, parameters, ref listOutPut);
-            if (result != null)
-            {
-                lstResult = new List<MarketItem>(result);
-                return lstResult;
-            }
-
-            return null;
         }
 
         public MarketItem GetMarketItemByID(string id)

@@ -75,65 +75,12 @@ namespace BE.PICBIN.BL
         /// <param name="fromDate"></param>
         /// <param name="toDate"></param>
         /// <returns></returns>
-        public async Task<ServiceResult> GetListSellPaging(string key, int start, int length, DateTime fromDate, DateTime toDate)
+        public async Task<ServiceResult> GetListSellPaging(string key, string searchKey, int start, int length, DateTime fromDate, DateTime toDate)
         {
-            ServiceResult serviceResult = new ServiceResult();
-            try
-            {
-                TradeDL dL = new TradeDL(Configuration);
-                var data = dL.GetListSellPaging(key, start, length, fromDate, toDate);
+            TradeDL dL = new TradeDL(Configuration);
+            var data = dL.GetListSellPaging(key, searchKey, start, length, fromDate, toDate, 0);
 
-                if (data == null || data.Count == 0)
-                {
-                    serviceResult.Success = true;
-                    return serviceResult;
-                }
-
-                List<string> ids = new List<string>();
-                foreach (var item in data)
-                {
-                    ids.Add(item.ImageID);
-                }
-
-                CollectionDL oDL = new CollectionDL(Configuration);
-                var imageContent = await oDL.GetImageCheckContent(ids);
-                if (imageContent == null || imageContent.Count == 0)
-                {
-                    serviceResult.Success = true;
-                    return serviceResult;
-                }
-
-                Dictionary<string, object> listData = new Dictionary<string, object>();
-                Dictionary<string, object> listImage = new Dictionary<string, object>();
-                for (var i = 0; i < data.Count; i++)
-                {
-                    listData.Add(data[i].ImageID, data[i]);
-                    listImage.Add(imageContent[i].RefID, imageContent[i].ImageContentMarked);
-                }
-
-                List<object> result = new List<object>();
-                foreach (var item in data)
-                {
-                    var value = new
-                    {
-                        Infor = listData[item.ImageID],
-                        Image = listImage[item.ImageID]
-                    };
-
-                    result.Add(value);
-                }
-
-                serviceResult.Success = true;
-                serviceResult.Data = result;
-                return serviceResult;
-            }
-            catch (Exception ex)
-            {
-                serviceResult.Success = false;
-                NLogBL nLog = new NLogBL(Configuration);
-                nLog.InsertLog(ex.Message, ex.StackTrace);
-            }
-
+            ServiceResult serviceResult = await HandleGetImageMarketContent(data);
             return serviceResult;
 
         }
@@ -189,12 +136,19 @@ namespace BE.PICBIN.BL
 
         public async Task<ServiceResult> GetListSellPagingForHome(string key, string searchKey, int start, int length, DateTime fromDate, DateTime toDate)
         {
+            TradeDL dL = new TradeDL(Configuration);
+            var data = dL.GetListSellPaging(key, searchKey, start, length, fromDate, toDate, 1);
+
+            ServiceResult serviceResult = await HandleGetImageMarketContent(data);
+
+            return serviceResult;
+        }
+
+        public async Task<ServiceResult> HandleGetImageMarketContent(List<MarketItem> data)
+        {
             ServiceResult serviceResult = new ServiceResult();
             try
             {
-                TradeDL dL = new TradeDL(Configuration);
-                var data = dL.GetListSellPagingForHome(key, searchKey, start, length, fromDate, toDate);
-
                 if (data == null || data.Count == 0)
                 {
                     serviceResult.Success = true;

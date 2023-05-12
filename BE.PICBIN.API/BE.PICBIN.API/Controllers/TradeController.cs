@@ -59,13 +59,13 @@ namespace BE.PICBIN.API.Controllers
         /// <param name="toDate"></param>
         /// <returns></returns>
         [HttpGet("sell/paging")]
-        public async Task<IActionResult> GetListSellPaging(string key, int start, int length, DateTime fromDate, DateTime toDate)
+        public async Task<IActionResult> GetListSellPaging(string key, string searchKey, int start, int length, DateTime fromDate, DateTime toDate)
         {
             ServiceResult result = new ServiceResult();
             try
             {
                 TradeBL oBL = new TradeBL(_config);
-                result = await oBL.GetListSellPaging(key, start, length, fromDate, toDate);
+                result = await oBL.GetListSellPaging(key, searchKey, start, length, fromDate, toDate);
 
             }
             catch (Exception ex)
