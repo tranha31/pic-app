@@ -11,7 +11,8 @@ namespace BE.PICBIN.DL.Entities
         public string UserPublicKey { get; set; }
         public string Caption { get; set; }
         public string Detail { get; set; }
-        public float Price { get; set; }
+        public decimal Price { get; set; }
         public DateTime CreatedDate { get; set; }
+        public DateTime ModifiedDate { get; set; }
     }
 }

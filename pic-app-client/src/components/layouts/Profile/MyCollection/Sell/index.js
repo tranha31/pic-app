@@ -4,7 +4,7 @@ import classNames from 'classnames/bind';
 import { Fragment, useRef, useState } from 'react';
 import Input from '@/components/base/Input';
 import PopupDetail from '@/components/base/PopupDetail';
-import CollectionAPI from '@/api/collection';
+import TradeAPI from '@/api/trade';
 import MessageBox from '@/components/base/MessageBox';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -13,7 +13,7 @@ import Loading from '@/components/base/Loading';
 
 const cx = classNames.bind(styles);
 
-function Sell({editMode, imageID, name, detail, price, imageContent, eventCallBackSell}) {
+function Sell({editMode, itemID, imageID, name, detail, price, imageContent, eventCallBackSell}) {
     const [showLoading, setShowLoading] = useState(false);
     const [showMessage, setShowMessage] = useState(false);
     const [message, setMessage] = useState("");
@@ -71,9 +71,9 @@ function Sell({editMode, imageID, name, detail, price, imageContent, eventCallBa
             address = address.substring(2);
 
             var price = Number.parseFloat(imagePrice)
-            const api = new CollectionAPI()
+            const api = new TradeAPI()
             setShowLoading(true);
-            var res = await api.addNewSell(address, imageID, imageName, imageDetail, price);
+            var res = await api.updateSell(editMode, itemID, address, imageID, imageName, imageDetail, price);
             if(res.data.success){
                 setShowLoading(false);
                 eventCallBackSell();

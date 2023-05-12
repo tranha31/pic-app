@@ -195,35 +195,5 @@ namespace BE.PICBIN.API.Controllers
 
             return Ok(result);
         }
-
-
-        /// <summary>
-        /// Đăng bán ảnh
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="id"></param>
-        /// <param name="name"></param>
-        /// <param name="detail"></param>
-        /// <param name="price"></param>
-        /// <returns></returns>
-        [HttpPost("collection/add/sell")]
-        public IActionResult SellImage(string key, string id, string name, string detail, float price)
-        {
-            ServiceResult result = new ServiceResult();
-            try
-            {
-                CollectionBL oBL = new CollectionBL(_config);
-                result = oBL.AddNewSellImage(key, id, name, detail, price);
-
-            }
-            catch (Exception ex)
-            {
-                result.Success = false;
-                NLogBL nLog = new NLogBL(_config);
-                nLog.InsertLog(ex.Message, ex.StackTrace);
-            }
-
-            return Ok(result);
-        }
     }
 }

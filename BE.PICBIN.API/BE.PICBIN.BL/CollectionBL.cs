@@ -183,44 +183,6 @@ namespace BE.PICBIN.BL
 
         }
 
-        /// <summary>
-        /// Thêm mới ảnh đăng bán
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="id"></param>
-        /// <param name="name"></param>
-        /// <param name="detail"></param>
-        /// <param name="price"></param>
-        /// <returns></returns>
-        public ServiceResult AddNewSellImage(string key, string id, string name, string detail, float price)
-        {
-            ServiceResult serviceResult = new ServiceResult() { Success = false };
-            CollectionDL oDL = new CollectionDL(Configuration);
-            CopyrightImage image = oDL.GetCopyrightImage(id);
-            if(image == null || image.UserPublicKey != key)
-            {
-                return serviceResult;
-            }
-
-            if(image.Status != 0)
-            {
-                serviceResult.Error = "Image invalid";
-                return serviceResult;
-            }
-
-            try
-            {
-                oDL.AddNewSellImage(key, id, name, detail, price);
-                serviceResult.Success = true;
-            }
-            catch (Exception ex)
-            {
-                NLogBL nLog = new NLogBL(Configuration);
-                nLog.InsertLog(ex.Message, ex.StackTrace);
-            }
-
-            return serviceResult;
-        }
 
         /// <summary>
         /// Lấy danh sách user
