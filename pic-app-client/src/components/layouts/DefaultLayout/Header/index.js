@@ -5,21 +5,50 @@ import { Link } from 'react-router-dom';
 import Tippy from '@tippyjs/react/headless';
 import Button from '@/components/base/Button';
 import { useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 
 const cx = classNames.bind(styles);
 
-function Header({callBackHandleCloseCopyright}) {
+function Header({callBackHandleCloseCopyright, callBackUpdateSearch, callBackFilterData, disableInputSearch}) {
 
     const location = useLocation();
 
     const handleCloseCopyright = (mode) => {
         callBackHandleCloseCopyright(mode);
     }
-    const lstDisableSearch = ["sell", "auction", "my_collection", "my_request"];
-    const disabledSearch = lstDisableSearch.filter((e) => { return location.pathname.includes(e)}).length > 0 ? true : false;
-
+    const lstDisableSearch = ["sell", "auction", "my_request"];
+    const checkDisabledSearch = lstDisableSearch.filter((e) => { return location.pathname.includes(e)}).length > 0 ? true : false;
     const routeInHome = homeRoutes.filter(e => { return e.path == location.pathname }).length > 0
     const routeInProfile = profileRoutes.filter(e => { return e.path == location.pathname }).length > 0
+
+    const [searchKey, setSearchKey] = useState("")
+    const [disabledSearch, setDisabledSearch] = useState(checkDisabledSearch)
+
+    useEffect(()=>{
+        setSearchKey("")
+    }, [location])
+
+    useEffect(()=>{
+        setDisabledSearch(disableInputSearch)
+    }, [disableInputSearch])
+
+    useEffect(() => {
+        setDisabledSearch(checkDisabledSearch);
+    }, [checkDisabledSearch])
+
+    const handleChangeSearchKey = (value) => {
+        setSearchKey(value)
+        callBackUpdateSearch(value, disabledSearch)
+    }
+
+    const handleKeyUp = (e) => {
+        if (e.key === 'Enter' || e.keyCode === 13) {
+            callBackFilterData(true)
+        }
+        else{
+            callBackFilterData(false)
+        }
+    }
 
     return (
         <div className={cx('header', 'd-flex')}>
@@ -27,7 +56,11 @@ function Header({callBackHandleCloseCopyright}) {
             <div className={cx('menu-box', 'd-flex', 'flex-column')}>
                 <div className={cx('search-box', 'd-flex', disabledSearch ? 'disabled' : '')}>
                     <div className={cx('search-icon')}></div>
-                    <input className={cx('search-input')} disabled={disabledSearch ? "disabled" : ""}/>
+                    <input className={cx('search-input')} disabled={disabledSearch ? "disabled" : ""} value={searchKey} 
+                        placeholder='Press Enter to search data'
+                        onChange={(e) => handleChangeSearchKey(e.target.value)} 
+                        onKeyUp={handleKeyUp}
+                    />
                     <div className={cx('search-delete', 'd-none')}>x</div>
                 </div>
                 <div className={cx('nav-bar', 'd-flex')}>

@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route} from "react-router-dom";
 import { publicRoutes } from "@/routes";
 import { DefaultLayout } from "@/components/layouts"
-import { Fragment, useEffect } from "react";
+import { Fragment, useEffect, useState } from "react";
 import "react-datepicker/dist/react-datepicker.css";
 
 function App() {
@@ -15,6 +15,27 @@ function App() {
 
   const handleAccountChange = () => {
       window.location.reload();
+  }
+
+  const [disabledSearch, setDisabledSearch] = useState(false);
+  const [searchKey, setSearchKey] = useState("");
+  const [filterData, setFilterData] = useState(false);
+
+  const updateDisableSearch = (disabled, value) => {
+    setDisabledSearch(disabled)
+    setSearchKey(value)
+  }
+
+  const updateSearch = (value, disabled) => {
+    if(disabled != undefined){
+      setDisabledSearch(disabled)
+    }
+
+    setSearchKey(value)
+  }
+
+  const handleCallBackFilterData = (value) => {
+    setFilterData(value);
   }
 
   return (
@@ -37,8 +58,8 @@ function App() {
                 key={index} 
                 path={route.path} 
                 element={
-                  <Layout>
-                    <Page/>
+                  <Layout callBackUpdateSearch={updateSearch} callBackFilterData={handleCallBackFilterData} disableSearch={disabledSearch}>
+                    <Page callBackUpdate={updateDisableSearch} searchKey={searchKey} isSearchData={filterData}/>
                   </Layout>}>
               </Route>
             );

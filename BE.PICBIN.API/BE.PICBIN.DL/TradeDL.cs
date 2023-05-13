@@ -56,7 +56,7 @@ namespace BE.PICBIN.DL
                 for (var i = 0; i < lstSearch.Count; i++)
                 {
                     parameters.Add($"@Search{i}", "%" + lstSearch[i] + "%");
-                    where += $" m.Caption LIKE @Search{i} OR m.Detail LIKE @Search{i} OR ";
+                    where += $" m.Caption LIKE @Search{i} OR ";
 
                     if (i == lstSearch.Count - 1)
                     {

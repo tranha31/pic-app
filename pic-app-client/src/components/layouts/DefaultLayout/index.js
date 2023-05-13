@@ -1,17 +1,18 @@
 import styles from './DefaultLayout.module.scss';
 import classNames from 'classnames/bind';
 import CopyrightAction from "@/components/views/CopyrightAction";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import Header from "./Header";
 import Draggable from 'react-draggable';
 
 const cx = classNames.bind(styles);
 
-function DefaultLayout({children}) {
+function DefaultLayout({children, callBackUpdateSearch, callBackFilterData, disableSearch}) {
 
     const [copyrightMode, setCopyrightMode] = useState(0);
     const [showCopyright, setShowCopyright] = useState(false);
     const [showNotify, setShowNotify] = useState(false);
+    const [disabedSearchKey, setDisabedSearchKey] = useState(disableSearch);
 
     const handleCloseCopyright = (state) => {
         setShowCopyright(state)
@@ -22,9 +23,22 @@ function DefaultLayout({children}) {
         setShowCopyright(true);
     }
 
+    const handleCallBackUpdateSearch = (value, disable) => {
+        callBackUpdateSearch(value, disable)
+    }
+
+    const handelCallBackFilterData = (value) => {
+        callBackFilterData(value)
+    }
+
+    useEffect(()=>{
+        setDisabedSearchKey(disableSearch)
+    }, [disableSearch])
+
+
     return ( 
         <Fragment>
-            <Header callBackHandleCloseCopyright={handleShowCopyright}/>
+            <Header disableInputSearch={disabedSearchKey} callBackHandleCloseCopyright={handleShowCopyright} callBackUpdateSearch={handleCallBackUpdateSearch} callBackFilterData={handelCallBackFilterData}/>
             <div className="container" style={{position: "relative"}}>
                 <div className="content">{children}</div>
 

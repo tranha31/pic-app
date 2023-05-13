@@ -6,12 +6,17 @@ import { useLocation } from 'react-router-dom'
 import Market from './Market';
 // import Sell from './Sell';
 import Auction from './Auction';
+import { useEffect } from 'react';
 
 const cx = classNames.bind(styles);
 
-function Home() {
+function Home({callBackUpdate, searchKey, isSearchData}) {
     const location = useLocation();
     var isDefault = false;
+
+    useEffect(()=>{
+        callBackUpdate(false)
+    }, [])
     
     return (
         <div className={cx('home-container', 'd-flex')}>

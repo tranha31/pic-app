@@ -16,11 +16,12 @@ import saling from "../../../../assets/imgs/saling.png";
 import auctioning from "../../../../assets/imgs/auctioning.png";
 import PopupDetail from '@/components/base/PopupDetail';
 import Sell from './Sell';
+import TradeAPI from '@/api/trade';
 
 
 const cx = classNames.bind(styles);
 
-function MyCollection() {
+function MyCollection({callBackUpdate, searchKey, isSearchData}) {
 
     const [tab, setTab] = useState(0);
     const [showDetail, setShowDetail] = useState(false);
@@ -49,20 +50,61 @@ function MyCollection() {
 
     const [showSellDetail, setShowSellDetail] = useState(false);
 
+    const [showFilterSell, setShowFilterSell] = useState(false);
+    const [startDateSell, setStartDateSell] = useState(new Date(curDate));
+    const [endDateSell, setEndDateSell] = useState(new Date());
+    const [listSell, setListSell] = useState([]);
+    const [sellSelectedItem, setSellSelectedItem] = useState([]);
+    const [curIndexSell, setCurIndexSell] = useState(0);
+    const [currentImageSell, setCurrentImageSell] = useState("");
+
+    const [searchValue, setSearchValue] = useState(searchKey)
+
+    useEffect(()=>{
+        setSearchValue(searchKey)
+    }, [searchKey])
+
     useEffect(() => {
         getInitData();
+        if(tab === 1){
+            callBackUpdate(false, searchValue)
+        }
+        else if(tab === 0){
+            callBackUpdate(true, searchValue)
+        }
+        else{
+            callBackUpdate(true)
+        }
     }, []);
 
     useEffect(() => {
         if(tab === 0 && listImage.length === 0){
             handleRefresh();
+            callBackUpdate(true, searchValue)
         }
-        // else if(tab === 1 && appealRequests.length === 0){
-        //     handleRefresh();
-        // }
+        else if(tab === 1 && listSell.length === 0){
+            handleRefresh();
+            callBackUpdate(false, searchValue)
+        }
+        else{
+            if(tab === 1){
+                callBackUpdate(false, searchValue)
+            }
+            else{
+                callBackUpdate(true, searchValue)
+            }
+            
+        }
 
         setShowFilter(false);
+        setShowFilterSell(false);
     }, [tab])
+
+    useEffect(() => {
+        if(isSearchData && tab === 1){
+            handleRefresh();
+        }
+    }, [isSearchData])
 
     const getInitData = async () => {
         var data = await handlePagingData(0);
@@ -94,7 +136,10 @@ function MyCollection() {
                 setSelectedItem([...[]])
                 setListImage([...data])
             }
-            else{
+            else if(tab === 1){
+                setCurrentImageSell("")
+                setSellSelectedItem([...[]])
+                setListSell([...data])
             }
         }
     }
@@ -106,6 +151,12 @@ function MyCollection() {
 
         setStatusReq(imageStatus[0]);
         setParamImageStatus(-1);
+    }
+
+    const refreshFilterSell = () => {
+        var curDate = new Date();
+        setStartDateSell(new Date(curDate.setDate(curDate.getDate() - 30)))
+        setEndDateSell(new Date())
     }
 
     const filterData = async () => {
@@ -120,7 +171,12 @@ function MyCollection() {
                 setShowFilter(false);
             }
             else if (tab === 1){
-
+                setCurrentImageSell("")
+                setSellSelectedItem([...[]])
+                setCurIndexSell(0);
+                setListSell([...[]])
+                setListSell([...data])
+                setShowFilterSell(false)
             }
         }
     }
@@ -158,7 +214,7 @@ function MyCollection() {
                 return handleGetImage(index, address);
             }
             else if (tab === 1){
-                //return handleGetAppealRequest(index, address);
+                return handleGetSell(index, address);
             }
 
         }
@@ -167,6 +223,44 @@ function MyCollection() {
             return false;
         }
         
+    }
+
+    const handleGetSell = async (index, address) => {
+        try{
+            setShowLoading(true);
+            const api = new TradeAPI();
+            var fromDate = new Date(startDateSell)
+            var toDate = new Date(endDateSell)
+            var param = {
+                key: address,
+                searchKey: searchValue,
+                start : index,
+                length : 20,
+                fromDate: new Date(fromDate.setHours(0,0,0,0)),
+                toDate: new Date(toDate.setHours(23,59,59,1000)),
+            }
+            
+            var res = await api.getSellPaging(param);
+            if(res.data.success){
+                var data = res.data.data;
+                var sellItem = [];
+                if(data){
+                    sellItem = convertDataSell(data);
+                    
+                }
+                setShowLoading(false);
+                return sellItem;
+            }
+            else{
+                setShowLoading(false);
+                toast.error("Something wrong! Please try again!")
+                return false;
+            }
+        }
+        catch(err){
+            toast.error("Something wrong! Please try again!")
+            return false;
+        }
     }
 
     const handleGetImage = async (index, address) => {
@@ -219,6 +313,25 @@ function MyCollection() {
         })
 
         return image;
+    }
+
+    const convertDataSell = (data) => {
+        var sell = data.map((e, i) => {
+            var contentImage = "url('" + e.image + "')";
+            return {
+                "id": e.infor.imageID,
+                "caption" : e.infor.caption,
+                "detail" : e.infor.detail,
+                "price" : e.infor.price,
+                "user" : e.infor.userPublicKey,
+                "modifiedDate": new Date(e.infor.modifiedDate).toLocaleString('en-GB', {
+                    hour12: false,
+                  }).substring(0, 10),
+                "image" : contentImage,
+            }
+        });
+
+        return sell;
     }
 
     const handleChooseImage = (id) => {
@@ -303,63 +416,114 @@ function MyCollection() {
                 <div className={cx('tab-item', tab == 3 ? 'active' : "")} onClick={() => {goToTab(3)}}>Participating Auction room</div>
                 <div className={cx('flex-1')}></div>
                 <div className={cx('refresh')} onClick={() => {handleRefresh()}}></div>
-                <Tippy
-                    visible={showFilter}
-                    interactive
-                    placement="bottom"
-                    offset={0}
-                    render={attrs => (
-                        <div className={cx('filter-box', 'd-flex', 'flex-column')} tabIndex="-1" {...attrs}>
-                            <div className={cx('filter-header', 'd-flex', 'mb-8')}>
-                                <div className={cx('icon-filter')}></div>
-                                <div className={cx('font-bold', 'font-size-18')}>Filter</div>
-                            </div>
-                            <div className={cx('filter-content', 'd-flex', 'flex-column', 'flex-1')}>
-                                <div className={cx('d-flex', 'w-full', 'mb-8')}>
-                                    <div className={cx('date-picker-wrapper', 'mr-8', 'w-half')}>
-                                        <p className={cx('title-date-picker', 'font-bold')}>From date</p>
-                                        <DatePicker 
-                                            className={cx('date-picker', 'w-full')} 
-                                            dateFormat="dd/MM/yyyy" 
-                                            selected={startDate} 
-                                            onChange={(date) => setStartDate(date)} 
-                                        />
-                                    </div>
+                {tab == 0 && (
+                    <Tippy
+                        visible={showFilter}
+                        interactive
+                        placement="bottom"
+                        offset={0}
+                        render={attrs => (
+                            <div className={cx('filter-box', 'd-flex', 'flex-column')} tabIndex="-1" {...attrs}>
+                                <div className={cx('filter-header', 'd-flex', 'mb-8')}>
+                                    <div className={cx('icon-filter')}></div>
+                                    <div className={cx('font-bold', 'font-size-18')}>Filter</div>
+                                </div>
+                                <div className={cx('filter-content', 'd-flex', 'flex-column', 'flex-1')}>
+                                    <div className={cx('d-flex', 'w-full', 'mb-8')}>
+                                        <div className={cx('date-picker-wrapper', 'mr-8', 'w-half')}>
+                                            <p className={cx('title-date-picker', 'font-bold')}>From date</p>
+                                            <DatePicker 
+                                                className={cx('date-picker', 'w-full')} 
+                                                dateFormat="dd/MM/yyyy" 
+                                                selected={startDate} 
+                                                onChange={(date) => setStartDate(date)} 
+                                            />
+                                        </div>
 
-                                    <div className={cx('date-picker-wrapper', 'w-half')}>
-                                        <p className={cx('title-date-picker', 'font-bold')}>To date</p>
-                                        <DatePicker 
-                                            className={cx('date-picker', 'w-full')} 
-                                            dateFormat="dd/MM/yyyy" 
-                                            selected={endDate} 
-                                            onChange={(date) => setEndDate(date)} 
+                                        <div className={cx('date-picker-wrapper', 'w-half')}>
+                                            <p className={cx('title-date-picker', 'font-bold')}>To date</p>
+                                            <DatePicker 
+                                                className={cx('date-picker', 'w-full')} 
+                                                dateFormat="dd/MM/yyyy" 
+                                                selected={endDate} 
+                                                onChange={(date) => setEndDate(date)} 
+                                            />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div className={cx('font-bold', 'mb-8')}>Image status</div>
+                                        <Select 
+                                            options={imageStatus} 
+                                            isSearchable={false}
+                                            defaultValue={imageStatus[0]}
+                                            value={statusReq}
+                                            menuPlacement='auto'
+                                            onChange={(v) => handleChangeImageStatus(v)}
                                         />
                                     </div>
                                 </div>
-                                <div>
-                                    <div className={cx('font-bold', 'mb-8')}>Image status</div>
-                                    <Select 
-                                        options={imageStatus} 
-                                        isSearchable={false}
-                                        defaultValue={imageStatus[0]}
-                                        value={statusReq}
-                                        menuPlacement='auto'
-                                        onChange={(v) => handleChangeImageStatus(v)}
-                                    />
+
+                                <div className={cx('d-flex', 'w-full')}>
+                                    <div className={cx('flex-1')}></div>
+                                    <Button normal onClick={() => {setShowFilter(false)}}>Close</Button>
+                                    <Button normal onClick={() => {refreshFilter()}}>Refresh</Button>
+                                    <Button primary onClick={() => {filterData()}}>OK</Button>
                                 </div>
                             </div>
+                        )}
+                    >
+                        <div className={cx('filter')} onClick={() => {setShowFilter(true)}}></div>
+                    </Tippy>
+                )}
+                
+                {tab == 1 && (
+                    <Tippy
+                        visible={showFilterSell}
+                        interactive
+                        placement="bottom"
+                        offset={0}
+                        render={attrs => (
+                            <div className={cx('filter-box', 'd-flex', 'flex-column')} tabIndex="-1" {...attrs} style={{height: "200px"}}>
+                                <div className={cx('filter-header', 'd-flex', 'mb-8')}>
+                                    <div className={cx('icon-filter')}></div>
+                                    <div className={cx('font-bold', 'font-size-18')}>Filter</div>
+                                </div>
+                                <div className={cx('filter-content', 'd-flex', 'flex-column', 'flex-1')}>
+                                    <div className={cx('d-flex', 'w-full', 'mb-8')}>
+                                        <div className={cx('date-picker-wrapper', 'mr-8', 'w-half')}>
+                                            <p className={cx('title-date-picker', 'font-bold')}>From date</p>
+                                            <DatePicker 
+                                                className={cx('date-picker', 'w-full')} 
+                                                dateFormat="dd/MM/yyyy" 
+                                                selected={startDateSell} 
+                                                onChange={(date) => setStartDateSell(date)} 
+                                            />
+                                        </div>
 
-                            <div className={cx('d-flex', 'w-full')}>
-                                <div className={cx('flex-1')}></div>
-                                <Button normal onClick={() => {setShowFilter(false)}}>Close</Button>
-                                <Button normal onClick={() => {refreshFilter()}}>Refresh</Button>
-                                <Button primary onClick={() => {filterData()}}>OK</Button>
+                                        <div className={cx('date-picker-wrapper', 'w-half')}>
+                                            <p className={cx('title-date-picker', 'font-bold')}>To date</p>
+                                            <DatePicker 
+                                                className={cx('date-picker', 'w-full')} 
+                                                dateFormat="dd/MM/yyyy" 
+                                                selected={endDateSell} 
+                                                onChange={(date) => setEndDateSell(date)} 
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className={cx('d-flex', 'w-full')}>
+                                    <div className={cx('flex-1')}></div>
+                                    <Button normal onClick={() => {setShowFilterSell(false)}}>Close</Button>
+                                    <Button normal onClick={() => {refreshFilterSell()}}>Refresh</Button>
+                                    <Button primary onClick={() => {filterData()}}>OK</Button>
+                                </div>
                             </div>
-                        </div>
-                    )}
-                >
-                    <div className={cx('filter')} onClick={() => {setShowFilter(true)}}></div>
-                </Tippy>
+                        )}
+                    >
+                        <div className={cx('filter')} onClick={() => {setShowFilterSell(true)}}></div>
+                    </Tippy>
+                )}
             </div>
 
             <div className={cx('collection-content', 'd-flex', 'flex-column', 'flex-1')}>
@@ -410,23 +574,35 @@ function MyCollection() {
                 { tab == 1 && (
                     <Fragment>
                         <div className={cx('list-image', 'd-flex')}>
-                            <div className={cx('content-picture', 'd-flex', 'flex-column', 'active')}>
-                                <div className={cx('image')}></div>
-                                <div className={cx('info', 'd-flex', 'flex-column')}>
-                                    <div className={cx('name')}>Test image</div>
-                                    <div className={cx('price')}>Price: 5 eth</div>
-                                    <div className={cx('author')}>Amount: 10</div>
-                                </div>
-                            </div>
+                            {
+                                listSell.length > 0 ? 
+                                (
+                                    listSell.map((e, index) => {
+                                        return (
+                                            <div key={index} className={cx('content-picture','d-flex', 'flex-column', sellSelectedItem.indexOf(e.id) > -1 ? 'active' : '')}
+                                                onClick={() => {handleChooseImage(e.id)}}
+                                                onDoubleClick={() => {handleShowImage(e.id)}}
+                                                data-id={e.id}
 
-                            <div className={cx('content-picture', 'd-flex', 'flex-column')}>
-                                <div className={cx('image')}></div>
-                                <div className={cx('info', 'd-flex', 'flex-column')}>
-                                    <div className={cx('name')}>Test image</div>
-                                    <div className={cx('price')}>Price: 5 eth</div>
-                                    <div className={cx('author')}>Amount: 10</div>
-                                </div>
-                            </div>
+                                            >
+                                                <div className={cx('image')} style={{backgroundImage: e.image}}></div>
+                                                <div className={cx('info', 'd-flex', 'flex-column')} style={{overflow: 'auto'}}>
+                                                    <div className={cx('name')}>{e.caption}</div>
+                                                    <div className={cx('price')}>Price: {e.price} ETH</div>
+                                                    <div className={cx('author')}>{e.modifiedDate}</div>
+                                                </div>
+                                            </div>
+                                        )
+                                    })
+                                ) 
+                                : 
+                                (
+                                    <div className={cx('empty-data', 'd-flex', 'flex-1', 'flex-column', 'align-center', 'justify-center')}>
+                                        <div className={cx('i-empty')}></div>
+                                        <div className={cx('font-bold', 'font-size-18')}>No data</div>
+                                    </div>
+                                )
+                            }
                         </div>
 
                         <div className={cx('sell-content-footer', 'd-flex', 'w-full')}>

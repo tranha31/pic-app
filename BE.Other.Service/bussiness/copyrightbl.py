@@ -5,6 +5,7 @@ from PIL import Image as im
 import io
 import base64
 from .imagecaptionbl import ImageCaptionBL
+from repositories.copyrightdl import CopyrightDL
 
 class CopyrightBL:
 
@@ -296,7 +297,16 @@ class CopyrightBL:
         if(sign8 != None):
             signs.append(sign8)
         
-        return signs
+        oDL = CopyrightDL()
+        if(len(signs) == 0):
+            return signs
+        else:
+            lstSign = oDL.checkExistSign(signs)
+            signs = []
+            for i in range(len(lstSign)):
+                signs.append(lstSign[i]["UserPublicKey"])
+
+            return signs
     
 
 

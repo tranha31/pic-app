@@ -8,7 +8,7 @@ import MyRequest from './MyRequest';
 
 const cx = classNames.bind(styles);
 
-function Profile() {
+function Profile({callBackUpdate, searchKey, isSearchData}) {
 
     const location = useLocation();
     var isDefault = false;
@@ -31,7 +31,7 @@ function Profile() {
                     })
                 }
             </div>
-            {isDefault ? <MyCollection/> : <MyRequest/>}
+            {isDefault ? <MyCollection callBackUpdate={callBackUpdate} searchKey={searchKey} isSearchData={isSearchData}/> : <MyRequest/>}
         </div>
 
     );
