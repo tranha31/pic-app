@@ -57,6 +57,10 @@ function Input(
 
     const [hasError, setHasError] = useState(false);
 
+    useEffect(()=>{
+        setValue(val)
+    }, [val])
+
     //const inputRef = useRef(null);
 
 
@@ -116,7 +120,6 @@ function Input(
 
 
     const formatCurrency = (blur) => {
-        debugger
         var input_val = inputRef.current.value;
         if (input_val === "") { return; }
         

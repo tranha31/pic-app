@@ -46,7 +46,7 @@ function MyRequest() {
 
 
     const [showFilterAppeal, setShowFilterAppeal] = useState(false);
-    const [startDateAppeal, setStartDateAppeal] = useState(new Date(curDate.setDate(curDate.getDate() - 30)));
+    const [startDateAppeal, setStartDateAppeal] = useState(new Date(curDate));
     const [endDateAppeal, setEndDateAppeal] = useState(new Date());
 
     const [showLoading, setShowLoading] = useState(false);
@@ -183,9 +183,11 @@ function MyRequest() {
                 setSelectedAppeal([...[]])
                 setSelectedItem([...[]])
                 setRegisterRequests([...data])
+                setCurIndex(0)
             }
             else{
                 setAppealRequests([...data])
+                setCurAppealIndex(0)
             }
         }
     }
@@ -541,6 +543,20 @@ function MyRequest() {
                 <div className={cx('tab-item', tab == 0 ? 'active' : "")} onClick={() => {goToTab(0)}}>Registration request</div>
                 <div className={cx('tab-item', tab == 1 ? 'active' : "")} onClick={() => {goToTab(1)}}>Request an appeal</div>
                 <div className={cx('flex-1')}></div>
+                {tab === 0 && (
+                    <div className={cx('d-flex', 'align-center', 'mr-8')}>From: {new Date(startDate).toLocaleString('en-GB', {
+                        hour12: false,
+                      }).substring(0, 10)} - To: {new Date(endDate).toLocaleString('en-GB', {
+                        hour12: false,
+                      }).substring(0, 10)}</div>
+                )}
+                {tab === 1 && (
+                    <div className={cx('d-flex', 'align-center', 'mr-8')}>From: {new Date(startDateAppeal).toLocaleString('en-GB', {
+                        hour12: false,
+                      }).substring(0, 10)} - To: {new Date(endDateAppeal).toLocaleString('en-GB', {
+                        hour12: false,
+                      }).substring(0, 10)}</div>
+                )}
                 <div className={cx('refresh')} onClick={() => {handleRefresh()}} id={"reload-request"}></div>
                 {tab == 0 ? (
                     <Tippy

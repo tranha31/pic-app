@@ -1,7 +1,7 @@
 import Button from '@/components/base/Button';
 import styles from './Sell.module.scss';
 import classNames from 'classnames/bind';
-import { Fragment, useRef, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import Input from '@/components/base/Input';
 import PopupDetail from '@/components/base/PopupDetail';
 import TradeAPI from '@/api/trade';
@@ -13,17 +13,23 @@ import Loading from '@/components/base/Loading';
 
 const cx = classNames.bind(styles);
 
-function Sell({editMode, itemID, imageID, name, detail, price, imageContent, eventCallBackSell}) {
+function Sell({oData, eventCallBackSell}) {
     const [showLoading, setShowLoading] = useState(false);
     const [showMessage, setShowMessage] = useState(false);
     const [message, setMessage] = useState("");
-    const [imageName, setImageName] = useState(name);
-    const [imageDetail, setImageDetail] = useState(detail);
-    const [imagePrice, setImagePrice] = useState(price);
+    const [imageName, setImageName] = useState(oData?.caption);
+    const [imageDetail, setImageDetail] = useState(oData?.detail);
+    const [imagePrice, setImagePrice] = useState(oData?.price);
 
     const nameRef = useRef(null);
     const detailRef = useRef(null);
     const priceRef = useRef(null);
+
+    useEffect(()=>{
+        setImageName(oData?.caption)
+        setImageDetail(oData?.detail)
+        setImagePrice(oData?.price)
+    }, [oData])
 
     const handleSubmit = () => {
         if (validateBeforeSave()){
@@ -73,10 +79,14 @@ function Sell({editMode, itemID, imageID, name, detail, price, imageContent, eve
             var price = Number.parseFloat(imagePrice)
             const api = new TradeAPI()
             setShowLoading(true);
-            var res = await api.updateSell(editMode, itemID, address, imageID, imageName, imageDetail, price);
+            var res = await api.updateSell(oData?.editMode, oData?.id, address, oData?.imageID, imageName, imageDetail, price);
             if(res.data.success){
                 setShowLoading(false);
-                eventCallBackSell();
+                var data = oData;
+                data.caption = imageName;
+                data.detail = imageDetail;
+                data.price = price;
+                eventCallBackSell(data);
             }
             else{
                 setShowLoading(false);
@@ -92,7 +102,7 @@ function Sell({editMode, itemID, imageID, name, detail, price, imageContent, eve
         <div className={cx('sell-content', 'flex-1')}>
             <div className={cx('step-2', 'd-flex', 'flex-1')}>
                 <div className={cx('flex-1', 'd-flex', 'justify-center', 'align-center')}>
-                    <div id='image-content' className={cx('image-content')} style={{backgroundImage: imageContent}}></div>
+                    <div id='image-content' className={cx('image-content')} style={{backgroundImage: oData?.imageContent}}></div>
                 </div>
                 <div className={cx('detail-content', 'flex-1', 'd-flex', 'flex-column', 'justify-center')}>
                     <p className={cx('detail-content-title', 'font-bold', 'font-size-18')}>Fill information</p>
@@ -110,7 +120,7 @@ function Sell({editMode, itemID, imageID, name, detail, price, imageContent, eve
         </div>
     )
 
-    const submitBtn = editMode == 1 ? (
+    const submitBtn = oData?.editMode == 1 ? (
         <Button primary onClick={() => {handleSave()}}>Submit</Button>
     ) : <Fragment></Fragment>
 

@@ -16,8 +16,8 @@ class TradeAPI {
      * @param {*} price 
      * @returns 
      */
-    async updateSell(mode, itemId, key, id, name, detail, price){
-        return await init.post(`${this.controler}/update/sell`, null, {params: {mode, itemId, key, id, name, detail, price}})
+    async updateSell(mode, itemID, key, id, name, detail, price){
+        return await init.post(`${this.controler}/update/sell`, null, {params: {mode, itemID, key, id, name, detail, price}})
     }
 
     /**
@@ -27,6 +27,14 @@ class TradeAPI {
      */
     async getSellPaging(param){
         return await init.get(`${this.controler}/sell/paging`, {params: param});
+    }
+
+    async deleteItemSell(param){
+        return await init.delete(`${this.controler}/sell/delete`, {params: param});
+    }
+
+    async getHomeSellPaging(param){
+        return await init.get(`${this.controler}/home/sell/paging`, {params: param});
     }
 }
 

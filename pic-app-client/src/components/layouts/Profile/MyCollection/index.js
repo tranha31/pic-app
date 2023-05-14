@@ -17,6 +17,7 @@ import auctioning from "../../../../assets/imgs/auctioning.png";
 import PopupDetail from '@/components/base/PopupDetail';
 import Sell from './Sell';
 import TradeAPI from '@/api/trade';
+import MessageBox from '@/components/base/MessageBox';
 
 
 const cx = classNames.bind(styles);
@@ -57,8 +58,15 @@ function MyCollection({callBackUpdate, searchKey, isSearchData}) {
     const [sellSelectedItem, setSellSelectedItem] = useState([]);
     const [curIndexSell, setCurIndexSell] = useState(0);
     const [currentImageSell, setCurrentImageSell] = useState("");
-
+    const [showViewItemSell, setShowViewItemSell] = useState(false);
+    const [currentItemSellShow, setCurrentItemSellShow] = useState();
+    const [showMessage, setShowMessage] = useState(false)
     const [searchValue, setSearchValue] = useState(searchKey)
+
+    const [titleMessage, setTitleMessage] = useState("")
+    const [contetnMessage, setContetnMessage] = useState("")
+
+    const [dataSell, setDataSell] = useState()
 
     useEffect(()=>{
         setSearchValue(searchKey)
@@ -66,15 +74,7 @@ function MyCollection({callBackUpdate, searchKey, isSearchData}) {
 
     useEffect(() => {
         getInitData();
-        if(tab === 1){
-            callBackUpdate(false, searchValue)
-        }
-        else if(tab === 0){
-            callBackUpdate(true, searchValue)
-        }
-        else{
-            callBackUpdate(true)
-        }
+        callBackUpdate(true, searchValue)
     }, []);
 
     useEffect(() => {
@@ -135,11 +135,15 @@ function MyCollection({callBackUpdate, searchKey, isSearchData}) {
                 setCurrentImage("")
                 setSelectedItem([...[]])
                 setListImage([...data])
+                setCurIndex(0)
+                setShowFilter(false)
             }
             else if(tab === 1){
                 setCurrentImageSell("")
                 setSellSelectedItem([...[]])
                 setListSell([...data])
+                setCurIndexSell(0)
+                setShowFilterSell(false)
             }
         }
     }
@@ -193,7 +197,14 @@ function MyCollection({callBackUpdate, searchKey, isSearchData}) {
             }
         }
         else{
-
+            var index = curIndexSell + 20;
+            setCurIndexSell(index);
+            var curData = listSell;
+            var data = await handlePagingData(index);
+            if(data !== false){
+                var merData = [...curData, ...data]
+                setListSell([...merData])
+            }
         }
     }
 
@@ -319,7 +330,7 @@ function MyCollection({callBackUpdate, searchKey, isSearchData}) {
         var sell = data.map((e, i) => {
             var contentImage = "url('" + e.image + "')";
             return {
-                "id": e.infor.imageID,
+                "id": e.infor.id,                
                 "caption" : e.infor.caption,
                 "detail" : e.infor.detail,
                 "price" : e.infor.price,
@@ -328,6 +339,7 @@ function MyCollection({callBackUpdate, searchKey, isSearchData}) {
                     hour12: false,
                   }).substring(0, 10),
                 "image" : contentImage,
+                "imageID": e.infor.imageID
             }
         });
 
@@ -368,31 +380,155 @@ function MyCollection({callBackUpdate, searchKey, isSearchData}) {
         setShowDetail(true)
     }
 
+    const handleChooseItemSell = (id) => {
+        if (sellSelectedItem.length == 0){
+            setSellSelectedItem([...[]])
+            setSellSelectedItem([id])
+        }
+        else if(sellSelectedItem[0] === id){
+            setSellSelectedItem([...[]])
+        }
+        else{
+            setSellSelectedItem([...[]])
+            setSellSelectedItem([id])
+        }
+    }
+
+    const handleShowItemSell = (id) => {
+        var sell = listSell.find((e, i) => {
+            return e.id === id;
+        })
+
+        setCurrentItemSellShow(sell)
+        setShowViewItemSell(true)
+    }
+
     const handleGoToSell = () => {
         var image = listImage.find((e, i) => {
             return e.id === selectedItem[0];
         })
         setCurrentImage(image.image)
+        setDataSell({
+            editMode: 0,
+            id: "",
+            imageID: image.id,
+            caption: "",
+            detail: "",
+            price: "",
+            imageContent: image.image
+        })
         setShowSellDetail(true);
     }
 
-    const handleCallBackSellDetail = () => {
+    const handleCallBackSellDetail = (data) => {
         setShowSellDetail(false);
+        if(tab === 0){
+            var lstImage = listImage;
+            lstImage = lstImage.map((e, i) => {
+                if(e.id == selectedItem[0]){
+                    e.status = 1;
+                }
+    
+                return e;
+            })
+            
+            setListImage([...[]])
+            setListImage([...listImage])
+            setSelectedItem([...[]])
+            setCurrentImage("");
+        }
+        else if(tab === 1){
+            var temp = listSell;
+            temp = temp.map((e, ind) => {
+                if(e.id == data.id){
+                    e.caption = data.caption;
+                    e.detail = data.detail;
+                    e.price = data.price;
+                    e.modifiedDate = new Date().toLocaleString('en-GB', {
+                        hour12: false,
+                      }).substring(0, 10);
+                }
+                return e;
+            })
+            setListSell([...temp]);
+        }
 
-        var lstImage = listImage;
-        lstImage = lstImage.map((e, i) => {
-            if(e.id == selectedItem[0]){
-                e.status = 1;
+    }
+
+    const handleDelelteItem = () => {
+        setTitleMessage("Warning")
+        setContetnMessage("Are you sure you want to delete?")
+        setBtnMessage(<Button primary onClick={() => {deleteItemSell(sellSelectedItem[0])}}>Submit</Button>)
+        setShowMessage(true)
+    }
+
+    const handleDelelteItemInForm = () => {
+        setTitleMessage("Warning")
+        setContetnMessage("Are you sure you want to delete?")
+        setBtnMessage(<Button primary onClick={() => {deleteItemSell(currentItemSellShow.id)}}>Submit</Button>)
+        setShowMessage(true)
+    }
+
+    const deleteItemSell = async (id) => {
+        setShowMessage(false)
+        setShowViewItemSell(false)
+        try{
+            setShowLoading(true);
+            var api = new TradeAPI()
+            var param = {
+                id: id
             }
+            var res = await api.deleteItemSell(param);
+            if(res.data.success){
+                var temp = listSell;
+                temp = temp.filter((e, ind) => {
+                    return e.id != id;
+                })
+                setListSell([...temp]);
+                setShowLoading(false);
+                toast.success("Delete success!")
+            }
+            else{
+                setShowLoading(false);
+                toast.error("Something wrong! Please try again!")
+            }
+        }
+        catch(err){
+            setShowLoading(false);
+            toast.error("Something wrong! Please try again!")
+        }
 
-            return e;
+    }
+
+    const handleEditItem = () => {
+        var temp = listSell;
+        temp = temp.filter((e, ind) => {
+            return e.id == sellSelectedItem[0];
         })
-        
-        setListImage([...[]])
-        setListImage([...listImage])
-        setSelectedItem([...[]])
-        setCurrentImage("");
+        setDataSell({
+            editMode: 1,
+            id: temp[0].id,
+            imageID: temp[0].imageID,
+            caption: temp[0].caption,
+            detail: temp[0].detail,
+            price: temp[0].price,
+            imageContent: temp[0].image
+        })
+        setShowSellDetail(true);
+    }
 
+    const handleEditItemInForm = () => {
+        setShowViewItemSell(false)
+        setDataSell({
+            editMode: 1,
+            id: currentItemSellShow.id,
+            imageID: currentItemSellShow.imageID,
+            caption: currentItemSellShow.caption,
+            detail: currentItemSellShow.detail,
+            price: currentItemSellShow.price,
+            imageContent: currentItemSellShow.image
+        })
+        setShowSellDetail(true);
     }
 
     const viewImage = (
@@ -407,6 +543,32 @@ function MyCollection({callBackUpdate, searchKey, isSearchData}) {
 
     )
 
+    const viewItemSell = (
+        <div className={cx('d-flex', 'flex-column', 'w-full')} style={{paddingBottom: "15px"}}>
+            <div className={cx('d-flex', 'w-full', 'flex-1')} style={{paddingBottom: "10px"}}>
+                <div className={cx('image-show', 'mr-16')} style={{backgroundImage: currentItemSellShow?.image, border: "1px solid #fff200"}}></div>
+                <div className={cx('d-flex', 'flex-column', 'w-full')}>
+                    <div className={cx('font-size-18', 'font-bold')} style={{color: "#0e1d38", paddingBottom: "10px"}}>{currentItemSellShow?.caption}</div>
+                    <div style={{paddingBottom: "10px"}}>{currentItemSellShow?.modifiedDate}</div>
+                    <div>Price: {currentItemSellShow?.price} ETH</div>
+                    <div style={{paddingBottom: "10px"}}>Author: 0x{currentItemSellShow?.user}</div>
+                    <div>{currentItemSellShow?.detail}</div>
+                </div>
+            </div>
+            <div className={cx('d-flex', 'w-full')}>
+                <div className={cx('flex-1')}></div>
+                <Button normal onClick={() => {setShowViewItemSell(false)}}>Close</Button>
+                <Button normal onClick={() => {handleDelelteItemInForm()}}>Delete</Button>
+                <Button primary onClick={() => {handleEditItemInForm()}}>Edit</Button>
+            </div>
+        </div>
+        
+    )
+
+    const [btnMessage, setBtnMessage] = useState(
+        <Button primary>Submit</Button>
+    )
+
     return ( 
         <div className={cx('collection-wrapper', 'd-flex', 'flex-column', 'flex-1')}>
             <div className={cx('tab-wrapper', 'd-flex', 'w-full')}>
@@ -415,6 +577,20 @@ function MyCollection({callBackUpdate, searchKey, isSearchData}) {
                 <div className={cx('tab-item', tab == 2 ? 'active' : "")} onClick={() => {goToTab(2)}}>My Auction room</div>
                 <div className={cx('tab-item', tab == 3 ? 'active' : "")} onClick={() => {goToTab(3)}}>Participating Auction room</div>
                 <div className={cx('flex-1')}></div>
+                {tab === 0 && (
+                    <div className={cx('d-flex', 'align-center', 'mr-8')}>From: {new Date(startDate).toLocaleString('en-GB', {
+                        hour12: false,
+                      }).substring(0, 10)} - To: {new Date(endDate).toLocaleString('en-GB', {
+                        hour12: false,
+                      }).substring(0, 10)}</div>
+                )}
+                {tab === 1 && (
+                    <div className={cx('d-flex', 'align-center', 'mr-8')}>From: {new Date(startDateSell).toLocaleString('en-GB', {
+                        hour12: false,
+                      }).substring(0, 10)} - To: {new Date(endDateSell).toLocaleString('en-GB', {
+                        hour12: false,
+                      }).substring(0, 10)}</div>
+                )}
                 <div className={cx('refresh')} onClick={() => {handleRefresh()}}></div>
                 {tab == 0 && (
                     <Tippy
@@ -580,8 +756,8 @@ function MyCollection({callBackUpdate, searchKey, isSearchData}) {
                                     listSell.map((e, index) => {
                                         return (
                                             <div key={index} className={cx('content-picture','d-flex', 'flex-column', sellSelectedItem.indexOf(e.id) > -1 ? 'active' : '')}
-                                                onClick={() => {handleChooseImage(e.id)}}
-                                                onDoubleClick={() => {handleShowImage(e.id)}}
+                                                onClick={() => {handleChooseItemSell(e.id)}}
+                                                onDoubleClick={() => {handleShowItemSell(e.id)}}
                                                 data-id={e.id}
 
                                             >
@@ -605,12 +781,13 @@ function MyCollection({callBackUpdate, searchKey, isSearchData}) {
                             }
                         </div>
 
-                        <div className={cx('sell-content-footer', 'd-flex', 'w-full')}>
-                            <div className={cx('flex-1')}></div>
-                            <Button normal>See more</Button>
-                            <Button normal disabled>Delete</Button>
-                            <Button normal disabled>Edit</Button>
+                        <div className={cx('sell-content-footer', 'd-flex', 'w-full', 'align-center')}>
+                            <div className={cx('flex-1', 'font-bold', 'underline', 'font-italic', 'pl-10')}>Click duplex on item to see detail</div>
+                            <Button normal onClick={() => loadMoreData()}>See more</Button>
+                            <Button normal disabled={sellSelectedItem.length > 0 ? false : true} onClick={() => handleDelelteItem()}>Delete</Button>
+                            <Button primary disabled={sellSelectedItem.length > 0 ? false : true} onClick={() => handleEditItem()}>Edit</Button>
                         </div>
+                        {showViewItemSell && <PopupDetail title={"Item detail"} scale={{height: "85%", width: "65%"}} child={viewItemSell} eventCallBack={() =>setShowViewItemSell(false)}/>} 
                     </Fragment>
                 )}
 
@@ -623,8 +800,9 @@ function MyCollection({callBackUpdate, searchKey, isSearchData}) {
                 )}
                 
             </div> 
-            {showDetail && <PopupDetail title={"Image"} scale={{height: "85%", width: "65%"}} child={viewImage} eventCallBack={() =>setShowDetail(false)}/>} 
-            {showSellDetail && <Sell eventCallBackSell={handleCallBackSellDetail} imageContent={currentImage} imageID={selectedItem[0]}/>}
+            {showDetail && <PopupDetail title={"Image"} scale={{height: "85%", width: "65%"}} child={viewImage} eventCallBack={() =>setShowDetail(false)}/>}
+            {showMessage && <MessageBox type={"warning"} title={titleMessage} message={contetnMessage} child={btnMessage} scale={{height: "200px", width: "450px"}} eventCallBack={() => {setShowMessage(false)}}/>} 
+            {showSellDetail && <Sell eventCallBackSell={handleCallBackSellDetail} oData={dataSell}/>}
             {showLoading && <Loading/>}       
             <ToastContainer/>
         </div>

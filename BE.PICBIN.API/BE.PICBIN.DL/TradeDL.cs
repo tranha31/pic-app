@@ -19,6 +19,8 @@ namespace BE.PICBIN.DL
             SetMongoDB(MongoDBName);
         }
 
+        #region Sell
+
         public void AddNewSellImage(int mode, string itemID, string key, string id, string name, string detail, decimal price)
         {
             DynamicParameters parameters = new DynamicParameters();
@@ -36,7 +38,7 @@ namespace BE.PICBIN.DL
             ExcuteProcMySQL(procName, parameters, ref listOutPut);
         }
 
-        public List<MarketItem> GetListSellPaging(string key, string searchKey, int start, int length, DateTime fromDate, DateTime toDate, int mode)
+        public List<MarketItem> GetListSellPaging(string key, string searchKey, int start, int length, int mode, DateTime? fromDate = null, DateTime? toDate = null, int? typeOrder = 0)
         {
             List<MarketItem> lstResult;
 
@@ -56,7 +58,7 @@ namespace BE.PICBIN.DL
                 for (var i = 0; i < lstSearch.Count; i++)
                 {
                     parameters.Add($"@Search{i}", "%" + lstSearch[i] + "%");
-                    where += $" m.Caption LIKE @Search{i} OR ";
+                    where += $" LOWER(m.Caption) LIKE LOWER(@Search{i}) OR ";
 
                     if (i == lstSearch.Count - 1)
                     {
@@ -71,12 +73,23 @@ namespace BE.PICBIN.DL
             string sql;
             if(mode == 0)
             {
-                sql = $"SELECT * FROM marketitem m WHERE m.UserPublicKey = @PublicKey AND (m.CreatedDate BETWEEN @FromDate AND @ToDate) {where} ORDER BY m.ModifiedDate LIMIT @Start, @Length;";
+                sql = $"SELECT * FROM marketitem m WHERE m.UserPublicKey = @PublicKey AND (m.CreatedDate BETWEEN @FromDate AND @ToDate) {where} ORDER BY m.ModifiedDate DESC LIMIT @Start, @Length;";
 
             }
             else
             {
-                sql = $"SELECT * FROM marketitem m WHERE m.UserPublicKey <> @PublicKey AND (m.CreatedDate BETWEEN @FromDate AND @ToDate) {where} ORDER BY m.ModifiedDate LIMIT @Start, @Length;";
+                string orderBy = "m.ModifiedDate DESC";
+                if(typeOrder == 1)
+                {
+                    orderBy = "m.Price DESC";
+                }
+
+                if (!string.IsNullOrEmpty(where))
+                {
+                    where = " WHERE " + where.Substring(4);
+                }
+                sql = $"SELECT * FROM marketitem m {where} ORDER BY {orderBy} LIMIT @Start, @Length;";
+
             }
 
             var result = QueryCommandMySQL<MarketItem>(sql, parameters, ref listOutPut);
@@ -122,5 +135,114 @@ namespace BE.PICBIN.DL
 
             return null;
         }
+
+        #endregion
+
+        #region Auction
+
+        public void UpdateAuctionRoom(int mode, string itemID, string key, string imageID, DateTime fromDate, DateTime toDate, decimal startPrice)
+        {
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add("Mode", mode);
+            parameters.Add("ImageID", imageID);
+            parameters.Add("Key", key);
+            parameters.Add("FromDate", fromDate);
+            parameters.Add("ToDate", toDate);
+            parameters.Add("Price", startPrice);
+            parameters.Add("ItemID", itemID);
+
+            var procName = "Proc_AuctionRoom_Update";
+            List<string> listOutPut = null;
+
+            ExcuteProcMySQL(procName, parameters, ref listOutPut);
+        }
+
+        public List<AuctionRoomDetail> GetAuctionRoomDetail(string itemID)
+        {
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add($"@ID", itemID);
+
+            var sql = "SELECT * FROM auctiondetail a WHERE a.AuctionRoomID = @ID";
+
+            List<string> listOutPut = null;
+
+            var data = QueryCommandMySQL<AuctionRoomDetail>(sql, parameters, ref listOutPut);
+            if (data != null)
+            {
+                var lstResult = new List<AuctionRoomDetail>(data);
+                return lstResult;
+            }
+
+            return null;
+        }
+
+        public List<AuctionRoom> GetListAuctionRoomPaging(string key, int start, int length, DateTime fromDate, DateTime toDate, int mode)
+        {
+            List<AuctionRoom> lstResult;
+
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add($"@Start", start);
+            parameters.Add($"@Length", length);
+            parameters.Add($"@PublicKey", key);
+            parameters.Add($"@FromDate", fromDate);
+            parameters.Add($"@ToDate", toDate);
+
+            List<string> listOutPut = null;
+
+            string sql;
+            if (mode == 0)
+            {
+                sql = $"SELECT * FROM auctionroom m WHERE m.OwnerPublicKey = @PublicKey AND ((m.StartTime BETWEEN @FromDate AND @ToDate) OR (m.EndTime BETWEEN @FromDate AND @ToDate)) ORDER BY m.StartTime LIMIT @Start, @Length;";
+            }
+            else
+            {
+                sql = $"SELECT * FROM auctionroom m WHERE ((m.StartTime BETWEEN @FromDate AND @ToDate) OR (m.EndTime BETWEEN @FromDate AND @ToDate)) ORDER BY m.StartTime LIMIT @Start, @Length;";
+            }
+
+            var result = QueryCommandMySQL<AuctionRoom>(sql, parameters, ref listOutPut);
+            if (result != null)
+            {
+                lstResult = new List<AuctionRoom>(result);
+                return lstResult;
+            }
+
+            return null;
+        }
+
+        public AuctionRoom GetAuctionRoomByID(string id)
+        {
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add($"@ItemID", id);
+
+            var sql = "SELECT * FROM auctionroom a WHERE a.ID = @ItemID";
+
+            List<string> listOutPut = null;
+
+            var data = QueryCommandMySQL<AuctionRoom>(sql, parameters, ref listOutPut);
+            if (data != null)
+            {
+                var lstResult = new List<AuctionRoom>(data);
+                if(lstResult.Count > 0)
+                {
+                    return lstResult[0];
+                }
+            }
+
+            return null;
+        }
+
+        public bool HandleDeleteAuctionRoom(string id)
+        {
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add($"@ItemID", id);
+
+
+            List<string> listOutPut = null;
+
+            var result = ExcuteProcMySQL("Proc_AuctionRoom_Delete", parameters, ref listOutPut);
+            return result;
+        }
+
+        #endregion
     }
 }

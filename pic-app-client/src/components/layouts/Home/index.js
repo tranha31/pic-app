@@ -36,7 +36,7 @@ function Home({callBackUpdate, searchKey, isSearchData}) {
                     })
                 }
             </div>
-            {isDefault ? <Market/> : <Auction/>}
+            {isDefault ? <Market callBackUpdate={callBackUpdate} searchKey={searchKey} isSearchData={isSearchData}/> : <Auction/>}
         </div>
     );
 }
