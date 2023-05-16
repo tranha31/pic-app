@@ -14,5 +14,6 @@ namespace BE.PICBIN.DL.Entities
         public decimal HighestPrice { get; set; }
         public string HighestBetID { get; set; }
         public decimal StartPrice { get; set; }
+        public int Status { get; set; }
     }
 }

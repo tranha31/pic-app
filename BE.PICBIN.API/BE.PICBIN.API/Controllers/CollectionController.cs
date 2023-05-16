@@ -195,5 +195,29 @@ namespace BE.PICBIN.API.Controllers
 
             return Ok(result);
         }
+
+        /// <summary>
+        /// Lấy danh sách ảnh của user
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("collection/all/paging")]
+        public async Task<IActionResult> GetListImageUserAllPaging(string key, int start, int length, int status)
+        {
+            ServiceResult result = new ServiceResult();
+            try
+            {
+                CollectionBL oBL = new CollectionBL(_config);
+                result = await oBL.GetListImageUserAllPaging(key, start, length, status);
+
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                NLogBL nLog = new NLogBL(_config);
+                nLog.InsertLog(ex.Message, ex.StackTrace);
+            }
+
+            return Ok(result);
+        }
     }
 }

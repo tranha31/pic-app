@@ -10,13 +10,13 @@
         flex-wrap: wrap;
 
         .content-picture{
-            width: 300px;
-            height: 550px;
+            width: 250px;
+            height: 365px;
             margin-right: 20px;
             margin-bottom: 20px;
 
             .image{
-                height: 400px;
+                height: 245px;
                 width: 100%;
                 padding: 20px;
                 background-repeat: no-repeat;
@@ -26,7 +26,7 @@
 
             .info{
                 width: 100%;
-                height: calc(100% - 400px);
+                height: calc(100% - 245px);
                 padding: 20px;
                 background-color: #0e1d38;
                 color: #fff;

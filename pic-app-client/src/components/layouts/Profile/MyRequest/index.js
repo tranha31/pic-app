@@ -579,6 +579,7 @@ function MyRequest() {
                                                 dateFormat="dd/MM/yyyy" 
                                                 selected={startDate} 
                                                 onChange={(date) => setStartDate(date)} 
+                                                onBlur={() => {if(!startDate){setStartDate(new Date())}}}
                                             />
                                         </div>
 
@@ -589,6 +590,7 @@ function MyRequest() {
                                                 dateFormat="dd/MM/yyyy" 
                                                 selected={endDate} 
                                                 onChange={(date) => setEndDate(date)} 
+                                                onBlur={() => {if(!endDate){setEndDate(new Date())}}}
                                             />
                                         </div>
                                     </div>
@@ -637,6 +639,7 @@ function MyRequest() {
                                                 dateFormat="dd/MM/yyyy" 
                                                 selected={startDateAppeal} 
                                                 onChange={(date) => setStartDateAppeal(date)} 
+                                                onBlur={() => {if(!startDateAppeal){setStartDateAppeal(new Date())}}}
                                             />
                                         </div>
 
@@ -647,6 +650,7 @@ function MyRequest() {
                                                 dateFormat="dd/MM/yyyy" 
                                                 selected={endDateAppeal} 
                                                 onChange={(date) => setEndDateAppeal(date)} 
+                                                onBlur={() => {if(!endDateAppeal){setEndDateAppeal(new Date())}}}
                                             />
                                         </div>
                                     </div>

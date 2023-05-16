@@ -199,5 +199,30 @@ namespace BE.PICBIN.DL
 
             ExcuteProcMySQL(procName, parameters, ref listOutPut);
         }
+
+        public List<CopyrightImage> GetListImageUserAllPaging(string key, int start, int length, int status)
+        {
+            List<CopyrightImage> lstResult;
+
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add($"@Start", start);
+            parameters.Add($"@Length", length);
+            parameters.Add($"@Key", key);
+            parameters.Add($"@Status", status);
+
+            var sql = "SELECT * FROM copyrightimage c WHERE c.Status = @Status AND c.UserPublicKey = @Key ORDER BY c.CreatedDate DESC LIMIT @Start, @Length";
+
+            List<string> listOutPut = null;
+            
+
+            var result = QueryCommandMySQL<CopyrightImage>(sql, parameters, ref listOutPut);
+            if (result != null)
+            {
+                lstResult = new List<CopyrightImage>(result);
+                return lstResult;
+            }
+
+            return null;
+        }
     }
 }

@@ -29,6 +29,7 @@ function ParticipatingRoom() {
                             dateFormat="dd/MM/yyyy" 
                             selected={startDate} 
                             onChange={(date) => setStartDate(date)} 
+                            onBlur={() => {if(!startDate){setStartDate(new Date())}}}
                         />
                     </div>
 
@@ -39,6 +40,7 @@ function ParticipatingRoom() {
                             dateFormat="dd/MM/yyyy" 
                             selected={endDate} 
                             onChange={(date) => setEndDate(date)} 
+                            onBlur={() => {if(!endDate){setEndDate(new Date())}}}
                         />
                     </div>
                     <Button primary className={cx('fit-content')}>Filter</Button>

@@ -1,77 +1,374 @@
 import Button from '@/components/base/Button';
 import styles from './MyAuction.module.scss';
 import classNames from 'classnames/bind';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import DatePicker from "react-datepicker";
 import AddNewAutionDetail from './AddNewAuctionDetail';
+import TradeAPI from '@/api/trade';
+import Metamask from '@/api/metamask';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Loading from '@/components/base/Loading';
+import MessageBox from '@/components/base/MessageBox';
+import AuctionDetail from '@/components/layouts/Home/Auction/AuctionDetail';
 
 const cx = classNames.bind(styles);
 
-function MyAuction() {
+function MyAuction({isReload, updateReload, callBackEvent}) {
 
-    const [startDate, setStartDate] = useState(new Date())
-    const [endDate, setEndDate] = useState(new Date())
+    var curDate = new Date();
+    
+    const [startDate, setStartDate] = useState(new Date(curDate.setDate(curDate.getDate() - 30)));
+    const [endDate, setEndDate] = useState(new Date(curDate.setDate(curDate.getDate() + 60)));
 
     const [showDetail, setShowDetail] = useState(false);
+
+    const [listAuction, setListAuction] = useState([]);
+    const [showLoading, setShowLoading] = useState(false);
+    const [curIndex, setCurIndex] = useState(0);
+    const [selectedItem, setSelectedItem] = useState(null)
+
+    const [showMessage, setShowMessage] = useState(false)
+    const [typeMessage, setTypeMessage] = useState("warning")
+    const [titleMessage, setTitleMessage] = useState("")
+    const [contetnMessage, setContetnMessage] = useState("")
+    const [btnMessage, setBtnMessage] = useState(
+        <Button primary>Submit</Button>
+    )
+
+    const [oDataDetail, setODataDetail] = useState(null)
+
+    const [showAuctionDetail, setShowAuctionDetail] = useState(false)
+
+    useEffect(()=>{
+        getInitData()
+    }, [])
+
+    useEffect(() => {
+        if(isReload){
+            filterData()
+            updateReload();
+        }
+    }, [isReload])
+
+    const getInitData = async () => {
+        var data = await handlePagingData(0);
+        if(data !== false){
+            setListAuction([...data])
+        }
+    }
+
+    const filterData = async () => {
+        var data = await handlePagingData(0);
+        if(data !== false){
+            setListAuction([...data])
+            setSelectedItem(null)
+        }
+    }
+
+    const loadMoreData = async () => {
+        var index = curIndex + 20;
+        setCurIndex(index);
+        var curData = listAuction;
+        var data = await handlePagingData(index);
+        if(data !== false){
+            var merData = [...curData, ...data]
+            setListAuction([...merData])
+        }
+    }
+
+    const handlePagingData = async (index) => {
+        const metamask = new Metamask();
+        var check = await metamask.checkConnect();
+        if(!check){
+            toast.warning("Install metamask extension!");
+            return;
+        }
+
+        try{
+            var address = await metamask.getAddress();
+            address = address[0];
+            address = address.substring(2);
+            return handleGetAuction(index, address);
+
+        }
+        catch(err){
+            toast.warning("Metamask connection required!");
+            return false;
+        }
+        
+    }
+
+    const handleGetAuction = async (index, address) => {
+        try{
+            setShowLoading(true);
+            const api = new TradeAPI();
+            var fromDate = new Date(startDate)
+            var toDate = new Date(endDate)
+            var param = {
+                key: address,
+                start : index,
+                length : 20,
+                fromDate: new Date(fromDate.setHours(0,0,0,0)),
+                toDate: new Date(toDate.setHours(23,59,59,1000)),
+            }
+            
+            var res = await api.getAuctionRoomPaging(param);
+            if(res.data.success){
+                var data = res.data.data;
+                var auctionRooms = [];
+                if(data){
+                    auctionRooms = convertDataAuction(data);
+                    
+                }
+                setShowLoading(false);
+                return auctionRooms;
+            }
+            else{
+                setShowLoading(false);
+                toast.error("Something wrong! Please try again!")
+                return false;
+            }
+        }
+        catch(err){
+            toast.error("Something wrong! Please try again!")
+            return false;
+        }
+    }
+    
+    const convertDataAuction = (data) => {
+        var auction = data.map((e, i) => {
+            var contentImage = "url('" + e.image + "')";
+            var startTime = new Date(e.infor.startTime).toLocaleString('en-GB', {
+                hour12: false,
+            });
+            var endTime = new Date(e.infor.endTime).toLocaleString('en-GB', {
+                hour12: false,
+            });
+            return {
+                "id": e.infor.id,                
+                "imageID" : e.infor.imageID,
+                "highestBetID" : e.infor.highestBetID,
+                "highestPrice" : e.infor.highestPrice,
+                "user" : e.infor.ownerPublicKey,
+                "startTime": startTime.substring(0, 10) + startTime.substring(11),
+                "endTime": endTime.substring(0, 10) + endTime.substring(11),
+                "image" : contentImage,
+                "startPrice": e.infor.startPrice,
+                "status": e.infor.status,
+                "startTimeCheck": e.infor.startTime
+            }
+        });
+
+        return auction;
+    }
+
+    const handleChooseAuctionRoom = (id) => {
+        if(!selectedItem){
+            var item = listAuction.filter((e, i) => {
+                return e.id === id
+            })
+    
+            setSelectedItem(item[0])
+        }
+        else if(selectedItem.id === id){
+            setSelectedItem(null)
+        }
+        else{
+            var item = listAuction.filter((e, i) => {
+                return e.id === id
+            })
+    
+            setSelectedItem(item[0])
+        }
+        
+    }
+
+    const handleDeleteAuctionRoom = async () => {
+        var now = new Date()
+        if(now >= new Date(selectedItem.startTimeCheck)){
+            setTypeMessage("error")
+            setTitleMessage("Can't delete")
+            setContetnMessage("Auction has begun. You can't delete auction!")
+            setBtnMessage(null)
+            setShowMessage(true)
+
+            return;
+        }
+
+        try{
+            var api = new TradeAPI()
+            var param = {
+                id: selectedItem.id
+            }
+
+            var res = await api.deleteAuctionRoom(param)
+            if(res.data.success){
+                var temp = listAuction;
+                temp = temp.filter((e, ind) => {
+                    return e.id != selectedItem.id;
+                })
+                setListAuction([...temp]);
+                setShowLoading(false);
+                setSelectedItem(null)
+                toast.success("Delete success!")
+                callBackEvent();
+            }
+            else{
+                setShowLoading(false);
+                toast.error("Something wrong! Please try again!")
+            }
+        }
+        catch(err){
+            setShowLoading(false);
+            toast.error("Something wrong! Please try again!")
+        }
+    }
+
+    const handleAddNew = () =>{
+        var now = new Date()
+        var start = new Date(now.setDate(now.getDate() + 2))
+        var end = new Date(now.setDate(now.getDate() + 5))
+        var data = {
+            editMode: 0,
+            id: null,
+            startDate: start,
+            endDate: end,
+            startPrice: 0,
+            currentImage: null
+        }
+
+        setODataDetail(data)
+        setShowDetail(true)
+    }
+
+    const handleEdit = () => {
+        var now = new Date()
+        if(now >= new Date(selectedItem.startTimeCheck)){
+            setTypeMessage("error")
+            setTitleMessage("Can't edit")
+            setContetnMessage("Auction has begun. You can't edit auction!")
+            setBtnMessage(null)
+            setShowMessage(true)
+
+            return;
+        }
+
+        var start = selectedItem.startTime;
+        var startTimeString = start.substring(3, 5) + "/" + start.substring(0, 2) + "/" + start.substring(6)
+        var end = selectedItem.endTime;
+        var endTimeString = end.substring(3, 5) + "/" + end.substring(0, 2) + "/" + end.substring(6)
+
+        var data = {
+            editMode: 1,
+            id: selectedItem.id,
+            startDate: new Date(startTimeString),
+            endDate: new Date(endTimeString),
+            startPrice: selectedItem.startPrice,
+            currentImage: {
+                imageID: selectedItem.imageID,
+                image: selectedItem.image
+            }
+        }
+        setODataDetail(data)
+        setShowDetail(true)
+    }
+
+    const handleCallBackDetail = (status) => {
+        if(status === 0){
+            setShowDetail(false)
+        }
+        else if(status === 1){
+            setShowDetail(false)
+            filterData()
+            callBackEvent()
+        }
+    }
+
+    const handleViewAuctionRoom = () => {
+        setShowAuctionDetail(true)
+    }
 
     return ( 
         <div className={cx('auction-wrapper', 'd-flex', 'flex-column')}>
             <div className={cx('auction-header', 'd-flex', 'w-full', 'flex-column')}>
                 <div className={cx('filter', 'd-flex', 'w-full')}>
                     <div className={cx('date-picker-wrapper', 'mr-8')}>
-                        <p className={cx('title-date-picker', 'font-bold')}>Start date</p>
+                        <p className={cx('title-date-picker', 'font-bold')}>Start time</p>
                         <DatePicker 
                             className={cx('date-picker')} 
-                            dateFormat="dd/MM/yyyy" 
+                            dateFormat="dd/MM/yyyy HH:mm" 
                             selected={startDate} 
+                            showTimeInput
+                            timeInputLabel="Time:"
                             onChange={(date) => setStartDate(date)} 
+                            onBlur={() => {if(!startDate){setStartDate(new Date())}}}
                         />
                     </div>
 
                     <div className={cx('date-picker-wrapper', 'mr-8')}>
-                        <p className={cx('title-date-picker', 'font-bold')}>End date</p>
+                        <p className={cx('title-date-picker', 'font-bold')}>End time</p>
                         <DatePicker 
                             className={cx('date-picker')} 
-                            dateFormat="dd/MM/yyyy" 
+                            dateFormat="dd/MM/yyyy HH:mm" 
                             selected={endDate} 
+                            showTimeInput
+                            timeInputLabel="Time:"
                             onChange={(date) => setEndDate(date)} 
+                            onBlur={() => {if(!endDate){setEndDate(new Date())}}}
                         />
                     </div>
-                    <Button primary className={cx('fit-content')}>Filter</Button>
+                    <Button primary className={cx('fit-content')} onClick={() => {filterData()}}>Filter</Button>
                     <div className={cx('flex-1')}></div>
-                    <Button normal disabled>Delete</Button>
-                    <Button normal disabled>Edit</Button>
-                    <Button primary onClick={() => {setShowDetail(true)}}>Add new</Button>
+                    {selectedItem && <Button normal onClick={() => {handleDeleteAuctionRoom()}}>Delete</Button>}
+                    {selectedItem && <Button normal onClick={() => {handleViewAuctionRoom()}}>View</Button>}
+                    {selectedItem && <Button normal onClick={() => handleEdit()}>Edit</Button>}
+                    <Button primary onClick={() => {handleAddNew()}}>Add new</Button>
                 </div>
                 
             </div>
             <div className={cx('auction-content', 'w-full', 'd-flex')}>
-                <div className={cx('content-auction', 'd-flex', 'flex-column', 'active')}>
-                    <div className={cx('image')}></div>
-                    <div className={cx('info', 'd-flex', 'flex-column')}>
-                        <div className={cx('highest-price')}>Highest price: 10 eth</div>
-                        <div className={cx('')}>Start time: 02/04/2023 00:00:00</div>
-                        <div className={cx('')}>End time: 04/04/2023 23:59:59</div>
-                        
-                    </div>
-                </div>
-                <div className={cx('content-auction', 'd-flex', 'flex-column')}>
-                    <div className={cx('image')}></div>
-                    <div className={cx('info', 'd-flex', 'flex-column')}>
-                        <div className={cx('highest-price')}>Highest price: 10 eth</div>
-                        <div className={cx('')}>Start time: 02/04/2023 00:00:00</div>
-                        <div className={cx('')}>End time: 04/04/2023 23:59:59</div>
-                        
-                    </div>
-                </div>
+                {
+                    listAuction.length > 0 ? 
+                    (
+                        listAuction.map((e, index) => {
+                            return (
+                                <div key={index} className={cx('content-auction','d-flex', 'flex-column', selectedItem?.id === e.id ? 'active' : '')}
+                                    onClick={() => {handleChooseAuctionRoom(e.id)}}
+                                    data-id={e.id}
+
+                                >
+                                    <div className={cx('image')} style={{backgroundImage: e.image}}></div>
+                                    <div className={cx('info', 'd-flex', 'flex-column')} style={{overflow: 'auto'}}>
+                                        <div className={cx('highest-price')}>Highest price: {e.highestPrice} ETH</div>
+                                        <div className={cx('')}>Start price: {e.startPrice} ETH</div>
+                                        <div className={cx('')}>Start time: {e.startTime}</div>
+                                        <div className={cx('')}>End time: {e.endTime}</div>
+                                    </div>
+                                </div>
+                            )
+                        })
+                    ) 
+                    : 
+                    (
+                        <div className={cx('empty-data', 'd-flex', 'flex-1', 'flex-column', 'align-center', 'justify-center')}>
+                            <div className={cx('i-empty')}></div>
+                            <div className={cx('font-bold', 'font-size-18')}>No data</div>
+                        </div>
+                    )
+                }
                 
             </div>
 
             <div className={cx('see-more', 'd-flex', 'flex-1', 'justify-center')}>
-                <Button className={cx('see-more-btn')} primary>See more</Button>
+                <Button className={cx('see-more-btn')} primary onClick={() => {loadMoreData()}}>See more</Button>
             </div>
 
-            {showDetail && <AddNewAutionDetail callBackEvent={(state) => {setShowDetail(state)}}/>}
+            {showDetail && <AddNewAutionDetail callBackEvent={(state) => {handleCallBackDetail(state)}} oData={oDataDetail}/>}
+            {showAuctionDetail && <AuctionDetail eventCallBack={()=>{setShowAuctionDetail(false)}}/>}
+            {showMessage && <MessageBox type={typeMessage} title={titleMessage} message={contetnMessage} child={btnMessage} scale={{height: "200px", width: "450px"}} eventCallBack={() => {setShowMessage(false)}}/>} 
+            <ToastContainer/>
+            {showLoading && <Loading/>}
         </div>
     );
 }

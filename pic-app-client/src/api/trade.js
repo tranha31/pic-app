@@ -36,6 +36,22 @@ class TradeAPI {
     async getHomeSellPaging(param){
         return await init.get(`${this.controler}/home/sell/paging`, {params: param});
     }
+
+    async getAuctionRoomPaging(param){
+        return await init.get(`${this.controler}/auction/room`, {params: param});
+    }
+
+    async deleteAuctionRoom(param){
+        return await init.delete(`${this.controler}/auction/room`, {params: param});
+    }
+
+    async updateAuctionRoom(mode, key, id, imageID, fromDate, toDate, startPrice){
+        return await init.post(`${this.controler}/auction/room`, null, {params: {mode, key, id, imageID, fromDate, toDate, startPrice}})
+    }
+
+    async getAuctionRoomHomePaging(param){
+        return await init.get(`${this.controler}/auction/room/home`, {params: param});
+    }
 }
 
 export default TradeAPI

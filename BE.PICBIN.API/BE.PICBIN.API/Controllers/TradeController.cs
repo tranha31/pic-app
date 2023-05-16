@@ -248,13 +248,13 @@ namespace BE.PICBIN.API.Controllers
         /// <param name="toDate"></param>
         /// <returns></returns>
         [HttpGet("auction/room/home")]
-        public async Task<IActionResult> GetListAuctionRoomForHomePaging(int start, int length, DateTime fromDate, DateTime toDate)
+        public async Task<IActionResult> GetListAuctionRoomForHomePaging(int start, int length, DateTime fromDate, DateTime toDate, int status)
         {
             ServiceResult result = new ServiceResult();
             try
             {
                 TradeBL oBL = new TradeBL(_config);
-                result = await oBL.GetListAuctionRoomForHomePaging(start, length, fromDate, toDate);
+                result = await oBL.GetListAuctionRoomForHomePaging(start, length, fromDate, toDate, status);
 
             }
             catch (Exception ex)

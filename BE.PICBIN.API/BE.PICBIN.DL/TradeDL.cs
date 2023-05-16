@@ -176,7 +176,7 @@ namespace BE.PICBIN.DL
             return null;
         }
 
-        public List<AuctionRoom> GetListAuctionRoomPaging(string key, int start, int length, DateTime fromDate, DateTime toDate, int mode)
+        public List<AuctionRoom> GetListAuctionRoomPaging(string key, int start, int length, DateTime fromDate, DateTime toDate, int mode, int? status = -1)
         {
             List<AuctionRoom> lstResult;
 
@@ -196,7 +196,13 @@ namespace BE.PICBIN.DL
             }
             else
             {
-                sql = $"SELECT * FROM auctionroom m WHERE ((m.StartTime BETWEEN @FromDate AND @ToDate) OR (m.EndTime BETWEEN @FromDate AND @ToDate)) ORDER BY m.StartTime LIMIT @Start, @Length;";
+                var otherWhere = string.Empty;
+                if(status != -1)
+                {
+                    parameters.Add($"@Status", status);
+                    otherWhere = " AND m.Status = @Status ";
+                }
+                sql = $"SELECT * FROM auctionroom m WHERE ((m.StartTime BETWEEN @FromDate AND @ToDate) OR (m.EndTime BETWEEN @FromDate AND @ToDate)) {otherWhere} ORDER BY m.StartTime LIMIT @Start, @Length;";
             }
 
             var result = QueryCommandMySQL<AuctionRoom>(sql, parameters, ref listOutPut);

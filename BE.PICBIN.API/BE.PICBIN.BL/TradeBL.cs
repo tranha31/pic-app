@@ -366,10 +366,10 @@ namespace BE.PICBIN.BL
             return serviceResult;
         }
 
-        public async Task<ServiceResult> GetListAuctionRoomForHomePaging(int start, int length, DateTime fromDate, DateTime toDate)
+        public async Task<ServiceResult> GetListAuctionRoomForHomePaging(int start, int length, DateTime fromDate, DateTime toDate, int status)
         {
             TradeDL dL = new TradeDL(Configuration);
-            var data = dL.GetListAuctionRoomPaging(null, start, length, fromDate, toDate, 1);
+            var data = dL.GetListAuctionRoomPaging(null, start, length, fromDate, toDate, 1, status);
 
             ServiceResult serviceResult = await HandleGetImageAuctionContent(data);
             return serviceResult;

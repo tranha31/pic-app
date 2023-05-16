@@ -18,6 +18,7 @@ import PopupDetail from '@/components/base/PopupDetail';
 import Sell from './Sell';
 import TradeAPI from '@/api/trade';
 import MessageBox from '@/components/base/MessageBox';
+import AddNewAutionDetail from './MyAuction/AddNewAuctionDetail';
 
 
 const cx = classNames.bind(styles);
@@ -67,6 +68,11 @@ function MyCollection({callBackUpdate, searchKey, isSearchData}) {
     const [contetnMessage, setContetnMessage] = useState("")
 
     const [dataSell, setDataSell] = useState()
+
+    const [reloadAuction, setReloadAuction] = useState(false)
+
+    const [showAuctionDetail, setShowAuctionDetail] = useState(false);
+    const [oDataAuctionDetail, setODataAuctionDetail] = useState(null);
 
     useEffect(()=>{
         setSearchValue(searchKey)
@@ -129,22 +135,27 @@ function MyCollection({callBackUpdate, searchKey, isSearchData}) {
     }
 
     const handleRefresh = async () => {
-        var data = await handlePagingData(0);
-        if(data !== false){
-            if(tab === 0){
-                setCurrentImage("")
-                setSelectedItem([...[]])
-                setListImage([...data])
-                setCurIndex(0)
-                setShowFilter(false)
+        if(tab === 0 || tab === 1){
+            var data = await handlePagingData(0);
+            if(data !== false){
+                if(tab === 0){
+                    setCurrentImage("")
+                    setSelectedItem([...[]])
+                    setListImage([...data])
+                    setCurIndex(0)
+                    setShowFilter(false)
+                }
+                else if(tab === 1){
+                    setCurrentImageSell("")
+                    setSellSelectedItem([...[]])
+                    setListSell([...data])
+                    setCurIndexSell(0)
+                    setShowFilterSell(false)
+                }
             }
-            else if(tab === 1){
-                setCurrentImageSell("")
-                setSellSelectedItem([...[]])
-                setListSell([...data])
-                setCurIndexSell(0)
-                setShowFilterSell(false)
-            }
+        }
+        else if(tab === 2){
+            setReloadAuction(true)
         }
     }
 
@@ -407,6 +418,10 @@ function MyCollection({callBackUpdate, searchKey, isSearchData}) {
         var image = listImage.find((e, i) => {
             return e.id === selectedItem[0];
         })
+        if(image.status !== 0){
+            toast.warning("Image can't sell!")
+            return;
+        }
         setCurrentImage(image.image)
         setDataSell({
             editMode: 0,
@@ -418,6 +433,44 @@ function MyCollection({callBackUpdate, searchKey, isSearchData}) {
             imageContent: image.image
         })
         setShowSellDetail(true);
+    }
+
+    const handleGoToCreateAuction = () => {
+        var image = listImage.find((e, i) => {
+            return e.id === selectedItem[0];
+        })
+        if(image.status !== 0){
+            toast.warning("Image can't create auction!")
+            return;
+        }
+
+        var now = new Date()
+        var start = new Date(now.setDate(now.getDate() + 2))
+        var end = new Date(now.setDate(now.getDate() + 5))
+        var data = {
+            editMode: 0,
+            id: null,
+            startDate: start,
+            endDate: end,
+            startPrice: 0,
+            currentImage: {
+                imageID: image.id,
+                image: image.image
+            }
+        }
+
+        setODataAuctionDetail(data)
+        setShowAuctionDetail(true)
+    }
+
+    const handleCallBackDetail = (status) => {
+        if(status === 0){
+            setShowAuctionDetail(false)
+        }
+        else if(status === 1){
+            setShowAuctionDetail(false)
+            filterData()
+        }
     }
 
     const handleCallBackSellDetail = (data) => {
@@ -531,6 +584,19 @@ function MyCollection({callBackUpdate, searchKey, isSearchData}) {
         setShowSellDetail(true);
     }
 
+    const reloadListImage = async () => {
+        var metamask = new Metamask()
+        var address = await metamask.getAddress();
+        address = address[0];
+        address = address.substring(2);
+
+        var data = handleGetImage(0, address);
+        if(data !== false){
+            setListImage([...[]])
+            setListImage([...data])
+        }
+    }
+
     const viewImage = (
         <div className={cx('d-flex', 'flex-column', 'w-full')}>
             <div className={cx('image-show')} style={{backgroundImage: currentImage, border: "1px solid #fff200"}}></div>
@@ -613,6 +679,7 @@ function MyCollection({callBackUpdate, searchKey, isSearchData}) {
                                                 dateFormat="dd/MM/yyyy" 
                                                 selected={startDate} 
                                                 onChange={(date) => setStartDate(date)} 
+                                                onBlur={() => {if(!startDate){setStartDate(new Date())}}} 
                                             />
                                         </div>
 
@@ -623,6 +690,7 @@ function MyCollection({callBackUpdate, searchKey, isSearchData}) {
                                                 dateFormat="dd/MM/yyyy" 
                                                 selected={endDate} 
                                                 onChange={(date) => setEndDate(date)} 
+                                                onBlur={() => {if(!endDate){setEndDate(new Date())}}} 
                                             />
                                         </div>
                                     </div>
@@ -673,6 +741,7 @@ function MyCollection({callBackUpdate, searchKey, isSearchData}) {
                                                 dateFormat="dd/MM/yyyy" 
                                                 selected={startDateSell} 
                                                 onChange={(date) => setStartDateSell(date)} 
+                                                onBlur={() => {if(!startDateSell){setStartDateSell(new Date())}}} 
                                             />
                                         </div>
 
@@ -683,6 +752,7 @@ function MyCollection({callBackUpdate, searchKey, isSearchData}) {
                                                 dateFormat="dd/MM/yyyy" 
                                                 selected={endDateSell} 
                                                 onChange={(date) => setEndDateSell(date)} 
+                                                onBlur={() => {if(!endDateSell){setEndDateSell(new Date())}}} 
                                             />
                                         </div>
                                     </div>
@@ -741,8 +811,9 @@ function MyCollection({callBackUpdate, searchKey, isSearchData}) {
                             <Button normal onClick={() => {loadMoreData()}}>See more</Button>
                             <Button normal disabled={selectedItem.length > 0 ? false : true} onClick={() => {handleDownloadData()}}>Download</Button>
                             <Button primary disabled={selectedItem.length > 0 ? false : true} onClick={() => {handleGoToSell()}}>Sell</Button>
+                            <Button primary disabled={selectedItem.length > 0 ? false : true} onClick={() => {handleGoToCreateAuction()}}>Create auction</Button>
                         </div>
-                        
+                        {showAuctionDetail && <AddNewAutionDetail callBackEvent={(state) => {handleCallBackDetail(state)}} oData={oDataAuctionDetail}/>}
                     </Fragment>
                     
                 )}
@@ -792,7 +863,7 @@ function MyCollection({callBackUpdate, searchKey, isSearchData}) {
                 )}
 
                 { tab == 2 && (
-                    <MyAuction />
+                    <MyAuction isReload={reloadAuction} updateReload={() => setReloadAuction(false)} callBackEvent={() => {reloadListImage()}}/>
                 )}
 
                 {tab == 3 && (

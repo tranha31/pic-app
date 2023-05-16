@@ -1,5 +1,5 @@
 .auction-wrapper{
-    width: 100%;
+    width: calc(100vw - 200px);
     background-color: #fff;
     height: calc(100vh - 80px);
     padding: 20px;
@@ -7,7 +7,6 @@
     .auction-header{
 
         .filter{
-            padding-top: 20px;
             align-items: end;
 
             .title-date-picker{
@@ -37,13 +36,13 @@
         margin-top: 15px;
 
         .content-auction{
-            width: 300px;
-            height: 550px;
+            width: 250px;
+            height: 450px;
             margin-right: 20px;
             margin-bottom: 20px;
 
             .image{
-                height: 400px;
+                height: 245px;
                 width: 100%;
                 padding: 20px;
                 background-repeat: no-repeat;
@@ -53,7 +52,7 @@
 
             .info{
                 width: 100%;
-                height: calc(100% - 400px);
+                height: calc(100% - 245px);
                 padding: 20px;
                 background-color: #0e1d38;
                 color: #fff;
@@ -69,12 +68,69 @@
                     color: #fff200;
                     margin-bottom: 5px;
                 }
+
+                .author{
+                    word-break: break-all;
+                    margin-bottom: 10px;
+                }
             }
 
             &:hover{
                 cursor: pointer;
                 box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
                 border: 2px solid #fff200;
+            }
+        }
+    }
+
+    .filter-btn{
+        width: 30px;
+        height: 30px;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-image: url("../../../../assets/imgs/menu-4-32.png");
+        border: 1px solid #babec5;
+        border-radius: 1px;
+        cursor: pointer;
+        background-size: 19px;
+    }
+
+    .filter-box{
+        width: 500px;
+        height: 300px;
+        border: 1px solid #babec5;
+        border-radius: 5px;
+        background-color: #fff;
+        padding: 10px;
+
+        .filter-header{
+            padding-bottom: 7px;
+            border-bottom: 1px solid #babec5;
+
+            .icon-filter{
+                width: 30px;
+                height: 24px;
+                background-repeat: no-repeat;
+                background-position: center;
+                background-image: url("../../../../assets/imgs/filled-filter-24.png");
+            }
+        }
+
+        
+
+        .title-date-picker{
+            margin-bottom: 8px;
+        }
+
+        .date-picker{
+            border: 1px solid #babec5;
+            border-radius: 5px;
+            height: 40px;
+            padding-left: 5px;
+            caret-color: #fff200;
+
+            &:focus{
+                border: 1px solid #fff200;
             }
         }
     }
@@ -101,6 +157,10 @@
 
         .see-more{
             padding-top: 5px;
+        }
+
+        .filter-box{
+            width: 300px !important;
         }
     }
     

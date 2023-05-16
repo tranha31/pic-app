@@ -53,6 +53,10 @@ class CollectionAPI {
     async addNewSell(key, id, name, detail, price){
         return await init.post(`${this.controler}/collection/add/sell`, null, {params: {key, id, name, detail, price}})
     }
+
+    async getImageAllPaging(param){
+        return await init.get(`${this.controler}/collection/all/paging`, {params: param});
+    }
 }
 
 export default CollectionAPI
