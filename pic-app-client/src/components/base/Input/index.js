@@ -52,7 +52,7 @@ function Input(
     const [error, setError] = useState(false);
     const [messageError, setMessageError] = useState("");
     const [classesInput, setClassesInput] = useState(
-        cx('input-wrapper', 'w-full', {["number"]: isNumber})
+        cx('input-wrapper', 'w-full', {["number"]: isNumber}, {["text-right"]: isCurrency})
     )
 
     const [hasError, setHasError] = useState(false);
@@ -99,7 +99,7 @@ function Input(
             setMessageError("This field cannot be null!");
             setError(true);
             setClassesInput(
-                cx('input-wrapper', 'w-full', 'error')
+                cx('input-wrapper', 'w-full', 'error', {["text-right"]: isCurrency})
             )
             setHasError(true)
         }
@@ -107,7 +107,7 @@ function Input(
             setMessageError("");
             setError(false);
             setClassesInput(
-                cx('input-wrapper', 'w-full')
+                cx('input-wrapper', 'w-full', {["text-right"]: isCurrency})
             )
             setHasError(false)
         }
@@ -128,6 +128,15 @@ function Input(
         var caret_pos = inputRef.current.selectionStart;
 
         if (input_val.indexOf(".") >= 0) {
+            if(input_val[0] === "."){
+                input_val = "0" + input_val;
+            }
+
+            if(input_val.length > 2){
+                if(input_val.substring(0, input_val.length - 1).includes(".") && input_val[input_val.length - 1] === "." ){
+                    input_val = input_val.substring(0, input_val.length - 1)
+                }
+            }
             var decimal_pos = input_val.indexOf(".");
             var left_side = input_val.substring(0, decimal_pos);
             var right_side = input_val.substring(decimal_pos+1);
@@ -141,7 +150,7 @@ function Input(
             input_val = formatNumber(input_val);
             
         }
-        
+
         inputRef.current.value = input_val;
 
         var updated_len = input_val.length;

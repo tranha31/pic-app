@@ -301,6 +301,9 @@ function MyAuction({isReload, updateReload, callBackEvent}) {
                             selected={startDate} 
                             showTimeInput
                             timeInputLabel="Time:"
+                            showYearDropdown
+                            yearDropdownItemNumber={15}
+                            scrollableYearDropdown
                             onChange={(date) => setStartDate(date)} 
                             onBlur={() => {if(!startDate){setStartDate(new Date())}}}
                         />
@@ -314,6 +317,9 @@ function MyAuction({isReload, updateReload, callBackEvent}) {
                             selected={endDate} 
                             showTimeInput
                             timeInputLabel="Time:"
+                            showYearDropdown
+                            yearDropdownItemNumber={15}
+                            scrollableYearDropdown
                             onChange={(date) => setEndDate(date)} 
                             onBlur={() => {if(!endDate){setEndDate(new Date())}}}
                         />

@@ -118,6 +118,29 @@ class CopyrightBL:
         
         return result
     
+    def handleChangeSignInImage(self, base64_string, sign):
+        result = None
+        try:
+            imRGB = self.inputImage(base64_string)
+            s = self.hexToBinary(sign)
+            R, G, B = cv2.split(imRGB)
+            sign_block = self.getSignBlock(R)
+            self.watermarking(sign_block, s)
+            self.mergeImage(R, sign_block)
+            imageResult = self.outImage(R, G, B)
+
+            result = {
+                "caption" : "",
+                "image" : imageResult,
+                "imageMark": "",
+                "error": ""
+                
+            }
+        except:
+            print("An exception occurred")
+        
+        return result
+    
     '''
     Đóng dấu đã xác nhận lên ảnh để view trên ui
     (20/4/2023)
@@ -296,6 +319,8 @@ class CopyrightBL:
 
         if(sign8 != None):
             signs.append(sign8)
+
+        print(signs)
         
         oDL = CopyrightDL()
         if(len(signs) == 0):

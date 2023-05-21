@@ -476,34 +476,40 @@ function MyCollection({callBackUpdate, searchKey, isSearchData}) {
     const handleCallBackSellDetail = (data) => {
         setShowSellDetail(false);
         if(tab === 0){
-            var lstImage = listImage;
-            lstImage = lstImage.map((e, i) => {
-                if(e.id == selectedItem[0]){
-                    e.status = 1;
-                }
-    
-                return e;
-            })
+            if(data){
+                var lstImage = listImage;
+                lstImage = lstImage.map((e, i) => {
+                    if(e.id == selectedItem[0]){
+                        e.status = 1;
+                    }
+        
+                    return e;
+                })
+                
+                setListImage([...[]])
+                setListImage([...listImage])
+                setSelectedItem([...[]])
+                setCurrentImage("");
+            }
             
-            setListImage([...[]])
-            setListImage([...listImage])
-            setSelectedItem([...[]])
-            setCurrentImage("");
         }
         else if(tab === 1){
-            var temp = listSell;
-            temp = temp.map((e, ind) => {
-                if(e.id == data.id){
-                    e.caption = data.caption;
-                    e.detail = data.detail;
-                    e.price = data.price;
-                    e.modifiedDate = new Date().toLocaleString('en-GB', {
-                        hour12: false,
-                      }).substring(0, 10);
-                }
-                return e;
-            })
-            setListSell([...temp]);
+            if(data){
+                var temp = listSell;
+                temp = temp.map((e, ind) => {
+                    if(e.id == data.id){
+                        e.caption = data.caption;
+                        e.detail = data.detail;
+                        e.price = data.price;
+                        e.modifiedDate = new Date().toLocaleString('en-GB', {
+                            hour12: false,
+                          }).substring(0, 10);
+                    }
+                    return e;
+                })
+                setListSell([...temp]);
+            }
+            
         }
 
     }
@@ -679,6 +685,9 @@ function MyCollection({callBackUpdate, searchKey, isSearchData}) {
                                                 dateFormat="dd/MM/yyyy" 
                                                 selected={startDate} 
                                                 onChange={(date) => setStartDate(date)} 
+                                                showYearDropdown
+                                                yearDropdownItemNumber={15}
+                                                scrollableYearDropdown
                                                 onBlur={() => {if(!startDate){setStartDate(new Date())}}} 
                                             />
                                         </div>
@@ -690,6 +699,9 @@ function MyCollection({callBackUpdate, searchKey, isSearchData}) {
                                                 dateFormat="dd/MM/yyyy" 
                                                 selected={endDate} 
                                                 onChange={(date) => setEndDate(date)} 
+                                                showYearDropdown
+                                                yearDropdownItemNumber={15}
+                                                scrollableYearDropdown
                                                 onBlur={() => {if(!endDate){setEndDate(new Date())}}} 
                                             />
                                         </div>
@@ -740,6 +752,9 @@ function MyCollection({callBackUpdate, searchKey, isSearchData}) {
                                                 className={cx('date-picker', 'w-full')} 
                                                 dateFormat="dd/MM/yyyy" 
                                                 selected={startDateSell} 
+                                                showYearDropdown
+                                                yearDropdownItemNumber={15}
+                                                scrollableYearDropdown
                                                 onChange={(date) => setStartDateSell(date)} 
                                                 onBlur={() => {if(!startDateSell){setStartDateSell(new Date())}}} 
                                             />
@@ -751,6 +766,9 @@ function MyCollection({callBackUpdate, searchKey, isSearchData}) {
                                                 className={cx('date-picker', 'w-full')} 
                                                 dateFormat="dd/MM/yyyy" 
                                                 selected={endDateSell} 
+                                                showYearDropdown
+                                                yearDropdownItemNumber={15}
+                                                scrollableYearDropdown
                                                 onChange={(date) => setEndDateSell(date)} 
                                                 onBlur={() => {if(!endDateSell){setEndDateSell(new Date())}}} 
                                             />

@@ -108,6 +108,12 @@ function CopyrightAction({mode, callBackEvent}) {
             toast.warning("Install metamask extension!");
             return;
         }
+
+        var checkNetwork = await metamask.checkAcceptNetwork();
+        if(!checkNetwork){
+            toast.warning("Your current network is not supported.");
+            return;
+        }
         
         try{
             var address = await metamask.getAddress();

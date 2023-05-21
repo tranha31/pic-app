@@ -55,3 +55,26 @@ def addCopyrightImage():
         
     serviceResult = json.dumps(serviceResult, ensure_ascii=False)
     return Response(response=serviceResult, status=200, mimetype="application/json")
+
+
+@copyright.route("/copyright/changesign", methods=['POST'])
+@cross_origin()
+def updateCopyrightImage():
+    _json = request.json
+    base64Image = _json["image"]
+    sign = _json["sign"] 
+    serviceResult = {
+        "error" : "",
+        "success": True,
+        "data" : ""
+    }
+
+    result = oCopyrightBL.handleChangeSignInImage(base64Image, sign)  
+    if result == None:
+        serviceResult["success"] = False
+        serviceResult["error"] = "Error"
+    else:
+        serviceResult["data"] = str(result)
+        
+    serviceResult = json.dumps(serviceResult, ensure_ascii=False)
+    return Response(response=serviceResult, status=200, mimetype="application/json")

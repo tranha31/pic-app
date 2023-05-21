@@ -113,6 +113,13 @@ function AddNewAutionDetail({callBackEvent, oData}) {
     const saveData = async () => {
         try{
             const metamask = new Metamask();
+
+            var checkNetwork = await metamask.checkAcceptNetwork();
+            if(!checkNetwork){
+                toast.warning("Your current network is not supported.");
+                return;
+            }
+
             var address = await metamask.getAddress();
             address = address[0];
             address = address.substring(2);
@@ -162,6 +169,9 @@ function AddNewAutionDetail({callBackEvent, oData}) {
                             selected={startDate}
                             showTimeInput
                             timeInputLabel="Time:" 
+                            showYearDropdown
+                            yearDropdownItemNumber={15}
+                            scrollableYearDropdown
                             onChange={(date) => setStartDate(date)} 
                             onBlur={() => {if(!startDate){setStartDate(new Date())}}} 
                         />
@@ -175,6 +185,9 @@ function AddNewAutionDetail({callBackEvent, oData}) {
                             selected={endDate}
                             showTimeInput
                             timeInputLabel="Time:" 
+                            showYearDropdown
+                            yearDropdownItemNumber={15}
+                            scrollableYearDropdown
                             onChange={(date) => setEndDate(date)} 
                             onBlur={() => {if(!endDate){setEndDate(new Date())}}} 
                         />

@@ -28,6 +28,9 @@ function ParticipatingRoom() {
                             className={cx('date-picker')} 
                             dateFormat="dd/MM/yyyy" 
                             selected={startDate} 
+                            showYearDropdown
+                            yearDropdownItemNumber={15}
+                            scrollableYearDropdown
                             onChange={(date) => setStartDate(date)} 
                             onBlur={() => {if(!startDate){setStartDate(new Date())}}}
                         />
@@ -39,6 +42,9 @@ function ParticipatingRoom() {
                             className={cx('date-picker')} 
                             dateFormat="dd/MM/yyyy" 
                             selected={endDate} 
+                            showYearDropdown
+                            yearDropdownItemNumber={15}
+                            scrollableYearDropdown
                             onChange={(date) => setEndDate(date)} 
                             onBlur={() => {if(!endDate){setEndDate(new Date())}}}
                         />

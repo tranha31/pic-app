@@ -39,6 +39,10 @@ class CopyrightAPI {
     async sendAppealRequest(param){
         return await init.get(`${this.controler}/request/appeal/add`, {params: param})
     }
+
+    async updateCopyright(oldKey, newKey, imageID, sellID){
+        return await init.post(`${this.controler}/copyright/update`, null, {params: {oldKey, newKey, imageID, sellID}})
+    }
 }
 
 export default CopyrightAPI

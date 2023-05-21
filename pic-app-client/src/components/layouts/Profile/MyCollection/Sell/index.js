@@ -72,6 +72,13 @@ function Sell({oData, eventCallBackSell}) {
 
         try{
             const metamask = new Metamask();
+
+            var checkNetwork = await metamask.checkAcceptNetwork();
+            if(!checkNetwork){
+                toast.warning("Your current network is not supported.");
+                return;
+            }
+            
             var address = await metamask.getAddress();
             address = address[0];
             address = address.substring(2);

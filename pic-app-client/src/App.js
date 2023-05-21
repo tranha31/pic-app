@@ -13,8 +13,25 @@ function App() {
     };
   })
 
+  useEffect(() => {
+    window.ethereum.on('networkChanged', function(networkId){
+      console.log('networkChanged',networkId);
+      if(process.env.REACT_ACCEPT_TEST === "0" && networkId != 1){
+
+      }
+      else{
+        window.location.reload();
+      }
+      
+    });
+  })
+
   const handleAccountChange = () => {
       window.location.reload();
+  }
+
+  const handleNetWorkChange = (networkId) => {
+    console.log('networkChanged',networkId);
   }
 
   const [disabledSearch, setDisabledSearch] = useState(false);

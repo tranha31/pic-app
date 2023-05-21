@@ -195,5 +195,29 @@ namespace BE.PICBIN.API.Controllers
 
             return Ok(result);
         }
+
+        /// <summary>
+        /// Thay đổi chữ ký trong ảnh
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("copyright/update")]
+        public async Task<IActionResult> UpdateCopyright(string oldKey, string newKey, string imageID, string sellID)
+        {
+            CopyrightBL oBL = new CopyrightBL(_config);
+            ServiceResult result = new ServiceResult();
+            try
+            {
+                result = await oBL.UpdateCopyright(oldKey, newKey, imageID, sellID);
+
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                NLogBL nLog = new NLogBL(_config);
+                nLog.InsertLog(ex.Message, ex.StackTrace);
+            }
+
+            return Ok(result);
+        }
     }
 }

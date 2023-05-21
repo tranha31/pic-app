@@ -163,6 +163,14 @@ namespace BE.PICBIN.DL
             return null;
         }
 
+        public async Task UpdateContentImage(string id, string content)
+        {
+            var filter = Builders<CopyrightImageModel>.Filter.Eq(s => s.RefID, id);
+            var update = Builders<CopyrightImageModel>.Update.Set(s => s.ImageContent, content);
+
+            await UpdateOneAsync<CopyrightImageModel>(filter, update, "CopyrightImage");
+        }
+
         public CopyrightImage GetCopyrightImage(string id)
         {
             DynamicParameters parameters = new DynamicParameters();

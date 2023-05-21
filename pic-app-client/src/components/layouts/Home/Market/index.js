@@ -9,6 +9,8 @@ import TradeAPI from '@/api/trade';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Loading from '@/components/base/Loading';
+import Metamask from '@/api/metamask';
+import CopyrightAPI from '@/api/copyright';
 
 const cx = classNames.bind(styles);
 
@@ -157,6 +159,90 @@ function Market({callBackUpdate, searchKey, isSearchData}) {
         setShowDetail(false)
     }
 
+    const handleBuyImage = async () => {
+        const metamask = new Metamask();
+        var check = await metamask.checkConnect();
+        if(!check){
+            toast.warning("Install metamask extension!");
+            return;
+        }
+
+        try{
+
+            var checkNetwork = await metamask.checkAcceptNetwork();
+            if(!checkNetwork){
+                toast.warning("Your current network is not supported.");
+                return;
+            }
+
+            var address = await metamask.getAddress();
+            address = address[0];
+
+            var balance = await metamask.getAccountBalance(address);
+            balance = parseInt(balance.toString(), 16)
+            var price = Number.parseFloat(selectedItem.price)
+            price = price * Math.pow(10, 18);
+
+            if(balance <= price){
+                toast.warning("Your balance is not enough.");
+                return;
+            }
+
+            if(address.substring(2) === selectedItem.user){
+                toast.warning("You can't buy image of yourself.");
+                return;
+            }
+
+            price = decimalToHexString(price)
+            var transaction = {
+                to: '0x' + selectedItem.user,
+                from: address,
+                value: price
+            }
+
+            setShowLoading(true);
+
+            var result = await metamask.sendTransation(transaction);
+            if(result){
+                var res = await callServerToUpdateCopyright(selectedItem.user, address.substring(2), selectedItem.imageID, selectedItem.id)
+                if(res){
+                    setShowDetail(false);
+                    filterData();
+                }
+                else{
+                    toast.warning("Something wrong! Please try again.");
+                }
+            }
+            else{
+                toast.warning("Something wrong! Please try again.");
+            }
+
+        }
+        catch(err){
+            toast.warning("Metamask connection required!");
+        }
+    }
+
+    const decimalToHexString = (number) => {
+        if (number < 0)
+        {
+            number = 0xFFFFFFFF + number + 1;
+        }
+
+        return "0x" + number.toString(16).toUpperCase();
+    }
+
+    const callServerToUpdateCopyright = async (oldKey, newKey, imageID, sellID) => {
+        try{
+            var api = new CopyrightAPI();
+            var res = await api.updateCopyright(oldKey, newKey, imageID, sellID)
+            return res.data.success;
+        }
+        catch(err){
+            toast.warning("Something wrong! Please try again.");
+        }
+    }
+
     var imageDetail = (
         <div className={cx('content-image-detail', 'd-flex')}>
             <div className={cx('image-content', 'flex-1')}>
@@ -174,7 +260,11 @@ function Market({callBackUpdate, searchKey, isSearchData}) {
                         <div className={cx('d-flex', 'align-center', 'justify-center')}>
                             <div className={cx('s-32', 'icon-not-hover', 'i-cart')}></div>
                             <p className={cx('font-size-18', 'font-bold')}>Buy now</p>
-                        </div>}>
+                        </div>}
+
+                    onClick={() => handleBuyImage()}        
+                >
+                    
                 </Button>
             </div>
         </div>

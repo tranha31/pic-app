@@ -194,6 +194,67 @@ namespace BE.PICBIN.BL
 
         }
 
+        public async Task<ServiceResult> UpdateCopyright(string oldKey, string newKey, string imageID, string sellID)
+        {
+            ServiceResult serviceResult = new ServiceResult();
+
+            //Lấy ảnh từ mongo
+            CollectionDL oDL = new CollectionDL(Configuration);
+            var imageContent = await oDL.GetImageContentByID(imageID);
+            if (string.IsNullOrEmpty(imageContent))
+            {
+                return serviceResult;
+            }
+
+            var imageContentUpdate = imageContent.Split("data:image/png;base64,")[1];
+
+            //Gọi service update chữ ký cho ảnh
+            var copyRightUrl = Configuration.GetSection("CopyrightOtherService").Value;
+            var url = copyRightUrl + "/copyright/changesign";
+            Dictionary<string, string> param = new Dictionary<string, string>();
+            param.Add("sign", newKey);
+            param.Add("image", imageContentUpdate);
+
+            try
+            {
+                var result = await CallHTTPRequest.CallHttp(url, "POST", param);
+
+                var imageResult = JsonConvert.DeserializeObject<ServiceResult>(result.ToString());
+                if (!imageResult.Success)
+                {
+                    serviceResult.Error = imageResult.Error;
+                    return serviceResult;
+                }
+
+                var dataUpdate = JsonConvert.DeserializeObject<RegisterContent>(imageResult.Data.ToString());
+                imageContentUpdate = dataUpdate.Image;
+
+                //Update lại vào mongo + update mysql
+
+                await oDL.UpdateContentImage(imageID, imageContentUpdate);
+
+                CopyrightDL copyrightDL = new CopyrightDL(Configuration);
+                var done = copyrightDL.UpdateSignCopyrightImage(imageID, newKey, oldKey, sellID);
+
+                //Nếu thất bại thì cần rollback lại content
+                if (!done)
+                {
+                    await oDL.UpdateContentImage(imageID, imageContent);
+                    serviceResult.Error = "Cannot change copyright";
+                    return serviceResult;
+                }
+
+                serviceResult.Success = true;
+
+            }
+            catch (Exception ex)
+            {
+                _nLog.InsertLog(ex.Message, ex.StackTrace);
+            }
+
+            return serviceResult;
+        }
+
         /// <summary>
         /// Kháng cáo yêu cầu bị từ chối
         /// </summary>
