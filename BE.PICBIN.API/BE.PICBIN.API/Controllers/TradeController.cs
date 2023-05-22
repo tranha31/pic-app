@@ -291,5 +291,83 @@ namespace BE.PICBIN.API.Controllers
 
             return Ok(result);
         }
+
+        /// <summary>
+        /// Them moi lich su dat cuoc
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("auction/room/history")]
+        public IActionResult AddAuctionHistory(string roomID, string key, decimal price, int action)
+        {
+            ServiceResult result = new ServiceResult();
+            try
+            {
+                TradeBL oBL = new TradeBL(_config);
+                result = oBL.AddAuctionHistory(roomID, key, price, action);
+
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                NLogBL nLog = new NLogBL(_config);
+                nLog.InsertLog(ex.Message, ex.StackTrace);
+            }
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Lay lich su dat cuoc
+        /// </summary>
+        /// <param name="roomID"></param>
+        /// <returns></returns>
+        [HttpGet("auction/history/getall")]
+        public IActionResult GetAuctionRoomHistory(string roomID)
+        {
+            ServiceResult result = new ServiceResult();
+            try
+            {
+                TradeBL oBL = new TradeBL(_config);
+                result.Success = true;
+                result.Data = oBL.GetAuctionRoomHistory(roomID);
+
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                NLogBL nLog = new NLogBL(_config);
+                nLog.InsertLog(ex.Message, ex.StackTrace);
+            }
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Lay ds phong dau gia dang tham gia
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="start"></param>
+        /// <param name="length"></param>
+        /// <returns></returns>
+        [HttpGet("auction/room/join")]
+        public IActionResult GetListJoinAuctionRoomPaging(string key, int status, int start, int length)
+        {
+            ServiceResult result = new ServiceResult();
+            try
+            {
+                TradeBL oBL = new TradeBL(_config);
+                result.Success = true;
+                result.Data = oBL.GetListJoinAuctionRoomPaging(key, status, start, length);
+
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                NLogBL nLog = new NLogBL(_config);
+                nLog.InsertLog(ex.Message, ex.StackTrace);
+            }
+
+            return Ok(result);
+        }
     }
 }

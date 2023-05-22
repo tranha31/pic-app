@@ -343,6 +343,94 @@ namespace BE.PICBIN.BL
             await oRequestDL.HandleRejectAppealRequest(ids);
             return true;
         }
+
+        /// <summary>
+        /// Xu ly ket thuc dau gia
+        /// </summary>
+        /// <param name="auctionID"></param>
+        /// <returns></returns>
+        public async Task<ServiceResult> HandleFinishAuctionRoom(string auctionID)
+        {
+            ServiceResult serviceResult = new ServiceResult();
+            TradeDL tradeDL = new TradeDL(Configuration);
+            AuctionRoom auctionRoom = tradeDL.GetAuctionRoomByID(auctionID);
+            if(auctionRoom == null)
+            {
+                serviceResult.Error = "Auction room is not exist";
+                return serviceResult;
+            }
+
+            if(auctionRoom.EndTime > DateTime.Now)
+            {
+                serviceResult.Error = "Auction room is not ended";
+                return serviceResult;
+            }
+
+            if (string.IsNullOrEmpty(auctionRoom.HighestBeter))
+            {
+                serviceResult.Success = tradeDL.HandleDeleteAuctionRoom(auctionID);
+                return serviceResult;
+            }
+            else
+            {
+                string imageID = auctionRoom.ImageID;
+                //Lấy ảnh từ mongo
+                CollectionDL oDL = new CollectionDL(Configuration);
+                var imageContent = await oDL.GetImageContentByID(imageID);
+                if (string.IsNullOrEmpty(imageContent))
+                {
+                    return serviceResult;
+                }
+
+                var imageContentUpdate = imageContent.Split("data:image/png;base64,")[1];
+
+                //Gọi service update chữ ký cho ảnh
+                var copyRightUrl = Configuration.GetSection("CopyrightOtherService").Value;
+                var url = copyRightUrl + "/copyright/changesign";
+                Dictionary<string, string> param = new Dictionary<string, string>();
+                param.Add("sign", auctionRoom.HighestBeter);
+                param.Add("image", imageContentUpdate);
+
+                try
+                {
+                    var result = await CallHTTPRequest.CallHttp(url, "POST", param);
+
+                    var imageResult = JsonConvert.DeserializeObject<ServiceResult>(result.ToString());
+                    if (!imageResult.Success)
+                    {
+                        serviceResult.Error = imageResult.Error;
+                        return serviceResult;
+                    }
+
+                    var dataUpdate = JsonConvert.DeserializeObject<RegisterContent>(imageResult.Data.ToString());
+                    imageContentUpdate = dataUpdate.Image;
+
+                    //Update lại vào mongo + update mysql
+
+                    await oDL.UpdateContentImage(imageID, imageContentUpdate);
+
+                    CopyrightDL copyrightDL = new CopyrightDL(Configuration);
+                    var done = copyrightDL.UpdateSignCopyrightImageForAuction(imageID, auctionRoom.HighestBeter, auctionRoom.OwnerPublicKey, auctionRoom.ID);
+
+                    //Nếu thất bại thì cần rollback lại content
+                    if (!done)
+                    {
+                        await oDL.UpdateContentImage(imageID, imageContent);
+                        serviceResult.Error = "Cannot change copyright";
+                        return serviceResult;
+                    }
+
+                    serviceResult.Success = true;
+
+                }
+                catch (Exception ex)
+                {
+                    _nLog.InsertLog(ex.Message, ex.StackTrace);
+                }
+            }
+
+            return serviceResult;
+        }
     }
 
     public class RegisterRequest

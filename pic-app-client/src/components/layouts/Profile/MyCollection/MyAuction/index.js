@@ -148,7 +148,7 @@ function MyAuction({isReload, updateReload, callBackEvent}) {
             return {
                 "id": e.infor.id,                
                 "imageID" : e.infor.imageID,
-                "highestBetID" : e.infor.highestBetID,
+                "highestBeter" : e.infor.highestBeter,
                 "highestPrice" : e.infor.highestPrice,
                 "user" : e.infor.ownerPublicKey,
                 "startTime": startTime.substring(0, 10) + startTime.substring(11),

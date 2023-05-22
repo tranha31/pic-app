@@ -74,5 +74,20 @@ namespace BE.PICBIN.DL
             return rersult;
 
         }
+
+        public bool UpdateSignCopyrightImageForAuction(string imageID, string highestBeter, string ownerPublicKey, string iD)
+        {
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add("ImageID", imageID);
+            parameters.Add("NeKey", highestBeter);
+            parameters.Add("OldKey", ownerPublicKey);
+            parameters.Add("AuctionID", iD);
+
+            var procName = "Proc_CopyrightImage_UpdateForAuction";
+            List<string> listOutPut = null;
+
+            var rersult = ExcuteProcMySQL(procName, parameters, ref listOutPut);
+            return rersult;
+        }
     }
 }

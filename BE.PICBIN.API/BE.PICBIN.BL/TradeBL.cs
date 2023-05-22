@@ -243,7 +243,7 @@ namespace BE.PICBIN.BL
             }
 
             TradeDL oDL = new TradeDL(Configuration);
-            List<AuctionRoomDetail> auctionDetails = oDL.GetAuctionRoomDetail(id);
+            List<AuctionHistory> auctionDetails = oDL.GetAuctionRoomDetail(id);
             if (auctionDetails != null && auctionDetails.Count > 0)
             {
                 return false;
@@ -320,6 +320,68 @@ namespace BE.PICBIN.BL
             }
 
             return serviceResult;
+        }
+
+        /// <summary>
+        /// Lay lich su dat cuoc
+        /// </summary>
+        /// <param name="roomID"></param>
+        /// <returns></returns>
+        public List<AuctionHistory> GetAuctionRoomHistory(string roomID)
+        {
+            TradeDL oDL = new TradeDL(Configuration);
+            return oDL.GetAuctionRoomDetail(roomID);
+
+        }
+
+        /// <summary>
+        /// Them moi lich su dat cuoc
+        /// </summary>
+        /// <param name="roomID"></param>
+        /// <param name="key"></param>
+        /// <param name="price"></param>
+        /// <param name="action"></param>
+        /// <returns></returns>
+        public ServiceResult AddAuctionHistory(string roomID, string key, decimal price, int action)
+        {
+            ServiceResult serviceResult = new ServiceResult();
+            TradeDL oDL = new TradeDL(Configuration);
+            
+            var auctionRoom = oDL.GetAuctionRoomByID(roomID);
+            if(auctionRoom == null)
+            {
+                serviceResult.Error = "Auction room is not exist";
+                return serviceResult;
+            }
+
+            if(key == auctionRoom.OwnerPublicKey)
+            {
+                serviceResult.Error = "You are owner";
+                return serviceResult;
+            }
+
+            if(DateTime.Now < auctionRoom.StartTime || DateTime.Now > auctionRoom.EndTime)
+            {
+                serviceResult.Error = "Invalid time";
+                return serviceResult;
+            }
+
+            serviceResult.Success = oDL.AddAuctionHistory(roomID, key, price, action);
+            return serviceResult;
+        }
+
+        /// <summary>
+        /// Lay ds phong dang tham gia
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="status"></param>
+        /// <param name="start"></param>
+        /// <param name="length"></param>
+        /// <returns></returns>
+        public List<AuctionRoom> GetListJoinAuctionRoomPaging(string key, int status, int start, int length)
+        {
+            TradeDL oDL = new TradeDL(Configuration);
+            return oDL.GetListJoinAuctionRoomPaging(key, status, start, length);
         }
 
         public async Task<ServiceResult> GetAuctionRoomByID(string id)
@@ -403,7 +465,7 @@ namespace BE.PICBIN.BL
                 
                 if(mode == 1)
                 {
-                    List<AuctionRoomDetail> auctionDetails = tradeDL.GetAuctionRoomDetail(itemID);
+                    List<AuctionHistory> auctionDetails = tradeDL.GetAuctionRoomDetail(itemID);
                     if(auctionDetails != null && auctionDetails.Count > 0)
                     {
                         serviceResult.Error = "Exist detail";

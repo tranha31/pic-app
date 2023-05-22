@@ -143,13 +143,13 @@ namespace BE.PICBIN.DL
         public void UpdateAuctionRoom(int mode, string itemID, string key, string imageID, DateTime fromDate, DateTime toDate, decimal startPrice)
         {
             DynamicParameters parameters = new DynamicParameters();
-            parameters.Add("Mode", mode);
-            parameters.Add("ImageID", imageID);
-            parameters.Add("Key", key);
-            parameters.Add("FromDate", fromDate);
-            parameters.Add("ToDate", toDate);
-            parameters.Add("Price", startPrice);
-            parameters.Add("ItemID", itemID);
+            parameters.Add("@Mode", mode);
+            parameters.Add("@ImageID", imageID);
+            parameters.Add("@Key", key);
+            parameters.Add("@FromDate", fromDate);
+            parameters.Add("@ToDate", toDate);
+            parameters.Add("@Price", startPrice);
+            parameters.Add("@ItemID", itemID);
 
             var procName = "Proc_AuctionRoom_Update";
             List<string> listOutPut = null;
@@ -157,19 +157,19 @@ namespace BE.PICBIN.DL
             ExcuteProcMySQL(procName, parameters, ref listOutPut);
         }
 
-        public List<AuctionRoomDetail> GetAuctionRoomDetail(string itemID)
+        public List<AuctionHistory> GetAuctionRoomDetail(string itemID)
         {
             DynamicParameters parameters = new DynamicParameters();
             parameters.Add($"@ID", itemID);
 
-            var sql = "SELECT * FROM auctiondetail a WHERE a.AuctionRoomID = @ID";
+            var sql = "SELECT * FROM auctionhistory a WHERE a.AuctionRoomID = @ID ORDER BY a.CreatedTime DESC;";
 
             List<string> listOutPut = null;
 
-            var data = QueryCommandMySQL<AuctionRoomDetail>(sql, parameters, ref listOutPut);
+            var data = QueryCommandMySQL<AuctionHistory>(sql, parameters, ref listOutPut);
             if (data != null)
             {
-                var lstResult = new List<AuctionRoomDetail>(data);
+                var lstResult = new List<AuctionHistory>(data);
                 return lstResult;
             }
 
@@ -247,6 +247,40 @@ namespace BE.PICBIN.DL
 
             var result = ExcuteProcMySQL("Proc_AuctionRoom_Delete", parameters, ref listOutPut);
             return result;
+        }
+
+        public bool AddAuctionHistory(string roomID, string key, decimal price, int action)
+        {
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add("@RoomID", roomID);
+            parameters.Add("@Key", key);
+            parameters.Add("@Price", price);
+            parameters.Add("@Action", action);
+
+            var procName = "Proc_AuctionRoom_AddHistory";
+            List<string> listOutPut = null;
+
+            return ExcuteProcMySQL(procName, parameters, ref listOutPut);
+        }
+
+        public List<AuctionRoom> GetListJoinAuctionRoomPaging(string key, int status, int start, int length)
+        {
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add($"@Key", key);
+            parameters.Add($"@Status", status);
+            parameters.Add($"@Start", start);
+            parameters.Add($"@Length", length);
+
+            List<string> listOutPut = null;
+
+            var data = QueryStoreMySQL<AuctionRoom>("Proc_AuctionRoomJoin_GetPaging", parameters, ref listOutPut);
+            if (data != null)
+            {
+                var lstResult = new List<AuctionRoom>(data);
+                return lstResult;
+            }
+
+            return null;
         }
 
         #endregion

@@ -219,5 +219,30 @@ namespace BE.PICBIN.API.Controllers
 
             return Ok(result);
         }
+
+        /// <summary>
+        /// Xu ly ket thuc dau gia
+        /// </summary>
+        /// <param name="auctionID"></param>
+        /// <returns></returns>
+        [HttpPost("auction/room/finish")]
+        public async Task<IActionResult> HandleFinishAuctionRoom(string auctionID)
+        {
+            ServiceResult result = new ServiceResult();
+            try
+            {
+                CopyrightBL oBL = new CopyrightBL(_config);
+                result = await oBL.HandleFinishAuctionRoom(auctionID);
+
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                NLogBL nLog = new NLogBL(_config);
+                nLog.InsertLog(ex.Message, ex.StackTrace);
+            }
+
+            return Ok(result);
+        }
     }
 }
