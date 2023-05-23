@@ -350,14 +350,13 @@ namespace BE.PICBIN.API.Controllers
         /// <param name="length"></param>
         /// <returns></returns>
         [HttpGet("auction/room/join")]
-        public IActionResult GetListJoinAuctionRoomPaging(string key, int status, int start, int length)
+        public async Task<IActionResult> GetListJoinAuctionRoomPaging(string key, int status, int start, int length)
         {
             ServiceResult result = new ServiceResult();
             try
             {
                 TradeBL oBL = new TradeBL(_config);
-                result.Success = true;
-                result.Data = oBL.GetListJoinAuctionRoomPaging(key, status, start, length);
+                result = await oBL.GetListJoinAuctionRoomPaging(key, status, start, length);
 
             }
             catch (Exception ex)

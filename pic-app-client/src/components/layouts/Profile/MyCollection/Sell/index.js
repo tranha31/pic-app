@@ -83,7 +83,8 @@ function Sell({oData, eventCallBackSell}) {
             address = address[0];
             address = address.substring(2);
 
-            var price = Number.parseFloat(imagePrice)
+            var tempPrice = imagePrice;
+            var price = Number.parseFloat(tempPrice.toString().replaceAll("," ,""))
             const api = new TradeAPI()
             setShowLoading(true);
             var res = await api.updateSell(oData?.editMode, oData?.id, address, oData?.imageID, imageName, imageDetail, price);

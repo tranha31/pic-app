@@ -29,7 +29,8 @@
     "react-tippy": "^1.4.0",
     "react-toastify": "^9.1.2",
     "react-tooltip": "^4.2.21",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "web3": "^1.10.0"
   },
   "scripts": {
     "start": "react-app-rewired start",

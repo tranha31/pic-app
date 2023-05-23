@@ -122,12 +122,28 @@ function AddNewAutionDetail({callBackEvent, oData}) {
 
             var address = await metamask.getAddress();
             address = address[0];
-            address = address.substring(2);
-
-            var startPrice = Number.parseFloat(price)
+            
+            var tempPrice = price;
+            var startPrice = Number.parseFloat(tempPrice.toString().replaceAll(",",""))
+            var startTime = startDate.getTime();
+            var endTime = endDate.getTime();
             const api = new TradeAPI()
             setShowLoading(true);
+            //Cập nhật smartcontract
+            await metamask.connectSmartContract();
+            if(oData?.editMode == 0){
+                var id = uuidv4();
+                await metamask.createAuctionRoom(id, startTime, endTime, startPrice * Math.pow(10, 18), address);
+                oData.id = id;
+            }
+            else{ 
+                var now = new Date();
+                now = now.getTime();
+                await metamask.updateAuctionRoom(oData?.id, startTime, endTime, now, startPrice * Math.pow(10, 18), address);
+            }
+            address = address.substring(2);
             var res = await api.updateAuctionRoom(oData?.editMode, address, oData?.id, currentImage.imageID, startDate, endDate, startPrice);
+            setShowLoading(false);
             if(res.data.success){
                 setShowLoading(false);
                 callBackEvent(1);
@@ -138,8 +154,15 @@ function AddNewAutionDetail({callBackEvent, oData}) {
             }
         }
         catch(err){
-            toast.error("Something wrong! Please try again!")
+            toast.error("Transaction fail! Please try again!");
+            setShowLoading(false);
         }
+    }
+
+    const uuidv4 = () => {
+        return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+          (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+        );
     }
 
     const child = (

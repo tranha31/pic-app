@@ -378,10 +378,13 @@ namespace BE.PICBIN.BL
         /// <param name="start"></param>
         /// <param name="length"></param>
         /// <returns></returns>
-        public List<AuctionRoom> GetListJoinAuctionRoomPaging(string key, int status, int start, int length)
+        public async Task<ServiceResult> GetListJoinAuctionRoomPaging(string key, int status, int start, int length)
         {
             TradeDL oDL = new TradeDL(Configuration);
-            return oDL.GetListJoinAuctionRoomPaging(key, status, start, length);
+            List<AuctionRoom> data = oDL.GetListJoinAuctionRoomPaging(key, status, start, length);
+
+            ServiceResult serviceResult = await HandleGetImageAuctionContent(data);
+            return serviceResult;
         }
 
         public async Task<ServiceResult> GetAuctionRoomByID(string id)
@@ -471,11 +474,6 @@ namespace BE.PICBIN.BL
                         serviceResult.Error = "Exist detail";
                         return serviceResult;
                     }
-                }
-
-                if (mode == 0)
-                {
-                    itemID = Guid.NewGuid().ToString();
                 }
 
                 tradeDL.UpdateAuctionRoom(mode, itemID, key, imageID, fromDate, toDate, startPrice);

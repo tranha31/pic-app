@@ -43,6 +43,10 @@ class CopyrightAPI {
     async updateCopyright(oldKey, newKey, imageID, sellID){
         return await init.post(`${this.controler}/copyright/update`, null, {params: {oldKey, newKey, imageID, sellID}})
     }
+
+    async updateCopyrightForAuction(auctionID){
+        return await init.post(`${this.controler}/auction/room/finish`, null, {params: {auctionID}})
+    }
 }
 
 export default CopyrightAPI

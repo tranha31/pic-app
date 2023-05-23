@@ -36,6 +36,8 @@ function Auction() {
         { value: 1, label: 'Started' },
     ];
 
+    const [oDataDetail, setODataDetail] = useState(null);
+
     useEffect(()=>{
         getInitData()
     }, [])
@@ -160,6 +162,24 @@ function Auction() {
         
     }
 
+    const handleShowAuctionRoom = (id) => {
+        var room = listAuction.filter((e, i) => {
+            return e.id === id;
+        })
+
+        var data = room[0]
+        data.startTime = data.startTime.substring(3, 5) + "/" + data.startTime.substring(0, 2) + "/" + data.startTime.substring(6)
+        data.endTime = data.endTime.substring(3, 5) + "/" + data.endTime.substring(0, 2) + "/" + data.endTime.substring(6)
+        setODataDetail(data);
+        setShowAuctionRoom(true);
+    }
+
+    const handleCloseForm = () => {
+        setShowAuctionRoom(false);
+        setODataDetail(null);
+        filterData();
+    }
+
     const handleChangeOrderrStatus = (v) => {
         setStatusOrder(v);
         setParamOrder(v.value);
@@ -250,7 +270,7 @@ function Auction() {
                         listAuction.map((e, index) => {
                             return (
                                 <div key={index} className={cx('content-auction','d-flex', 'flex-column', selectedItem?.id === e.id ? 'active' : '')}
-                                    onClick={() => {setShowAuctionRoom(true)}}
+                                    onClick={() => {handleShowAuctionRoom(e.id)}}
                                     data-id={e.id}
 
                                 >
@@ -281,7 +301,7 @@ function Auction() {
                 <Button className={cx('see-more-btn')} primary onClick={() => {loadMoreData()}}>See more</Button>
             </div>
 
-            {showAuctionRoom && <AuctionDetail eventCallBack={()=>{setShowAuctionRoom(false)}}/>}
+            {showAuctionRoom && <AuctionDetail eventCallBack={()=>{handleCloseForm()}} oData={oDataDetail}/>}
             <ToastContainer/>
             {showLoading && <Loading/>}
         </div>

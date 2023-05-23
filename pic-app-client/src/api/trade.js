@@ -52,6 +52,18 @@ class TradeAPI {
     async getAuctionRoomHomePaging(param){
         return await init.get(`${this.controler}/auction/room/home`, {params: param});
     }
+
+    async getAuctionRoomJoinPaging(param){
+        return await init.get(`${this.controler}/auction/room/join`, {params: param});
+    }
+
+    async getAuctionRoomHistory(param){
+        return await init.get(`${this.controler}/auction/history/getall`, {params: param});
+    }
+
+    async addNewHistory(roomID, key, price, action){
+        return await init.post(`${this.controler}/auction/room/history`, null, {params: {roomID, key, price, action}})
+    }
 }
 
 export default TradeAPI

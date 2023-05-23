@@ -71,6 +71,8 @@ function MyCollection({callBackUpdate, searchKey, isSearchData}) {
 
     const [reloadAuction, setReloadAuction] = useState(false)
 
+    const [reloadAuctionJoin, setReloadAuctionJoin] = useState(false)
+
     const [showAuctionDetail, setShowAuctionDetail] = useState(false);
     const [oDataAuctionDetail, setODataAuctionDetail] = useState(null);
 
@@ -156,6 +158,9 @@ function MyCollection({callBackUpdate, searchKey, isSearchData}) {
         }
         else if(tab === 2){
             setReloadAuction(true)
+        }
+        else if(tab === 3){
+            setReloadAuctionJoin(true)
         }
     }
 
@@ -885,7 +890,7 @@ function MyCollection({callBackUpdate, searchKey, isSearchData}) {
                 )}
 
                 {tab == 3 && (
-                    <ParticipatingRoom />
+                    <ParticipatingRoom isReload={reloadAuctionJoin} updateReload={() => setReloadAuctionJoin(false)} callBackEvent={() => {reloadListImage()}}/>
                 )}
                 
             </div> 
