@@ -4,6 +4,9 @@ import CopyrightAction from "@/components/views/CopyrightAction";
 import { Fragment, useEffect, useState } from "react";
 import Header from "./Header";
 import Draggable from 'react-draggable';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { HubConnectionBuilder, HubConnection } from '@microsoft/signalr';
 
 const cx = classNames.bind(styles);
 
@@ -13,6 +16,7 @@ function DefaultLayout({children, callBackUpdateSearch, callBackFilterData, disa
     const [showCopyright, setShowCopyright] = useState(false);
     const [showNotify, setShowNotify] = useState(false);
     const [disabedSearchKey, setDisabedSearchKey] = useState(disableSearch);
+    const [connection, setConnection] = useState(null);
 
     const handleCloseCopyright = (state) => {
         setShowCopyright(state)
@@ -35,6 +39,27 @@ function DefaultLayout({children, callBackUpdateSearch, callBackFilterData, disa
         setDisabedSearchKey(disableSearch)
     }, [disableSearch])
 
+    useEffect(() => {
+        const connect = new HubConnectionBuilder()
+            .withUrl(process.env.REACT_APP_PUSH_URL + "hubs/notification")
+            .withAutomaticReconnect()
+            .build();
+
+        setConnection(connect);
+    }, [])
+    
+    useEffect(() => {
+        if (connection) {
+          connection
+            .start()
+            .then(() => {
+              connection.on("ReceiveMessage", (message) => {
+                console.log(message);
+              });
+            })
+            .catch((error) => console.log(error));
+        }
+      }, [connection]);
 
     return ( 
         <Fragment>
@@ -78,7 +103,7 @@ function DefaultLayout({children, callBackUpdateSearch, callBackFilterData, disa
                 
             </div>
             {showCopyright && <CopyrightAction mode={copyrightMode} callBackEvent={handleCloseCopyright}/>}
-            
+            <ToastContainer/>
         </Fragment>
      );
 }

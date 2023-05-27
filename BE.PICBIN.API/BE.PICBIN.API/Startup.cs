@@ -65,12 +65,10 @@ namespace BE.PICBIN.API
 
             app.UseHttpsRedirection();
 
+            
+            app.UseCors("ApiCorsPolicy");
+            
             app.UseRouting();
-
-            app.UseCors(builder => builder
-                .AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader());
 
             app.UseAuthorization();
 
@@ -78,8 +76,6 @@ namespace BE.PICBIN.API
             {
                 endpoints.MapControllers();
             });
-
-            
         }
     }
 }

@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BE.PICBIN.DL", "BE.PICBIN.D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RegisterWorker", "RegisterWorker\RegisterWorker.csproj", "{09BAF381-B669-4A28-B3B3-0C0C7873CA7E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppealWorker", "AppealWorker\AppealWorker.csproj", "{A4F5DCE8-837D-4551-A8E8-72A45CB8CAED}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BE.PICBIN.Notification", "BE.PICBIN.Notification\BE.PICBIN.Notification.csproj", "{AAF7FA69-0F19-4CAF-B66A-54A027196107}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,10 +35,10 @@ Global
 		{09BAF381-B669-4A28-B3B3-0C0C7873CA7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{09BAF381-B669-4A28-B3B3-0C0C7873CA7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{09BAF381-B669-4A28-B3B3-0C0C7873CA7E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A4F5DCE8-837D-4551-A8E8-72A45CB8CAED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A4F5DCE8-837D-4551-A8E8-72A45CB8CAED}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A4F5DCE8-837D-4551-A8E8-72A45CB8CAED}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A4F5DCE8-837D-4551-A8E8-72A45CB8CAED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AAF7FA69-0F19-4CAF-B66A-54A027196107}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAF7FA69-0F19-4CAF-B66A-54A027196107}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAF7FA69-0F19-4CAF-B66A-54A027196107}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAF7FA69-0F19-4CAF-B66A-54A027196107}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

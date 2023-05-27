@@ -171,6 +171,7 @@ function AuctionDetail({eventCallBack, oData}) {
                 setYourBet(yourBet + price)
                 setOAuctionData(data);
                 setAmount(null);
+                handleGetHistory();
             }
             else{
                 toast.warning("Something wrong! Please try again.");

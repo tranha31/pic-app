@@ -13,7 +13,7 @@ class Metamask {
     }
 
     async checkAcceptNetwork(){
-        if(process.env.REACT_ACCEPT_TEST === "0" && window.ethereum.networkVersion != "1"){
+        if(process.env.REACT_APP_ACCEPT_TEST === "0" && window.ethereum.networkVersion != "1"){
             return false;
         }
 
