@@ -75,7 +75,24 @@ namespace BE.PICBIN.BL
             CopyrightDL oDL = new CopyrightDL(Configuration);
             try
             {
-                await oDL.AddNewImage(image, contentImage, imageMarked);
+                var imageID = await oDL.AddNewImage(image, contentImage, imageMarked);
+                //Bắn thông báo + Lưu thông báo
+                if(!string.IsNullOrEmpty(imageID) && Guid.TryParse(imageID, out _))
+                {
+                    Notificontent notificontent = new Notificontent() { Message = "Your registration request has been approved", UserKey = sign };
+                    NotificationBL notificationBL = new NotificationBL(Configuration);
+                    //Không cần await => Cứ bắn thôi
+                    notificationBL.PushMessage(notificontent);
+
+                    Notification notification = new Notification()
+                    {
+                        ImageID = imageID,
+                        Content = "Your registration request has been approved",
+                        ReferenceLink = "my_collection",
+                        Type = 0
+                    };
+                    notificationBL.AddNewNotification(notification);
+                }
             }
             catch (Exception ex)
             {
@@ -88,7 +105,7 @@ namespace BE.PICBIN.BL
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task HandleRejectRegisterRequest(string id, ServiceResult serviceResult)
+        public async Task HandleRejectRegisterRequest(string id, ServiceResult serviceResult, string userKey)
         {
             RegisterRequestDL oDL = new RegisterRequestDL(Configuration);
 
@@ -122,6 +139,19 @@ namespace BE.PICBIN.BL
             }
 
             await oDL.HandleRejectRegisterRequest(id, registerReject);
+            //Bắn thông báo cho người dùng
+            Notificontent notificontent = new Notificontent() { Message = $"Your registration request has been deny: {error}", UserKey = userKey };
+            NotificationBL notificationBL = new NotificationBL(Configuration);
+            //Không cần await => Cứ bắn thôi
+            notificationBL.PushMessage(notificontent);
+
+            Notification notification = new Notification()
+            {
+                Content = $"Your registration request has been deny: {error}",
+                ReferenceLink = "my_request",
+                Type = 1
+            };
+            notificationBL.AddNewNotification(notification);
         }
 
         /// <summary>
@@ -246,6 +276,18 @@ namespace BE.PICBIN.BL
 
                 serviceResult.Success = true;
 
+                Notificontent notificontent = new Notificontent() { Message = "Your image has been sold", UserKey = oldKey };
+                NotificationBL notificationBL = new NotificationBL(Configuration);
+                //Không cần await => Cứ bắn thôi
+                notificationBL.PushMessage(notificontent);
+
+                Notification notification = new Notification()
+                {
+                    ImageID = imageID,
+                    Content = "Your image has been sold",
+                };
+                notificationBL.AddNewNotification(notification);
+
             }
             catch (Exception ex)
             {
@@ -284,7 +326,7 @@ namespace BE.PICBIN.BL
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<bool> HandleRejectAppealRequest(string id)
+        public async Task<bool> HandleRejectAppealRequest(string id, string userKey)
         {
             if (id == null)
             {
@@ -300,6 +342,25 @@ namespace BE.PICBIN.BL
             RegisterRequestDL oDL = new RegisterRequestDL(Configuration);
             await oDL.HandleRejectAppealRequest(ids);
 
+            //Bắn thông báo
+            List<string> userKeys = userKey.Split(';').ToList();
+            if(userKeys.Count > 0)
+            {
+                foreach (var item in userKeys)
+                {
+                    Notificontent notificontent = new Notificontent() { Message = "Your appeal request was denied", UserKey = item };
+                    NotificationBL notificationBL = new NotificationBL(Configuration);
+                    //Không cần await => Cứ bắn thôi
+                    notificationBL.PushMessage(notificontent);
+
+                    Notification notification = new Notification()
+                    {
+                        Content = "Your appeal request was denied",
+                    };
+                    notificationBL.AddNewNotification(notification);
+                }
+            }
+            
             return true;
         }
 
@@ -421,6 +482,18 @@ namespace BE.PICBIN.BL
                     }
 
                     serviceResult.Success = true;
+
+                    Notificontent notificontent = new Notificontent() { Message = "Your auction room has been finished", UserKey = auctionRoom.OwnerPublicKey };
+                    NotificationBL notificationBL = new NotificationBL(Configuration);
+                    //Không cần await => Cứ bắn thôi
+                    notificationBL.PushMessage(notificontent);
+
+                    Notification notification = new Notification()
+                    {
+                        ImageID = imageID,
+                        Content = "Your auction room has been finished",
+                    };
+                    notificationBL.AddNewNotification(notification);
 
                 }
                 catch (Exception ex)

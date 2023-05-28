@@ -149,13 +149,13 @@ namespace BE.PICBIN.API.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("request/appeal/reject")]
-        public async Task<IActionResult> RejectAppealRequest(string id)
+        public async Task<IActionResult> RejectAppealRequest(string id, string userKey)
         {
             CopyrightBL oBL = new CopyrightBL(_config);
             ServiceResult result = new ServiceResult();
             try
             {
-                var check = await oBL.HandleRejectAppealRequest(id);
+                var check = await oBL.HandleRejectAppealRequest(id, userKey);
                 result.Success = check;
 
             }

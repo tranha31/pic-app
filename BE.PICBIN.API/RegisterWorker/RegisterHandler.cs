@@ -89,13 +89,11 @@ namespace RegisterWorker
                         await oBL.AddNewCopyrightImage(data.Sign, dataRegister.Caption, dataRegister.Image, dataRegister.ImageMark);
 
                         await oBL.HandleDeleteRegisterRequest(data.ID);
-                        //Ban thong bao
                     }
                     else
                     {
                         CopyrightBL oBL = new CopyrightBL(_configuration);
-                        await oBL.HandleRejectRegisterRequest(data.ID, serviceResult);
-                        //Ban thong bao
+                        await oBL.HandleRejectRegisterRequest(data.ID, serviceResult, data.Sign);
                     }
                 }
 

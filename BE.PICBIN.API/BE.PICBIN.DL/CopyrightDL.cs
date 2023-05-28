@@ -20,7 +20,7 @@ namespace BE.PICBIN.DL
             SetMongoDB(MongoDBName);
         }
 
-        public async Task AddNewImage(CopyrightImage image, string content, string imageMarked)
+        public async Task<string> AddNewImage(CopyrightImage image, string content, string imageMarked)
         {
             DynamicParameters parameters = new DynamicParameters();
             parameters.Add("Sign", image.UserPublicKey);
@@ -33,12 +33,13 @@ namespace BE.PICBIN.DL
             ExcuteProcMySQL(procName, parameters, ref listOutPut);
 
             var id = listOutPut[0];
-            var guid = new Guid();
-            if(!string.IsNullOrEmpty(id) && Guid.TryParse(id, out guid))
+            if(!string.IsNullOrEmpty(id) && Guid.TryParse(id, out _))
             {
                 CopyrightImageModel copyrightImage = new CopyrightImageModel() { RefID = id, ImageContent = content, ImageContentMarked = imageMarked };
                 await InsertOneAsync<CopyrightImageModel>(copyrightImage, MongoCollection);
             }
+
+            return id;
         }
 
         public async Task<List<RegisterRequestModel>> GetAllRegisterRequest(FilterDefinition<RegisterRequestModel> filter)

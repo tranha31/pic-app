@@ -172,6 +172,7 @@ function AppealRequest() {
             const api = new CopyrightAPI();
             var param = {
                 id: currentID,
+                userKey: currentUser.substring(2)
             }
             
             setShowLoading(true);
