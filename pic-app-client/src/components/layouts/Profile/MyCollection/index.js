@@ -25,7 +25,15 @@ const cx = classNames.bind(styles);
 
 function MyCollection({callBackUpdate, searchKey, isSearchData}) {
 
-    const [tab, setTab] = useState(0);
+    const [tab, setTab] = useState(()=>{
+        var type = window.location.href.split("?q=")[1]
+        if(type){
+            return Number.parseInt(type);
+        }
+        else{
+            return 0;
+        }
+    });
     const [showDetail, setShowDetail] = useState(false);
     const [showFilter, setShowFilter] = useState(false);
 

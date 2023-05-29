@@ -82,14 +82,15 @@ namespace BE.PICBIN.BL
                     Notificontent notificontent = new Notificontent() { Message = "Your registration request has been approved", UserKey = sign };
                     NotificationBL notificationBL = new NotificationBL(Configuration);
                     //Không cần await => Cứ bắn thôi
-                    notificationBL.PushMessage(notificontent);
+                    await notificationBL.PushMessage(notificontent);
 
                     Notification notification = new Notification()
                     {
                         ImageID = imageID,
                         Content = "Your registration request has been approved",
                         ReferenceLink = "my_collection",
-                        Type = 0
+                        Type = 0,
+                        UserPublicKey = sign
                     };
                     notificationBL.AddNewNotification(notification);
                 }
@@ -143,13 +144,14 @@ namespace BE.PICBIN.BL
             Notificontent notificontent = new Notificontent() { Message = $"Your registration request has been deny: {error}", UserKey = userKey };
             NotificationBL notificationBL = new NotificationBL(Configuration);
             //Không cần await => Cứ bắn thôi
-            notificationBL.PushMessage(notificontent);
+            await notificationBL.PushMessage(notificontent);
 
             Notification notification = new Notification()
             {
                 Content = $"Your registration request has been deny: {error}",
                 ReferenceLink = "my_request",
-                Type = 1
+                Type = 1,
+                UserPublicKey = userKey
             };
             notificationBL.AddNewNotification(notification);
         }
@@ -279,12 +281,13 @@ namespace BE.PICBIN.BL
                 Notificontent notificontent = new Notificontent() { Message = "Your image has been sold", UserKey = oldKey };
                 NotificationBL notificationBL = new NotificationBL(Configuration);
                 //Không cần await => Cứ bắn thôi
-                notificationBL.PushMessage(notificontent);
+                await notificationBL.PushMessage(notificontent);
 
                 Notification notification = new Notification()
                 {
                     ImageID = imageID,
                     Content = "Your image has been sold",
+                    UserPublicKey = oldKey,
                 };
                 notificationBL.AddNewNotification(notification);
 
@@ -351,11 +354,12 @@ namespace BE.PICBIN.BL
                     Notificontent notificontent = new Notificontent() { Message = "Your appeal request was denied", UserKey = item };
                     NotificationBL notificationBL = new NotificationBL(Configuration);
                     //Không cần await => Cứ bắn thôi
-                    notificationBL.PushMessage(notificontent);
+                    await notificationBL.PushMessage(notificontent);
 
                     Notification notification = new Notification()
                     {
                         Content = "Your appeal request was denied",
+                        UserPublicKey = item
                     };
                     notificationBL.AddNewNotification(notification);
                 }
@@ -486,12 +490,13 @@ namespace BE.PICBIN.BL
                     Notificontent notificontent = new Notificontent() { Message = "Your auction room has been finished", UserKey = auctionRoom.OwnerPublicKey };
                     NotificationBL notificationBL = new NotificationBL(Configuration);
                     //Không cần await => Cứ bắn thôi
-                    notificationBL.PushMessage(notificontent);
+                    await notificationBL.PushMessage(notificontent);
 
                     Notification notification = new Notification()
                     {
                         ImageID = imageID,
                         Content = "Your auction room has been finished",
+                        UserPublicKey = auctionRoom.OwnerPublicKey
                     };
                     notificationBL.AddNewNotification(notification);
 

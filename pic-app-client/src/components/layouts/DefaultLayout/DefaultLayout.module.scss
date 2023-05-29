@@ -62,14 +62,22 @@
                 height: 50px;
                 margin-bottom: 10px;
 
+                &:hover{
+                    cursor: pointer;
+                }
+
                 .image{
                     height: 50px;
                     width: 50px;
                     background-repeat: no-repeat;
                     background-position: center;
-                    background-size: cover;
-                    background-image: url("../../../assets/imgs/socute.jpg");
+                    background-size: contain;
                     margin-right: 5px;
+                }
+
+                .message.active{
+                    color: #0e1d38;
+                    font-weight: 700;
                 }
             }
         }

@@ -143,11 +143,11 @@ namespace BE.PICBIN.BL
         /// <summary>
         /// Bắn thông báo cho người dùng
         /// </summary>
-        public void PushMessage(Notificontent notificontent)
+        public async Task PushMessage(Notificontent notificontent)
         {
             var pushURL = Configuration.GetSection("PushURL").Value;
             var url = pushURL + "/push/notification";
-            CallHTTPRequest.CallHttp(url, "POST", notificontent);
+            await CallHTTPRequest.CallHttp(url, "POST", notificontent);
         }
     }
 }

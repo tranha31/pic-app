@@ -20,7 +20,15 @@ const cx = classNames.bind(styles);
 
 function MyRequest() {
 
-    const [tab, setTab] = useState(0);
+    const [tab, setTab] = useState(()=>{
+        var type = window.location.href.split("?q=")[1]
+        if(type){
+            return Number.parseInt(type);
+        }
+        else{
+            return 0;
+        }
+    });
     const [title, setTitle] = useState("Warning");
     const [message, setMessage] = useState("We only send rejected image requests due to similarity. Are you sure you want to send an appeal?")
     const [showMessage, setShowMessage] = useState(false);

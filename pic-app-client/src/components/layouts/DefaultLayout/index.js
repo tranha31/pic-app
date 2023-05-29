@@ -7,16 +7,22 @@ import Draggable from 'react-draggable';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { HubConnectionBuilder, HubConnection } from '@microsoft/signalr';
+import NotificationAPI from '@/api/notification';
+import Metamask from '@/api/metamask';
+import { useNavigate } from "react-router-dom";
 
 const cx = classNames.bind(styles);
 
 function DefaultLayout({children, callBackUpdateSearch, callBackFilterData, disableSearch}) {
-
+    const navigate = useNavigate();
     const [copyrightMode, setCopyrightMode] = useState(0);
     const [showCopyright, setShowCopyright] = useState(false);
     const [showNotify, setShowNotify] = useState(false);
     const [disabedSearchKey, setDisabedSearchKey] = useState(disableSearch);
     const [connection, setConnection] = useState(null);
+    const [notification, setNotification] = useState([]);
+    const [address, setAddress] = useState(null);
+    const [userMessage, setUserMessage] = useState(null);
 
     const handleCloseCopyright = (state) => {
         setShowCopyright(state)
@@ -34,6 +40,67 @@ function DefaultLayout({children, callBackUpdateSearch, callBackFilterData, disa
     const handelCallBackFilterData = (value) => {
         callBackFilterData(value)
     }
+
+    const getNotification = async () => {
+        try{
+            var api = new NotificationAPI();
+            var param = {
+                userKey : address
+            }
+            var res = await api.getListNotification(param);
+            if(res.data.success){
+                var data = res.data.data;
+                setNotification(...[])
+                setNotification([...data]);
+            }
+        }
+        catch(err){
+            console.log(err)
+        }
+    }
+
+    const getAddress = async () => {
+        const metamask = new Metamask();
+        var check = await metamask.checkConnect();
+        if(check){
+            var address = await metamask.getAddress();
+            address = address[0];
+            setAddress(address.substring(2))
+        }
+    }
+
+    const handleViewNotification = async (index) => {
+        var data = notification;
+        var item = data[index];
+        await updateSeenNoti(item.infor.id);
+        data[index].infor.status = 1;
+        setNotification([...data]);
+        
+        if(item.infor.referenceLink){
+            var url = "/" + item.infor.referenceLink + "?q=" + item.infor.type.toString();
+            navigate(url);
+        }
+    }
+
+    const updateSeenNoti = async (id) => {
+        try{
+            var api = new NotificationAPI();
+            await api.updateSeenNotifi(id);
+        }
+        catch(err){
+            console.log(err)
+        }
+    }
+
+    useEffect(() => {
+        getAddress();
+    }, [])
+
+    useEffect(() => {
+        if(address){
+            getNotification();
+        }
+    }, [address])
 
     useEffect(()=>{
         setDisabedSearchKey(disableSearch)
@@ -54,12 +121,26 @@ function DefaultLayout({children, callBackUpdateSearch, callBackFilterData, disa
             .start()
             .then(() => {
               connection.on("ReceiveMessage", (message) => {
-                console.log(message);
+                setUserMessage(message);
               });
             })
             .catch((error) => console.log(error));
         }
-      }, [connection]);
+    }, [connection]);
+
+    useEffect(() => {
+        if(userMessage?.userKey === address){
+            if(window.location.href.includes("my_request")){
+                window.location.reload();
+            }
+            else{
+                toast.info(userMessage?.message);
+                getNotification();
+            }
+            
+        }
+    }, [userMessage])
+
 
     return ( 
         <Fragment>
@@ -77,14 +158,16 @@ function DefaultLayout({children, callBackUpdateSearch, callBackFilterData, disa
                                         <div className={cx('close-notify')} onClick={() => {setShowNotify(false)}}></div>
                                     </div>
                                     <div className={cx('notify-content', 'flex-1')}>
-                                        <div className={cx('d-flex', 'item-notify', 'w-full')}>
-                                            <div className={cx('image')}></div>
-                                            <div className={cx('message', 'flex-1')}>Your image is accepted</div>
-                                        </div>
-                                        <div className={cx('d-flex', 'item-notify', 'w-full')}>
-                                            <div className={cx('image')}></div>
-                                            <div className={cx('message', 'flex-1')}>Your image is accepted</div>
-                                        </div>
+                                        {
+                                            notification?.map((e, i) => {
+                                                return (
+                                                    <div key={i} className={cx('d-flex', 'item-notify', 'w-full', 'align-center')} onClick={() => {handleViewNotification(i)}}>
+                                                        {e.image && <div className={cx('image')} style={{backgroundImage: "url('"+e.image+"')"}}></div>}
+                                                        <div className={cx('message', 'flex-1', e.infor.status === 1 ? 'active' : '')}>{e.infor.content}</div>
+                                                    </div>
+                                                )
+                                            })
+                                        }
                                     </div>
                                 </div>
                             </div>
