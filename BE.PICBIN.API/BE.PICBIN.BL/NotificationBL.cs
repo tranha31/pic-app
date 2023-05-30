@@ -147,7 +147,7 @@ namespace BE.PICBIN.BL
         {
             var pushURL = Configuration.GetSection("PushURL").Value;
             var url = pushURL + "/push/notification";
-            await CallHTTPRequest.CallHttp(url, "POST", notificontent);
+            await CallHTTPRequest.CallHttp(url, "POST", "", notificontent);
         }
     }
 }

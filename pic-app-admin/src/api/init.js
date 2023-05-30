@@ -7,6 +7,7 @@ export default axios.create({
     headers: {
         "Content-Type" : "application/json-patch+json",
         "Authorization": "", 
+        "x-api-key": "89f76b00ff0211edbd2a34e6d760b36f"
     } ,
     
 })

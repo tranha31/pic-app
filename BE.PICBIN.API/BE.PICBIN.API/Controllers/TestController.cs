@@ -1,4 +1,5 @@
-﻿using BE.PICBIN.BL;
+﻿using BE.PICBIN.API.Authentication;
+using BE.PICBIN.BL;
 using BE.PICBIN.DL.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;

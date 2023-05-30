@@ -202,8 +202,8 @@ namespace BE.PICBIN.BL
 
             var copyRightUrl = Configuration.GetSection("CopyrightOtherService").Value;
             var url = copyRightUrl + "/copyright/check";
-
-            var result = await CallHTTPRequest.CallHttp(url, "POST", param);
+            var apiKey = Configuration.GetSection("CopyrightOtherServiceApiKey").Value;
+            var result = await CallHTTPRequest.CallHttp(url, "POST", apiKey, param);
             var serviceResult = JsonConvert.DeserializeObject<ServiceResult>(result.ToString());
             return serviceResult;
         }
@@ -249,7 +249,8 @@ namespace BE.PICBIN.BL
 
             try
             {
-                var result = await CallHTTPRequest.CallHttp(url, "POST", param);
+                var apiKey = Configuration.GetSection("CopyrightOtherServiceApiKey").Value;
+                var result = await CallHTTPRequest.CallHttp(url, "POST", apiKey, param);
 
                 var imageResult = JsonConvert.DeserializeObject<ServiceResult>(result.ToString());
                 if (!imageResult.Success)
@@ -390,8 +391,8 @@ namespace BE.PICBIN.BL
 
             var copyRightUrl = Configuration.GetSection("CopyrightOtherService").Value;
             var url = copyRightUrl + "/copyright/accept";
-
-            var result = await CallHTTPRequest.CallHttp(url, "POST", param);
+            var apiKey = Configuration.GetSection("CopyrightOtherServiceApiKey").Value;
+            var result = await CallHTTPRequest.CallHttp(url, "POST", apiKey, param);
 
             var serviceResult = JsonConvert.DeserializeObject<ServiceResult>(result.ToString());
             if (!serviceResult.Success)
@@ -458,7 +459,8 @@ namespace BE.PICBIN.BL
 
                 try
                 {
-                    var result = await CallHTTPRequest.CallHttp(url, "POST", param);
+                    var apiKey = Configuration.GetSection("CopyrightOtherServiceApiKey").Value;
+                    var result = await CallHTTPRequest.CallHttp(url, "POST", apiKey, param);
 
                     var imageResult = JsonConvert.DeserializeObject<ServiceResult>(result.ToString());
                     if (!imageResult.Success)

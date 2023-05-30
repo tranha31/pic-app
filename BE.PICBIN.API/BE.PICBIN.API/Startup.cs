@@ -1,3 +1,4 @@
+using BE.PICBIN.API.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -46,6 +47,8 @@ namespace BE.PICBIN.API
             });
 
             services.AddSingleton<IConfiguration>(Configuration);
+
+            services.AddScoped<ApiKeyAuthFilter>();
 
             //services.AddControllers().AddNewtonsoftJson(x =>
             //        x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);

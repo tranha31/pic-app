@@ -77,8 +77,8 @@ namespace RegisterWorker
 
                     var copyRightUrl = _configuration.GetSection("CopyrightManager").Value;
                     var url = copyRightUrl + "/copyright/add";
-
-                    var result = await CallHTTPRequest.CallHttp(url, "POST", param);
+                    var apiKey = _configuration.GetSection("CopyrightManagerApiKey").Value;
+                    var result = await CallHTTPRequest.CallHttp(url, "POST", apiKey, param);
 
                     var serviceResult = JsonConvert.DeserializeObject<ServiceResult>(result.ToString());
                     if (serviceResult.Success)

@@ -14,8 +14,9 @@ namespace BE.PICBIN.BL
 
         public CallHTTPRequest() {}
 
-        public static async Task<object> CallHttp(string url, string method, object param = null )
+        public static async Task<object> CallHttp(string url, string method, string apiKey, object param = null)
         {
+            client.DefaultRequestHeaders.Add("x-api-key", apiKey);
             var result = new object();
             if (method == "GET")
             {

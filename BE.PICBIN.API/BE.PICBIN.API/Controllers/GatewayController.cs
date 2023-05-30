@@ -1,4 +1,5 @@
-﻿using BE.PICBIN.BL;
+﻿using BE.PICBIN.API.Authentication;
+using BE.PICBIN.BL;
 using BE.PICBIN.BL.Enities;
 using BE.PICBIN.DL;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +13,7 @@ namespace BE.PICBIN.API.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [ApiKeyAuthFilter]
     public class GatewayController : Controller
     {
         private readonly IConfiguration _config;

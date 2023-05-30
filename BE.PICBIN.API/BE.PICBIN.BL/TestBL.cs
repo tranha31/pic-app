@@ -19,7 +19,7 @@ namespace BE.PICBIN.BL
         {
             var copyRightUrl = Configuration.GetSection("CopyrightManager").Value;
             var url = copyRightUrl + "/test";
-            var result = await CallHTTPRequest.CallHttp(url, "GET");
+            var result = await CallHTTPRequest.CallHttp(url, "GET", "");
             return result;
         }
 
@@ -28,7 +28,7 @@ namespace BE.PICBIN.BL
             Notificontent notificontent = new Notificontent() { Message = "Test push" };
             var pushURL = Configuration.GetSection("PushURL").Value;
             var url = pushURL + "/push/notification";
-            await CallHTTPRequest.CallHttp(url, "POST", notificontent);
+            await CallHTTPRequest.CallHttp(url, "POST", "", notificontent);
         }
     }
 }

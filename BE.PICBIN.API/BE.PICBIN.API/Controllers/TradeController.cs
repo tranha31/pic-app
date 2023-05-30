@@ -1,4 +1,5 @@
-﻿using BE.PICBIN.BL;
+﻿using BE.PICBIN.API.Authentication;
+using BE.PICBIN.BL;
 using BE.PICBIN.BL.Enities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -11,6 +12,7 @@ namespace BE.PICBIN.API.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [ApiKeyAuthFilter]
     public class TradeController : Controller
     {
         private readonly IConfiguration _config;
