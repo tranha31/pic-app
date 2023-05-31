@@ -1,6 +1,7 @@
 ﻿using BE.PICBIN.API.Authentication;
 using BE.PICBIN.BL;
 using BE.PICBIN.BL.Enities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -99,6 +100,7 @@ namespace BE.PICBIN.API.Controllers
         /// Upload register request
         /// </summary>
         /// <returns></returns>
+        [Authorize]
         [HttpGet("appeal/request/all/paging")]
         public async Task<IActionResult> AppealAllRegister(int start, int length, DateTime fromDate, DateTime toDate)
         {
@@ -126,6 +128,7 @@ namespace BE.PICBIN.API.Controllers
         /// <param name="length"></param>
         /// <param name="search"></param>
         /// <returns></returns>
+        [Authorize]
         [HttpGet("user/paging")]
         public IActionResult GetListUserPaging(int start, int length, string search)
         {

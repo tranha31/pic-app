@@ -28,7 +28,13 @@ class CollectionAPI {
      * @returns 
      */
     async getUserPaging(param){
-        return await init.get(`${this.controler}/user/paging`, {params: param});
+        try{
+            var res = await init.get(`${this.controler}/user/paging`, {params: param});
+            return res;
+        }
+        catch(err){
+            return err;
+        }
     }
 }
 

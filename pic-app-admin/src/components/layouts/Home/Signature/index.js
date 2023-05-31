@@ -8,11 +8,12 @@ import CollectionAPI from '../../../../api/collection';
 import Loading from '../../../base/Loading';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from "react-router-dom";
 
 const cx = classNames.bind(styles);
 
 function Signature() {
-
+    const navigate = useNavigate();
     const [numberPerPage, setNumberPerPage] = useState({ value: '30', label: '30' })
     const [totalRecord, setTotalRecord] = useState(0)
     const [searchKey, setSearchKey] = useState("")
@@ -80,21 +81,27 @@ function Signature() {
         }
         
         var res = await api.getUserPaging(param);
-        if(res.data.success){
-            var data = res.data.data.data;
-            var users = convertData(data);
-
-            var totalR = res.data.data.totalRecord;
-            setTotalRecord(totalR);
-
-            setShowLoading(false);
-            return users;
+        if(res.response.status === 401){
+            navigate("/login")
         }
         else{
-            setShowLoading(false);
-            toast.error("Something wrong! Please try again!")
-            return null;
+            if(res.data.success){
+                var data = res.data.data.data;
+                var users = convertData(data);
+    
+                var totalR = res.data.data.totalRecord;
+                setTotalRecord(totalR);
+    
+                setShowLoading(false);
+                return users;
+            }
+            else{
+                setShowLoading(false);
+                toast.error("Something wrong! Please try again!")
+                return null;
+            }
         }
+        
     }
 
     const convertData = (data) => {

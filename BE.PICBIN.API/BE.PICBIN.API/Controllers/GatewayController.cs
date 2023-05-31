@@ -2,6 +2,7 @@
 using BE.PICBIN.BL;
 using BE.PICBIN.BL.Enities;
 using BE.PICBIN.DL;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -150,6 +151,7 @@ namespace BE.PICBIN.API.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        [Authorize]
         [HttpDelete("request/appeal/reject")]
         public async Task<IActionResult> RejectAppealRequest(string id, string userKey)
         {
@@ -177,6 +179,7 @@ namespace BE.PICBIN.API.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        [Authorize]
         [HttpPost("request/appeal/accept")]
         public async Task<IActionResult> AcceptAppealRequest(string id, string key)
         {
