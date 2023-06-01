@@ -14,10 +14,10 @@ class Metamask {
 
     async checkAcceptNetwork(){
         if(process.env.REACT_APP_NETWORK_ID === window.ethereum.networkVersion){
-            return false;
+            return true;
         }
 
-        return true
+        return false
     }
 
     async getAddress(){

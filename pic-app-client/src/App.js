@@ -17,10 +17,10 @@ function App() {
     window.ethereum.on('networkChanged', function(networkId){
       console.log('networkChanged',networkId);
       if(Number.parseInt(process.env.REACT_APP_NETWORK_ID) === networkId){
-
+        window.location.reload();
       }
       else{
-        window.location.reload();
+        
       }
       
     });
