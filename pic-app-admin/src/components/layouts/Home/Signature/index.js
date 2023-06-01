@@ -81,7 +81,7 @@ function Signature() {
         }
         
         var res = await api.getUserPaging(param);
-        if(res.response.status === 401){
+        if(res.response && res.response.status === 401){
             navigate("/login")
         }
         else{

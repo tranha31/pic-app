@@ -12,11 +12,12 @@ import CopyrightAPI from '../../../../api/copyright';
 import "react-datepicker/dist/react-datepicker.css";
 import 'react-toastify/dist/ReactToastify.css';
 import MessageBox from '../../../base/MessageBox';
+import { useNavigate } from "react-router-dom";
 
 const cx = classNames.bind(styles);
 
 function AppealRequest() {
-
+    const navigate = useNavigate();
     const [numberPerPage, setNumberPerPage] = useState({ value: '30', label: '30' })
     var curDate = new Date();
     
@@ -100,21 +101,27 @@ function AppealRequest() {
         }
         
         var res = await api.getAllAppealRequestPaging(param);
-        if(res.data.success){
-            var data = res.data.data.data;
-            var registers = convertDataAppealRequest(data);
-
-            var totalR = res.data.data.totalRecord;
-            setTotalRecord(totalR);
-
-            setShowLoading(false);
-            return registers;
+        if(res.response && res.response.status === 401){
+            navigate("/login")
         }
         else{
-            setShowLoading(false);
-            toast.error("Something wrong! Please try again!")
-            return null;
+            if(res.data.success){
+                var data = res.data.data.data;
+                var registers = convertDataAppealRequest(data);
+    
+                var totalR = res.data.data.totalRecord;
+                setTotalRecord(totalR);
+    
+                setShowLoading(false);
+                return registers;
+            }
+            else{
+                setShowLoading(false);
+                toast.error("Something wrong! Please try again!")
+                return null;
+            }
         }
+        
     }
 
     const convertDataAppealRequest = (data) => {
@@ -177,18 +184,24 @@ function AppealRequest() {
             
             setShowLoading(true);
             var res = await api.rejectRequest(param);
-            if(res.data.success){
-                var temp = appealRequest;
-                temp = temp.filter((e, ind) => {
-                    return e.id != currentID;
-                })
-                setAppealRequest([...temp]);
-                eventCallBack();
-                toast.success("Reject request success!");
+            if(res.response && res.response.status === 401){
+                navigate("/login")
             }
             else{
-                toast.error("Something wrong! Please try again!")
+                if(res.data.success){
+                    var temp = appealRequest;
+                    temp = temp.filter((e, ind) => {
+                        return e.id != currentID;
+                    })
+                    setAppealRequest([...temp]);
+                    eventCallBack();
+                    toast.success("Reject request success!");
+                }
+                else{
+                    toast.error("Something wrong! Please try again!")
+                }
             }
+            
 
             setShowLoading(false);
         }
@@ -206,19 +219,25 @@ function AppealRequest() {
             
             setShowLoading(true);
             var res = await api.acceptRequest(id, key);
-            if(res.data.success){
-                var temp = appealRequest;
-                temp = temp.filter((e, ind) => {
-                    return e.id != currentID;
-                })
-                setAppealRequest([...temp]);
-                eventCallBack();
-                setShowMessasgeBox(false)
-                toast.success("Accept request success!");
+            if(res.response && res.response.status === 401){
+                navigate("/login")
             }
             else{
-                toast.error("Something wrong! Please try again!")
+                if(res.data.success){
+                    var temp = appealRequest;
+                    temp = temp.filter((e, ind) => {
+                        return e.id != currentID;
+                    })
+                    setAppealRequest([...temp]);
+                    eventCallBack();
+                    setShowMessasgeBox(false)
+                    toast.success("Accept request success!");
+                }
+                else{
+                    toast.error("Something wrong! Please try again!")
+                }
             }
+            
 
             setShowLoading(false);
         }
