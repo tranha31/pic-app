@@ -33,6 +33,10 @@ class TradeAPI {
         return await init.delete(`${this.controler}/sell/delete`, {params: param});
     }
 
+    async getItemSellByID(param){
+        return await init.get(`${this.controler}/sell/getbyid`, {params: param});
+    }
+
     async getHomeSellPaging(param){
         return await init.get(`${this.controler}/home/sell/paging`, {params: param});
     }

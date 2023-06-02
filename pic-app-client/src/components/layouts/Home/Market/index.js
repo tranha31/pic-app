@@ -199,6 +199,18 @@ function Market({callBackUpdate, searchKey, isSearchData}) {
                 from: address,
                 value: price
             }
+            
+            var api = new TradeAPI();
+            var param = {
+                id : selectedItem.id
+            }
+            var check = await api.getItemSellByID(param);
+            if(!check.data.success){
+                toast.warning("Image has been purchased.");
+                filterData();
+                setShowDetail(false);
+                return;
+            }
 
             setShowLoading(true);
 
