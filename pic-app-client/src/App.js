@@ -14,7 +14,7 @@ function App() {
   })
 
   useEffect(() => {
-    window.ethereum.on('networkChanged', function(networkId){
+    window.ethereum?.on('networkChanged', function(networkId){
       console.log('networkChanged',networkId);
       if(Number.parseInt(process.env.REACT_APP_NETWORK_ID) === networkId){
         window.location.reload();

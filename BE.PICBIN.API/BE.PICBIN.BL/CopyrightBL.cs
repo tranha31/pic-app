@@ -19,10 +19,13 @@ namespace BE.PICBIN.BL
         public IConfiguration Configuration { get; }
         public NLog _nLog { get; set; }
 
+        public CurrentDateTime current { get; set; }
+
         public CopyrightBL(IConfiguration configuration)
         {
             Configuration = configuration;
             _nLog = new NLog(configuration);
+            current = new CurrentDateTime(configuration);
         }
 
         /// <summary>
@@ -44,7 +47,7 @@ namespace BE.PICBIN.BL
                     UserPublicKey = sign,
                     ImageContent = content,
                     Status = 0,
-                    CreatedDate = DateTime.Now
+                    CreatedDate = current.GetCurrentDateTime()
                 };
 
                 RegisterRequestDL oDL = new RegisterRequestDL(Configuration);
@@ -150,7 +153,7 @@ namespace BE.PICBIN.BL
             {
                 Content = $"Your registration request has been deny: {error}",
                 ReferenceLink = "my_request",
-                Type = 1,
+                Type = 0,
                 UserPublicKey = userKey
             };
             notificationBL.AddNewNotification(notification);
@@ -426,7 +429,7 @@ namespace BE.PICBIN.BL
                 return serviceResult;
             }
 
-            if(auctionRoom.EndTime > DateTime.Now)
+            if(auctionRoom.EndTime > current.GetCurrentDateTime())
             {
                 serviceResult.Error = "Auction room is not ended";
                 return serviceResult;

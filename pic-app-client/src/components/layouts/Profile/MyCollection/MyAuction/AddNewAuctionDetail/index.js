@@ -113,7 +113,6 @@ function AddNewAutionDetail({callBackEvent, oData}) {
     const saveData = async () => {
         try{
             const metamask = new Metamask();
-
             var checkNetwork = await metamask.checkAcceptNetwork();
             if(!checkNetwork){
                 toast.warning("Your current network is not supported.");
@@ -234,7 +233,6 @@ function AddNewAutionDetail({callBackEvent, oData}) {
             <PopupDetail title={"Auction room"} scale={{height: "95%", width: "65%"}} child={child} eventCallBack={closePopup}/>
             <GalleryImage callBackEvent={closeGallery} showPopup={showGallery} resetSeletected={resetImage}/>
             {showMessage && <MessageBox type={"warning"} title={"Warning"} message={message} scale={{height: "200px", width: "450px"}} eventCallBack={()=> setShowMessage(false)}/>}
-            <ToastContainer/>
             {showLoading && <Loading/>}
         </div>
     );

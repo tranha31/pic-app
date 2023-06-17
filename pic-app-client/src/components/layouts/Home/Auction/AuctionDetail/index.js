@@ -55,13 +55,13 @@ function AuctionDetail({eventCallBack, oData}) {
         setOAuctionData(oData);
     }, [oData])
 
-    const getHistory = setInterval(() => {
-        handleGetHistory();
-    }, 60000);
+    // const getHistory = setInterval(() => {
+    //     handleGetHistory();
+    // }, 60000);
 
     const handleCallBack = () => {
         clearInterval(countDown);
-        clearInterval(getHistory);
+        //clearInterval(getHistory);
         eventCallBack();
     }
 
@@ -106,11 +106,11 @@ function AuctionDetail({eventCallBack, oData}) {
                     setHistory([...data]);
                 }
                 else{
-                    toast.warning("Cannot get history!");
+                    //toast.warning("Cannot get history!");
                 }
             }
             catch(err){
-                toast.warning("Cannot get history!");
+                //toast.warning("Cannot get history!");
             }
         }
     }
@@ -248,7 +248,10 @@ function AuctionDetail({eventCallBack, oData}) {
                         <Button primary onClick={() => handleSubmit()}>Submit</Button>
                     </div>
                 </div>
-                <p className={cx('font-bold')} style={{marginTop: "10px"}}>History</p>
+                <div className={cx('d-flex', 'w-full')}>
+                    <p className={cx('font-bold')} style={{marginTop: "10px"}}>History</p>
+                    <div className={cx('refresh')} onClick={() => {handleGetHistory()}}></div>
+                </div>
                 <div className={cx('history', 'd-flex', 'flex-column')}>
                     {
                         history.map((e, i) => {
@@ -283,7 +286,6 @@ function AuctionDetail({eventCallBack, oData}) {
     return ( 
         <div>
             <PopupDetail title={"Auction room"} scale={{height: "95%", width: "85%"}} child={child} eventCallBack={handleCallBack}/>
-            <ToastContainer/>
             {showLoading && <Loading/>}
         </div>
     );

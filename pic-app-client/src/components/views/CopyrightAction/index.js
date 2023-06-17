@@ -109,11 +109,11 @@ function CopyrightAction({mode, callBackEvent}) {
             return;
         }
 
-        var checkNetwork = await metamask.checkAcceptNetwork();
-        if(!checkNetwork){
-            toast.warning("Your current network is not supported.");
-            return;
-        }
+        // var checkNetwork = await metamask.checkAcceptNetwork();
+        // if(!checkNetwork){
+        //     toast.warning("Your current network is not supported.");
+        //     return;
+        // }
         
         try{
             var address = await metamask.getAddress();
@@ -231,7 +231,6 @@ function CopyrightAction({mode, callBackEvent}) {
     return ( 
         <div>
             <PopupDetail title={title} scale={{height: "90%", width: "55%"}} child={child} eventCallBack={closePopup}/>
-            <ToastContainer/>
             {showLoading && <Loading />}
             {showMessage && <MessageBox title={"Check result"} message={message} scale={{height: "300px", width: "450px"}} eventCallBack={()=>{setShowMessage(false)}}/>}
         </div>

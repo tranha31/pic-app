@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "a+3w5gQj9nmgBrM7EKDKdX4SKUZUOOthVbbRfAGYcGRPkFEJ3LbaChepL1kb0MfRr51MIaWVnHVWD47HbLsrSA==",
+  "dgSpecHash": "qWSL4uTJqiLw3TAlemFIQ0cP1+ZFllej/gFsAvRY2B2SSoobnlYXURgWyaf8ILVPmiPF1N1a8N6saSEEwDKJwg==",
   "success": true,
   "projectFilePath": "D:\\Blockchain\\pic-app\\BE.PICBIN.API\\RegisterWorker\\RegisterWorker.csproj",
   "expectedPackageFiles": [
@@ -23,6 +23,7 @@
     "C:\\Users\\Admin\\.nuget\\packages\\microsoft.extensions.filesystemglobbing\\3.1.28\\microsoft.extensions.filesystemglobbing.3.1.28.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\microsoft.extensions.hosting\\3.1.28\\microsoft.extensions.hosting.3.1.28.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\microsoft.extensions.hosting.abstractions\\3.1.28\\microsoft.extensions.hosting.abstractions.3.1.28.nupkg.sha512",
+    "C:\\Users\\Admin\\.nuget\\packages\\microsoft.extensions.hosting.windowsservices\\3.1.25\\microsoft.extensions.hosting.windowsservices.3.1.25.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\microsoft.extensions.logging\\3.1.28\\microsoft.extensions.logging.3.1.28.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\3.1.28\\microsoft.extensions.logging.abstractions.3.1.28.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\microsoft.extensions.logging.configuration\\3.1.28\\microsoft.extensions.logging.configuration.3.1.28.nupkg.sha512",
@@ -52,6 +53,7 @@
     "C:\\Users\\Admin\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\6.0.0\\system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\system.security.accesscontrol\\5.0.0\\system.security.accesscontrol.5.0.0.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\system.security.principal.windows\\5.0.0\\system.security.principal.windows.5.0.0.nupkg.sha512",
+    "C:\\Users\\Admin\\.nuget\\packages\\system.serviceprocess.servicecontroller\\4.7.0\\system.serviceprocess.servicecontroller.4.7.0.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\system.threading.channels\\7.0.0\\system.threading.channels.7.0.0.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\zstdsharp.port\\0.6.2\\zstdsharp.port.0.6.2.nupkg.sha512"
   ],

@@ -14,11 +14,13 @@ namespace BE.PICBIN.BL
     {
         public IConfiguration Configuration { get; }
         public NLog _nLog { get; set; }
+        public CurrentDateTime current { get; set; }
 
         public TradeBL(IConfiguration configuration)
         {
             Configuration = configuration;
             _nLog = new NLog(configuration);
+            current = new CurrentDateTime(configuration);
         }
 
         #region Sell
@@ -51,10 +53,6 @@ namespace BE.PICBIN.BL
             try
             {
                 TradeDL tradeDL = new TradeDL(Configuration);
-                if(mode == 0)
-                {
-                    itemID = Guid.NewGuid().ToString();
-                }
                 tradeDL.AddNewSellImage(mode, itemID, key, id, name, detail, price);
                 serviceResult.Success = true;
             }
@@ -173,7 +171,7 @@ namespace BE.PICBIN.BL
 
                 Dictionary<string, object> listData = new Dictionary<string, object>();
                 Dictionary<string, object> listImage = new Dictionary<string, object>();
-                for (var i = 0; i < data.Count; i++)
+                for (var i = 0; i < imageContent.Count; i++)
                 {
                     listData.Add(data[i].ImageID, data[i]);
                     listImage.Add(imageContent[i].RefID, imageContent[i].ImageContentMarked);
@@ -255,7 +253,7 @@ namespace BE.PICBIN.BL
                 return false;
             }
 
-            if(auctionRoom.StartTime <= DateTime.Now)
+            if(auctionRoom.StartTime <= current.GetCurrentDateTime())
             {
                 return false;
             }
@@ -290,7 +288,7 @@ namespace BE.PICBIN.BL
 
                 Dictionary<string, object> listData = new Dictionary<string, object>();
                 Dictionary<string, object> listImage = new Dictionary<string, object>();
-                for (var i = 0; i < data.Count; i++)
+                for (var i = 0; i < imageContent.Count; i++)
                 {
                     listData.Add(data[i].ImageID, data[i]);
                     listImage.Add(imageContent[i].RefID, imageContent[i].ImageContentMarked);
@@ -360,7 +358,7 @@ namespace BE.PICBIN.BL
                 return serviceResult;
             }
 
-            if(DateTime.Now < auctionRoom.StartTime || DateTime.Now > auctionRoom.EndTime)
+            if(current.GetCurrentDateTime() < auctionRoom.StartTime || current.GetCurrentDateTime() > auctionRoom.EndTime)
             {
                 serviceResult.Error = "Invalid time";
                 return serviceResult;
@@ -459,8 +457,10 @@ namespace BE.PICBIN.BL
             try
             {
                 TradeDL tradeDL = new TradeDL(Configuration);
-                
-                if(fromDate < DateTime.Now || toDate < DateTime.Now || fromDate >= toDate)
+
+                var now = current.GetCurrentDateTime();
+
+                if(fromDate < now || toDate < now || fromDate >= toDate)
                 {
                     serviceResult.Error = "Image time";
                     return serviceResult;

@@ -774,8 +774,7 @@ function MyRequest() {
                 )}
             </div>
             {showBoxReject && <MessageBox title={"Reason for reject"} message={messageReject} scale={{height: "200px", width: "450px"}} eventCallBack={() => {setShowBoxReject(false)}}/>}
-            {showDetail && <PopupDetail title={"Request detail"} scale={{height: "95%", width: "85%"}} child={viewReject} eventCallBack={handleCallBackDetailReject}/>}        
-            <ToastContainer/>
+            {showDetail && <PopupDetail title={"Request detail"} scale={{height: "95%", width: "85%"}} child={viewReject} eventCallBack={handleCallBackDetailReject}/>}
             {showLoading && <Loading />}
         </div>
     );

@@ -25,5 +25,5 @@ class DLBase:
             'raise_on_warnings': True
         }
         self.conn = mysql.connector.connect(**self.config)
-        cluster = MongoClient('localhost', 27017)
+        cluster = MongoClient('122.248.208.192', 27017)
         self.dbMongo = cluster[os.environ.get("REPO")]

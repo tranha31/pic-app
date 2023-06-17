@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+https://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <_PublishTargetUrl>D:\Blockchain\pic-app\BE.PICBIN.API\BE.PICBIN.API\bin\Release\netcoreapp3.1\publish\</_PublishTargetUrl>
+    <History>True|2023-06-16T13:37:38.5445263Z;True|2023-06-11T23:40:15.6499814+07:00;True|2023-06-11T21:27:32.5608793+07:00;False|2023-06-11T21:26:52.8301372+07:00;True|2023-06-11T20:57:26.2145556+07:00;True|2023-06-10T23:34:30.6241632+07:00;True|2023-06-10T23:16:23.6223919+07:00;</History>
+  </PropertyGroup>
+</Project>

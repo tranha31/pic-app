@@ -14,11 +14,15 @@ namespace BE.PICBIN.BL
     {
         public IConfiguration Configuration { get; }
         public NLog _nLog { get; set; }
+        public int diffHours { get; set; }
 
         public CollectionBL(IConfiguration configuration)
         {
             Configuration = configuration;
             _nLog = new NLog(configuration);
+
+            var hours = configuration.GetSection("DifferenceHours").Value;
+            diffHours = int.Parse(hours);
         }
 
         /// <summary>
@@ -35,8 +39,8 @@ namespace BE.PICBIN.BL
             ServiceResult serviceResult = new ServiceResult();
 
             var fUser = Builders<RegisterRequestModel>.Filter.Eq(x => x.UserPublicKey, key);
-            var fFromDate = Builders<RegisterRequestModel>.Filter.Gte<DateTime>(x => x.CreatedDate, fromDate);
-            var fToDate = Builders<RegisterRequestModel>.Filter.Lte<DateTime>(x => x.CreatedDate, toDate);
+            var fFromDate = Builders<RegisterRequestModel>.Filter.Gte<DateTime>(x => x.CreatedDate, fromDate.AddHours(diffHours));
+            var fToDate = Builders<RegisterRequestModel>.Filter.Lte<DateTime>(x => x.CreatedDate, toDate.AddHours(diffHours));
             var fStatus = Builders<RegisterRequestModel>.Filter.Eq(x => x.Status, status);
 
             FilterDefinition<RegisterRequestModel> combineFilters;
@@ -120,8 +124,8 @@ namespace BE.PICBIN.BL
             ServiceResult serviceResult = new ServiceResult();
 
             var fUser = Builders<AppealRegisterModel>.Filter.Eq(x => x.UserPublicKey, key);
-            var fFromDate = Builders<AppealRegisterModel>.Filter.Gte<DateTime>(x => x.CreatedDate, fromDate);
-            var fToDate = Builders<AppealRegisterModel>.Filter.Lte<DateTime>(x => x.CreatedDate, toDate);
+            var fFromDate = Builders<AppealRegisterModel>.Filter.Gte<DateTime>(x => x.CreatedDate, fromDate.AddHours(diffHours));
+            var fToDate = Builders<AppealRegisterModel>.Filter.Lte<DateTime>(x => x.CreatedDate, toDate.AddHours(diffHours));
 
             FilterDefinition<AppealRegisterModel> combineFilters;
 
@@ -158,8 +162,8 @@ namespace BE.PICBIN.BL
         {
             ServiceResult serviceResult = new ServiceResult();
 
-            var fFromDate = Builders<AppealRegisterModel>.Filter.Gte<DateTime>(x => x.CreatedDate, fromDate);
-            var fToDate = Builders<AppealRegisterModel>.Filter.Lte<DateTime>(x => x.CreatedDate, toDate);
+            var fFromDate = Builders<AppealRegisterModel>.Filter.Gte<DateTime>(x => x.CreatedDate, fromDate.AddHours(diffHours));
+            var fToDate = Builders<AppealRegisterModel>.Filter.Lte<DateTime>(x => x.CreatedDate, toDate.AddHours(diffHours));
 
             FilterDefinition<AppealRegisterModel> combineFilters;
 
@@ -212,7 +216,7 @@ namespace BE.PICBIN.BL
 
                 Dictionary<string, object> listData = new Dictionary<string, object>();
                 Dictionary<string, object> listImage = new Dictionary<string, object>();
-                for (var i = 0; i < data.Count; i++)
+                for (var i = 0; i < imageContent.Count; i++)
                 {
                     listData.Add(data[i].ImageID, data[i]);
                     listImage.Add(imageContent[i].RefID, imageContent[i].ImageContentMarked);
@@ -311,7 +315,7 @@ namespace BE.PICBIN.BL
 
                 Dictionary<string, object> listData = new Dictionary<string, object>();
                 Dictionary<string, object> listImage = new Dictionary<string, object>();
-                for(var i=0; i<data.Count; i++)
+                for(var i=0; i< imageContent.Count; i++)
                 {
                     listData.Add(data[i].ImageID, data[i]);
                     listImage.Add(imageContent[i].RefID, imageContent[i].ImageContentMarked);

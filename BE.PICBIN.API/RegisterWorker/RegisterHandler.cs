@@ -8,6 +8,7 @@ using RabbitMQ.Client.Events;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace RegisterWorker
@@ -48,8 +49,8 @@ namespace RegisterWorker
             {
                 var body = ea.Body.ToArray();
                 var message = Encoding.UTF8.GetString(body);
-
                 await ProcessRequest(message);
+
                 channel.BasicAck(deliveryTag: ea.DeliveryTag, multiple: false);
 
             };

@@ -31,7 +31,6 @@ def secret_key_require(f):
 
 @copyright.route("/copyright/add", methods=['POST'])
 @cross_origin()
-@secret_key_require
 def addCopyrightImage():
     _json = request.json
     base64Image = _json["image"]

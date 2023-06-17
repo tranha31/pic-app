@@ -193,45 +193,26 @@ function Market({callBackUpdate, searchKey, isSearchData}) {
                 return;
             }
 
-            price = decimalToHexString(price)
-            var transaction = {
-                to: '0x' + selectedItem.user,
-                from: address,
-                value: price
-            }
-            
-            var api = new TradeAPI();
-            var param = {
-                id : selectedItem.id
-            }
-            var check = await api.getItemSellByID(param);
-            if(!check.data.success){
-                toast.warning("Image has been purchased.");
-                filterData();
-                setShowDetail(false);
-                return;
-            }
-
             setShowLoading(true);
+            
+            await metamask.connectSmartContract();
+            await metamask.buyPicture(selectedItem.id, address, price);
 
-            var result = await metamask.sendTransation(transaction);
-            if(result){
-                var res = await callServerToUpdateCopyright(selectedItem.user, address.substring(2), selectedItem.imageID, selectedItem.id)
-                if(res){
-                    setShowDetail(false);
-                    filterData();
-                }
-                else{
-                    toast.warning("Something wrong! Please try again.");
-                }
+            var res = await callServerToUpdateCopyright(selectedItem.user, address.substring(2), selectedItem.imageID, selectedItem.id)
+            if(res){
+                setShowDetail(false);
+                filterData();
             }
             else{
                 toast.warning("Something wrong! Please try again.");
             }
 
+            setShowLoading(false);
+
         }
         catch(err){
-            toast.warning("Metamask connection required!");
+            toast.warning("Transaction fail! Please try again!");
+            setShowLoading(false);
         }
     }
 
@@ -357,7 +338,6 @@ function Market({callBackUpdate, searchKey, isSearchData}) {
                 <Button className={cx('see-more-btn')} primary onClick={() => {loadMoreData()}}>See more</Button>
             </div>
             {showDetail && <PopupDetail title={"View collection"} child={imageDetail} scale={{height: "90%", width: "65%"}} eventCallBack={() => {callBackClose()}}/>}
-            <ToastContainer/>
             {showLoading && <Loading/>}
         </div>
     );

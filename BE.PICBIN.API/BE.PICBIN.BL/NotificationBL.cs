@@ -88,12 +88,14 @@ namespace BE.PICBIN.BL
             //Mapping data
             Dictionary<string, object> listData = new Dictionary<string, object>();
             Dictionary<string, object> listImage = new Dictionary<string, object>();
+            int indexImage = 0;
             for (var i = 0; i < data.Count; i++)
             {
                 if (!string.IsNullOrEmpty(data[i].ImageID))
                 {
                     listData.Add(data[i].ImageID, data[i]);
-                    listImage.Add(imageContent[i].RefID, imageContent[i].ImageContentMarked);
+                    listImage.Add(imageContent[indexImage].RefID, imageContent[indexImage].ImageContentMarked);
+                    indexImage++;
                 }
                 else
                 {

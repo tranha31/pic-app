@@ -86,6 +86,18 @@ class Metamask {
     async endAuction(id, excuteTime, account){
         await window.contract.methods.endAuction(id, excuteTime).send({from: account});
     }
+
+    async addNewPicture(id, price, account){
+        await window.contract.methods.addNewPicture(id, price).send({from: account});
+    }
+
+    async updatePicture(id, price, account){
+        await window.contract.methods.updatePicturePrice(id, price).send({from: account});
+    }
+
+    async buyPicture(id, account, amount){
+        await window.contract.methods.handleBuyPicture(id).send({from: account, value: amount});
+    }
 }
 
 export default Metamask;

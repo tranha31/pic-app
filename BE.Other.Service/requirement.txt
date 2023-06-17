@@ -1,0 +1,15 @@
+python-dotenv
+flask
+Flask-Cors
+blueprint
+numpy==1.23.4
+keras
+sentence_transformers
+scikit-learn
+mysql-connector-python
+pymongo
+opencv-python
+matplotlib
+Pillow
+pandas
+tensorflow

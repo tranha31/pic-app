@@ -141,6 +141,10 @@ function DefaultLayout({children, callBackUpdateSearch, callBackFilterData, disa
         }
     }, [userMessage])
 
+    const handleShowNotify = () => {
+        getNotification();
+        setShowNotify(true)
+    }
 
     return ( 
         <Fragment>
@@ -175,7 +179,7 @@ function DefaultLayout({children, callBackUpdateSearch, callBackFilterData, disa
                         )}
 
                         {!showNotify && (
-                            <div className={cx('bell')} onClick={() => {setShowNotify(true)}}>
+                            <div className={cx('bell')} onClick={() => {handleShowNotify()}}>
                                 <div className={cx('new')}></div>
                             </div>
                         )}

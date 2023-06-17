@@ -282,7 +282,8 @@ class CopyrightBL:
         if(len(lstSign) == 0):
             return True
         else:
-            return self.oDL.checkExistSign(lstSign)
+            return False
+            #return self.oDL.checkExistSign(lstSign)
     
     '''
     Kiểm tra trong ảnh đã có chữ ký hay chưa
@@ -320,7 +321,6 @@ class CopyrightBL:
     '''
     def checkImageSimilar(self, base64string, caption):
         lstImageID = self.oImageCaptionBL.getListImageForCheck(caption)
-
         lstID = []
         if len(lstImageID) == 0:
             return True

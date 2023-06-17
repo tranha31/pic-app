@@ -352,7 +352,6 @@ function ParticipatingRoom({isReload, updateReload, callBackEvent}) {
             </div>
 
             {showDetail && <AuctionDetail oData={oDataDetail} eventCallBack={callBackDetail}/>}
-            <ToastContainer/>
             {showLoading && <Loading/>}
         </div>
     );

@@ -167,7 +167,8 @@ function Auction() {
             return e.id === id;
         })
 
-        var data = room[0]
+        var data = JSON.stringify(room[0])
+        data = JSON.parse(data)
         data.startTime = data.startTime.substring(3, 5) + "/" + data.startTime.substring(0, 2) + "/" + data.startTime.substring(6)
         data.endTime = data.endTime.substring(3, 5) + "/" + data.endTime.substring(0, 2) + "/" + data.endTime.substring(6)
         setODataDetail(data);
@@ -302,7 +303,6 @@ function Auction() {
             </div>
 
             {showAuctionRoom && <AuctionDetail eventCallBack={()=>{handleCloseForm()}} oData={oDataDetail}/>}
-            <ToastContainer/>
             {showLoading && <Loading/>}
         </div>
     );

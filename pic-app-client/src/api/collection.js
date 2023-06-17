@@ -46,7 +46,7 @@ class CollectionAPI {
      * @returns 
      */
     downloadImage(id){
-        var url = `${process.env.REACT_APP_BASE_URL}${this.controler}/collection/download?id=${id}`
+        var url = `${process.env.REACT_APP_BASE_URL}Download/collection?id=${id}`
         window.open(url);
     }
 

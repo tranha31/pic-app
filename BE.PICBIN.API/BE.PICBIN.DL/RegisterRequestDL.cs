@@ -62,7 +62,7 @@ namespace BE.PICBIN.DL
             var sql = "";
 
             var s = new StringBuilder();
-            s.Append("Delete From RegisterReject r Where r.RefID IN (");
+            s.Append("Delete From registerreject r Where r.RefID IN (");
 
             for(var i=0; i<id.Count; i++)
             {
@@ -91,6 +91,8 @@ namespace BE.PICBIN.DL
 
         public async Task HandleAddAppealRequest(List<string> id)
         {
+            var hoursDiff = Configuration.GetSection("DifferenceHours").Value;
+            var valueHours = int.Parse(hoursDiff);
             var filter = Builders<RegisterRequestModel>.Filter.In(s => s.RefID, id);
 
             var data = await GetAllDataAsync<RegisterRequestModel>(filter, MongoCollection);
@@ -100,7 +102,7 @@ namespace BE.PICBIN.DL
                 AppealRegisterModel appeal = new AppealRegisterModel()
                 {
                     Status = 0,
-                    CreatedDate = DateTime.Now,
+                    CreatedDate = DateTime.Now.AddHours(valueHours),
                     RefID = item.RefID,
                     UserPublicKey = item.UserPublicKey,
                     ImageContent = item.ImageContent
@@ -124,7 +126,7 @@ namespace BE.PICBIN.DL
             var sql = "";
 
             var s = new StringBuilder();
-            s.Append("Delete From RegisterReject r Where r.RefID IN (");
+            s.Append("Delete From registerreject r Where r.RefID IN (");
 
             for (var i = 0; i < id.Count; i++)
             {

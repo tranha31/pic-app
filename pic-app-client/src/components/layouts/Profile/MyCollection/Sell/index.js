@@ -81,12 +81,24 @@ function Sell({oData, eventCallBackSell}) {
             
             var address = await metamask.getAddress();
             address = address[0];
-            address = address.substring(2);
+            
 
             var tempPrice = imagePrice;
             var price = Number.parseFloat(tempPrice.toString().replaceAll("," ,""))
             const api = new TradeAPI()
             setShowLoading(true);
+
+            await metamask.connectSmartContract();
+            if(oData?.editMode == 0){
+                var id = uuidv4();
+                await metamask.addNewPicture(id, price * Math.pow(10, 18), address);
+                oData.id = id;
+            }
+            else{ 
+                await metamask.updatePicture(oData?.id, price * Math.pow(10, 18), address);
+            }
+
+            address = address.substring(2);
             var res = await api.updateSell(oData?.editMode, oData?.id, address, oData?.imageID, imageName, imageDetail, price);
             if(res.data.success){
                 setShowLoading(false);
@@ -104,6 +116,12 @@ function Sell({oData, eventCallBackSell}) {
         catch(err){
             toast.error("Something wrong! Please try again!")
         }
+    }
+
+    const uuidv4 = () => {
+        return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+          (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+        );
     }
 
     var sellContent = (
@@ -137,7 +155,6 @@ function Sell({oData, eventCallBackSell}) {
             <PopupDetail title={"Sell detail"} scale={{height: "95%", width: "85%"}} child={sellContent} eventCallBack={eventCallBackSell}/>
             {showMessage && <MessageBox type={"warning"} title={"Warning"} message={message} scale={{height: "200px", width: "450px"}} child={submitBtn} eventCallBack={closePopup}/>}
             {showLoading && <Loading />}
-            <ToastContainer/>
         </div>
         
     );

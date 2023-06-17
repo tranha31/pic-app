@@ -10,7 +10,7 @@ class ImageSimilar:
     oModel = None
     oSift = None
     threshold1 = 0.81
-    threshold2 = 0.88
+    threshold2 = 0.87
     w_distance = 0.8
     w_similar = 0.9
 
@@ -53,6 +53,8 @@ class ImageSimilar:
                 if check:
                     lstResult.append(idImage)
 
+            if len(lstResult) != 0:
+                lstResult = [*set(lstResult)]
         return lstResult
     
 
@@ -61,17 +63,20 @@ class ImageSimilar:
     (26/4/2023)
     """
     def checkSimilar(self, threshold, images):
+        #print(len(images))
         encoded_image = self.oModel.encode(images, batch_size=128, convert_to_tensor=True, show_progress_bar=True)
         processed_images = util.paraphrase_mining_embeddings(encoded_image)
 
+        #print(processed_images)
         result = []
 
         for image in processed_images:
-            if image[1] == 0:
+            if image[1] == 0 or image[2] == 0:
                 result.append(image)
 
+        #print(result)
         near_duplicates = [image for image in result if image[0] >= threshold]
-
+        print(near_duplicates)
         if len(near_duplicates) == 0:
             return False
         else:

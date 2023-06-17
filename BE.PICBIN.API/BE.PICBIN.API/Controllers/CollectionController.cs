@@ -174,34 +174,6 @@ namespace BE.PICBIN.API.Controllers
         }
 
         /// <summary>
-        /// Download Image
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [HttpGet("collection/download")]
-        public async Task<IActionResult> DownloadImage(string id)
-        {
-            ServiceResult result = new ServiceResult();
-            try
-            {
-                CollectionBL oBL = new CollectionBL(_config);
-                var data = await oBL.GetImageDownload(id);
-                var contentType = "image/png";
-                var fileName = "Image_" + DateTime.Now.Ticks.ToString() + ".png";
-                return File(data, contentType, fileName);
-
-            }
-            catch (Exception ex)
-            {
-                result.Success = false;
-                NLogBL nLog = new NLogBL(_config);
-                nLog.InsertLog(ex.Message, ex.StackTrace);
-            }
-
-            return Ok(result);
-        }
-
-        /// <summary>
         /// Lấy danh sách ảnh của user
         /// </summary>
         /// <returns></returns>

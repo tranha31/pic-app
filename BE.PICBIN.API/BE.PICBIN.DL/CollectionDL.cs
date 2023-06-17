@@ -15,10 +15,14 @@ namespace BE.PICBIN.DL
         public string MongoDBName = "picbin_repo";
         public string registerRequestCollection = "RegisterRequest";
         public string appealRequestCollection = "AppealRequest";
+        public int diffHours { get; set; }
 
         public CollectionDL(IConfiguration configuration) : base(configuration)
         {
             SetMongoDB(MongoDBName);
+
+            var hours = configuration.GetSection("DifferenceHours").Value;
+            diffHours = int.Parse(hours);
         }
 
         public async Task<List<RegisterRequestModel>> GetRegisterRequestPaging(FilterDefinition<RegisterRequestModel> filter, int start, int length)
@@ -126,8 +130,8 @@ namespace BE.PICBIN.DL
             parameters.Add($"@Start", start);
             parameters.Add($"@Length", length);
             parameters.Add($"@Key", key);
-            parameters.Add($"@FromDate", fromDate);
-            parameters.Add($"@ToDate", toDate);
+            parameters.Add($"@FromDate", fromDate.AddHours(diffHours));
+            parameters.Add($"@ToDate", toDate.AddHours(diffHours));
             parameters.Add($"@Status", status);
 
             List<string> listOutPut = null;

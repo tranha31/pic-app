@@ -29,6 +29,13 @@ def secret_key_require(f):
     
     return check_secret_key
 
+@copyright.route("/", methods=['GET'])
+@cross_origin()
+@secret_key_require
+def helloworld():
+    serviceResult = "Hello world"
+    return Response(response=serviceResult, status=200, mimetype="application/json")
+
 @copyright.route("/copyright/check", methods=['POST'])
 @cross_origin()
 @secret_key_require

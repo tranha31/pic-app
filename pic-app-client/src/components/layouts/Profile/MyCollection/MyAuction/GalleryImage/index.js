@@ -188,7 +188,6 @@ function GalleryImage({callBackEvent, showPopup, resetSeletected}) {
         return (
             <div>
                 <PopupDetail title={"Choose image"} scale={{height: "95%", width: "85%"}} child={child} eventCallBack={closePopup}/>
-                <ToastContainer/>
             </div>
         )
     }

@@ -905,8 +905,7 @@ function MyCollection({callBackUpdate, searchKey, isSearchData}) {
             {showDetail && <PopupDetail title={"Image"} scale={{height: "85%", width: "65%"}} child={viewImage} eventCallBack={() =>setShowDetail(false)}/>}
             {showMessage && <MessageBox type={"warning"} title={titleMessage} message={contetnMessage} child={btnMessage} scale={{height: "200px", width: "450px"}} eventCallBack={() => {setShowMessage(false)}}/>} 
             {showSellDetail && <Sell eventCallBackSell={handleCallBackSellDetail} oData={dataSell}/>}
-            {showLoading && <Loading/>}       
-            <ToastContainer/>
+            {showLoading && <Loading/>}
         </div>
     );
 }

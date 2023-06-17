@@ -81,3 +81,6 @@ D:\Blockchain\pic-app\BE.PICBIN.API\RegisterWorker\bin\Debug\netcoreapp3.1\runti
 D:\Blockchain\pic-app\BE.PICBIN.API\RegisterWorker\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp2.0\System.Security.AccessControl.dll
 D:\Blockchain\pic-app\BE.PICBIN.API\RegisterWorker\bin\Debug\netcoreapp3.1\runtimes\unix\lib\netcoreapp2.1\System.Security.Principal.Windows.dll
 D:\Blockchain\pic-app\BE.PICBIN.API\RegisterWorker\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp2.1\System.Security.Principal.Windows.dll
+D:\Blockchain\pic-app\BE.PICBIN.API\RegisterWorker\bin\Debug\netcoreapp3.1\Microsoft.Extensions.Hosting.WindowsServices.dll
+D:\Blockchain\pic-app\BE.PICBIN.API\RegisterWorker\bin\Debug\netcoreapp3.1\System.ServiceProcess.ServiceController.dll
+D:\Blockchain\pic-app\BE.PICBIN.API\RegisterWorker\bin\Debug\netcoreapp3.1\runtimes\win\lib\netstandard2.0\System.ServiceProcess.ServiceController.dll

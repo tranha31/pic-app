@@ -11,6 +11,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Loading from '@/components/base/Loading';
 import MessageBox from '@/components/base/MessageBox';
 import AuctionDetail from '@/components/layouts/Home/Auction/AuctionDetail';
+import CopyrightAPI from '@/api/copyright';
 
 const cx = classNames.bind(styles);
 
@@ -39,6 +40,7 @@ function MyAuction({isReload, updateReload, callBackEvent}) {
     const [oDataDetail, setODataDetail] = useState(null)
 
     const [showAuctionDetail, setShowAuctionDetail] = useState(false)
+    const [oDataInforRoom, setODataInforRoom] = useState(null)
 
     useEffect(()=>{
         getInitData()
@@ -254,9 +256,12 @@ function MyAuction({isReload, updateReload, callBackEvent}) {
             return;
         }
 
-        var start = selectedItem.startTime;
+        var dataTemp = JSON.stringify(selectedItem)
+        dataTemp = JSON.parse(dataTemp)
+
+        var start = dataTemp.startTime;
         var startTimeString = start.substring(3, 5) + "/" + start.substring(0, 2) + "/" + start.substring(6)
-        var end = selectedItem.endTime;
+        var end = dataTemp.endTime;
         var endTimeString = end.substring(3, 5) + "/" + end.substring(0, 2) + "/" + end.substring(6)
 
         var data = {
@@ -285,8 +290,64 @@ function MyAuction({isReload, updateReload, callBackEvent}) {
         }
     }
 
+    const handleCallBackViewAuctionRoom = () =>{
+        setODataInforRoom(null)
+        setShowAuctionDetail(false)
+    }
+
     const handleViewAuctionRoom = () => {
+        var data = JSON.stringify(selectedItem)
+        data = JSON.parse(data)
+        data.startTime = data.startTime.substring(3, 5) + "/" + data.startTime.substring(0, 2) + "/" + data.startTime.substring(6)
+        data.endTime = data.endTime.substring(3, 5) + "/" + data.endTime.substring(0, 2) + "/" + data.endTime.substring(6)
+        setODataInforRoom(data)
         setShowAuctionDetail(true)
+    }
+
+    const handleFinishAuction = async () => {
+        var now1 = new Date();
+        var endDate = selectedItem.endTime.substring(3, 5) + "/" + selectedItem.endTime.substring(0, 2) + "/" + selectedItem.endTime.substring(6);
+        if(now1 < new Date(endDate)){
+            toast.warning("Auction is not finished");
+            return;
+        }
+
+        try{
+            const metamask = new Metamask();
+            var check = await metamask.checkConnect();
+            if(!check){
+                toast.warning("Install metamask extension!");
+                return;
+            }
+            
+            var checkNetwork = await metamask.checkAcceptNetwork();
+            if(!checkNetwork){
+                toast.warning("Your current network is not supported.");
+                return;
+            }
+
+            var address = await metamask.getAddress();
+            address = address[0];
+
+            setShowLoading(true);
+            await metamask.connectSmartContract();
+            var now = new Date();
+            now = now.getTime();
+            await metamask.endAuction(selectedItem.id, now, address);
+
+            var api = new CopyrightAPI();
+            var res = await api.updateCopyrightForAuction(selectedItem.id);
+            if(!res.data.success){
+                toast.warning("Something wrong! Please try again.");
+            }
+
+            setShowLoading(false);
+            filterData();
+        }
+        catch(err){
+            toast.error("Transaction fail! Please try again!");
+            setShowLoading(false);
+        }
     }
 
     return ( 
@@ -326,6 +387,7 @@ function MyAuction({isReload, updateReload, callBackEvent}) {
                     </div>
                     <Button primary className={cx('fit-content')} onClick={() => {filterData()}}>Filter</Button>
                     <div className={cx('flex-1')}></div>
+                    {selectedItem && <Button normal onClick={() => handleFinishAuction()}>End</Button>}
                     {selectedItem && <Button normal onClick={() => {handleDeleteAuctionRoom()}}>Delete</Button>}
                     {selectedItem && <Button normal onClick={() => {handleViewAuctionRoom()}}>View</Button>}
                     {selectedItem && <Button normal onClick={() => handleEdit()}>Edit</Button>}
@@ -371,9 +433,8 @@ function MyAuction({isReload, updateReload, callBackEvent}) {
             </div>
 
             {showDetail && <AddNewAutionDetail callBackEvent={(state) => {handleCallBackDetail(state)}} oData={oDataDetail}/>}
-            {showAuctionDetail && <AuctionDetail eventCallBack={()=>{setShowAuctionDetail(false)}}/>}
+            {showAuctionDetail && <AuctionDetail oData={oDataInforRoom} eventCallBack={()=>handleCallBackViewAuctionRoom()}/>}
             {showMessage && <MessageBox type={typeMessage} title={titleMessage} message={contetnMessage} child={btnMessage} scale={{height: "200px", width: "450px"}} eventCallBack={() => {setShowMessage(false)}}/>} 
-            <ToastContainer/>
             {showLoading && <Loading/>}
         </div>
     );

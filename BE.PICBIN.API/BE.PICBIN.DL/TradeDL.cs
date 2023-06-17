@@ -13,10 +13,14 @@ namespace BE.PICBIN.DL
         public string MongoDBName = "picbin_repo";
         public string registerRequestCollection = "RegisterRequest";
         public string appealRequestCollection = "AppealRequest";
+        public int diffHours { get; set; }
 
         public TradeDL(IConfiguration configuration) : base(configuration)
         {
             SetMongoDB(MongoDBName);
+
+            var hours = configuration.GetSection("DifferenceHours").Value;
+            diffHours = int.Parse(hours);
         }
 
         #region Sell
@@ -46,8 +50,19 @@ namespace BE.PICBIN.DL
             parameters.Add($"@Start", start);
             parameters.Add($"@Length", length);
             parameters.Add($"@PublicKey", key);
-            parameters.Add($"@FromDate", fromDate);
-            parameters.Add($"@ToDate", toDate);
+            if(fromDate == null)
+            {
+                parameters.Add($"@FromDate", null);
+                parameters.Add($"@ToDate", null);
+            }
+            else
+            {
+                var from = (DateTime)fromDate;
+                var end = (DateTime)toDate;
+                parameters.Add($"@FromDate", from.AddHours(diffHours));
+                parameters.Add($"@ToDate", end.AddHours(diffHours));
+            }
+            
 
             var where = string.Empty;
             if (!string.IsNullOrEmpty(searchKey))
@@ -146,8 +161,8 @@ namespace BE.PICBIN.DL
             parameters.Add("@Mode", mode);
             parameters.Add("@ImageID", imageID);
             parameters.Add("@Key", key);
-            parameters.Add("@FromDate", fromDate);
-            parameters.Add("@ToDate", toDate);
+            parameters.Add("@FromDate", fromDate.AddHours(diffHours));
+            parameters.Add("@ToDate", toDate.AddHours(diffHours));
             parameters.Add("@Price", startPrice);
             parameters.Add("@ItemID", itemID);
 
@@ -184,8 +199,8 @@ namespace BE.PICBIN.DL
             parameters.Add($"@Start", start);
             parameters.Add($"@Length", length);
             parameters.Add($"@PublicKey", key);
-            parameters.Add($"@FromDate", fromDate);
-            parameters.Add($"@ToDate", toDate);
+            parameters.Add($"@FromDate", fromDate.AddHours(diffHours));
+            parameters.Add($"@ToDate", toDate.AddHours(diffHours));
 
             List<string> listOutPut = null;
 
