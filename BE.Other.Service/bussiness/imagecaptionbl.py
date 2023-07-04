@@ -30,8 +30,6 @@ class ImageCaptionBL:
     '''
     def createImageCaption(self, base64_string):
         image = self.inputImage(base64_string)
-        encodeImage = self.oModel.handleEncodeImage(image)
-        encodeImage = encodeImage.reshape((1,2048))
-        caption = self.oModel.greedySearch(encodeImage)
+        caption = self.oModel.generateCaption(image)
         return caption
     

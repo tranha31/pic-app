@@ -38,7 +38,6 @@ def helloworld():
 
 @copyright.route("/copyright/check", methods=['POST'])
 @cross_origin()
-@secret_key_require
 def checkCopyrightImage():
     _json = request.json
     base64Image = _json["image"]
@@ -61,7 +60,6 @@ def checkCopyrightImage():
 
 @copyright.route("/copyright/accept", methods=['POST'])
 @cross_origin()
-@secret_key_require
 def addCopyrightImage():
     _json = request.json
     base64Image = _json["image"]
@@ -85,7 +83,6 @@ def addCopyrightImage():
 
 @copyright.route("/copyright/changesign", methods=['POST'])
 @cross_origin()
-@secret_key_require
 def updateCopyrightImage():
     _json = request.json
     base64Image = _json["image"]
