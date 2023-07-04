@@ -3,7 +3,6 @@ flask
 Flask-Cors
 blueprint
 numpy==1.22.1
-keras
 sentence_transformers
 sklearn
 mysql-connector-python
@@ -11,3 +10,4 @@ pymongo
 opencv-python
 matplotlib
 Pillow
+transformers
