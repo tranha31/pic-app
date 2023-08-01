@@ -11,6 +11,6 @@ Open folder BE.Copyright.Manager. Open terminal. Run `pip install -r requirement
 
 Change file .env and appsettings.json with your connect
 
-Run Solution BE.PICBIN.API with multi project: BE.PICBIN.API and RegisterWorker
+Run Solution BE.PICBIN.API with multi project: BE.PICBIN.API, BE.PICBIN.Notification and RegisterWorker </br>
 Run server python with cmd: `python app.py`
 Run web application with cmd: `npm start`
