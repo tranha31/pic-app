@@ -1,14 +1,13 @@
 from models.imagesimilar import ImageSimilar
-from repositories.dlcopyright import DLCopyright
+from ulti.callhttprequest import CallHttpRequest
 
 class ImageSimilarBL:
 
     oModel = None
-    oDL = None
+    http = CallHttpRequest()
 
     def __init__(self) -> None:
         self.oModel = ImageSimilar()
-        self.oDL = DLCopyright()
 
         pass
 
@@ -20,7 +19,12 @@ class ImageSimilarBL:
         return result
 
     def getImageSimilar(self, listID):
-        images = self.oDL.getImageContent(listID)
+        url = "copyright/image/content"
+        datas = {
+            "listID" : listID
+        }
+        resultRequest = self.http.CallHTTPPost(url, datas)
+        images = resultRequest["data"]
         
         lstImages = images["contents"]
         lstImageID = images["ids"]

@@ -7,6 +7,7 @@ import base64
 from .imagecaptionbl import ImageCaptionBL
 from .imagesimilarbl import ImageSimilarBL
 from repositories.dlcopyright import DLCopyright
+from ulti.callhttprequest import CallHttpRequest
 
 class CopyrightBL:
 
@@ -16,12 +17,11 @@ class CopyrightBL:
     Cr = 2
     oImageCaptionBL = None
     oImageSimilarBL = None
-    oDL = None
+    http = CallHttpRequest()
 
     def __init__(self) -> None:
         self.oImageCaptionBL = ImageCaptionBL()
         self.oImageSimilarBL = ImageSimilarBL()
-        self.oDL = DLCopyright()
         pass
     
     """
@@ -283,7 +283,6 @@ class CopyrightBL:
             return True
         else:
             return False
-            #return self.oDL.checkExistSign(lstSign)
     
     '''
     Kiểm tra trong ảnh đã có chữ ký hay chưa
@@ -335,6 +334,185 @@ class CopyrightBL:
             return result
 
 
+    '''
+    Lấy chữ ký trong ảnh
+    (11/4/2023)
+    '''
+    def getSignInImage(self, base64_string):
+        imgRGB = self.inputImage(base64_string)
+        if type(imgRGB) == bool:
+            return False
+        
+        R, G, B = cv2.split(imgRGB)
+        
+        signs = self.handleGetSignInImage(R)
+        return signs
+
+    '''
+    Lấy text trong ảnh
+    (11/4/2023)
+    '''
+    def getWatermarking(self, sign_block):
+        sign1 = ""
+        for i in range(len(sign_block)):
+            D = sign_block[i]
+            if D[5][2] == 200:
+                sign1 += "1"
+            elif D[5][2] == 100:
+                sign1 += "0"
+            else:
+                sign1 += "1"
+
+        digit = []
+        sign2 = ""
+        for i in range(len(sign1) // 7):
+            digit.append(int(sign1[i * 7:i * 7 + 7], 2))
+
+        for i in range(len(digit)):
+            if(not(digit[i] >= 48 and digit[i] <= 57) and 
+               not(digit[i] >= 65 and digit[i] <= 90) and 
+               not(digit[i] >= 97 and digit[i] <= 122)):
+                return None
+            else:
+                sign2 += chr(digit[i])
+        
+        #TODO: Gọi DB để kiểm tra xem đã có chữ ký sign2 hay chưa. Tạm cứ trả về sign2
+
+        return sign2.lower()
+
+    '''
+    Xử lý lấy chữ ký trong ảnh
+    Kiểm tra ở 4 góc + 2 chiều xuôi và ngược
+    (11/4/2023)
+    '''
+    def handleGetSignInImage(self, R):
+        signs = []
+        RChannel = np.copy(R)
+        RChannel_1 = np.copy(R)
+
+        RChannelFlip = np.flip(RChannel_1, 1)
+
+        sign_block = self.getSignBlock(RChannel)
+        sign1 = self.getWatermarking(sign_block)
+
+        sign_block = self.getSignBlock(RChannelFlip)
+        sign5 = self.getWatermarking(sign_block)
+
+        RChannel2 = np.rot90(RChannel)
+        RChannelFlip2 = np.rot90(RChannelFlip)
+
+        sign_block = self.getSignBlock(RChannel2)
+        sign2 = self.getWatermarking(sign_block)
+
+        sign_block = self.getSignBlock(RChannelFlip2)
+        sign6 = self.getWatermarking(sign_block)
+        
+        RChannel3 = np.rot90(RChannel2)
+        RChannelFlip3 = np.rot90(RChannelFlip2)
+
+        sign_block = self.getSignBlock(RChannel3)
+        sign3 = self.getWatermarking(sign_block)
+
+        sign_block = self.getSignBlock(RChannelFlip3)
+        sign7 = self.getWatermarking(sign_block)
+        
+        RChannel4 = np.rot90(RChannel3)
+        RChannelFlip4 = np.rot90(RChannelFlip3)
+
+        sign_block = self.getSignBlock(RChannel4)
+        sign4 = self.getWatermarking(sign_block)
+
+        sign_block = self.getSignBlock(RChannelFlip4)
+        sign8 = self.getWatermarking(sign_block)
+        
+        if(sign1 != None):
+            signs.append(sign1)
+
+        if(sign2 != None):
+            signs.append(sign2)
+        
+        if(sign3 != None):
+            signs.append(sign3)
+
+        if(sign4 != None):
+            signs.append(sign4)
+
+        if(sign5 != None):
+            signs.append(sign5)
+
+        if(sign6 != None):
+            signs.append(sign6)
+
+        if(sign7 != None):
+            signs.append(sign7)
+
+        if(sign8 != None):
+            signs.append(sign8)
+
+        if(len(signs) == 0):
+            return signs
+        else:
+            url = "copyright/check"
+            datas = {
+                "lstSign" : signs
+            }
+            resultRequest = self.http.CallHTTPPost(url, datas)
+            lstSign = resultRequest["data"]
+            signs = []
+            for i in range(len(lstSign)):
+                signs.append(lstSign[i]["UserPublicKey"])
+
+            return signs
+
+    def embedWatermarkingAccept(self, base64_string, sign):
+        result = None
+        try:
+            imRGB = self.inputImage(base64_string)
+            s = self.hexToBinary(sign)
+            R, G, B = cv2.split(imRGB)
+            caption = self.oImageCaptionBL.createImageCaption(base64_string)
+            sign_block = self.getSignBlock(R)
+            self.watermarking(sign_block, s)
+            self.mergeImage(R, sign_block)
+            imageResult = self.outImage(R, G, B)
+            imgdata = base64.b64decode(base64_string)
+            image = im.open(io.BytesIO(imgdata))
+            imageView = self.markConfirmIntoImage(image)
+
+            result = {
+                "caption" : caption,
+                "image" : imageResult,
+                "imageMark": imageView,
+                "error": ""
+                
+            }
+        except:
+            print("An exception occurred")
+        
+        return result
+
+    def handleChangeSignInImage(self, base64_string, sign):
+        result = None
+        try:
+            imRGB = self.inputImage(base64_string)
+            s = self.hexToBinary(sign)
+            R, G, B = cv2.split(imRGB)
+            sign_block = self.getSignBlock(R)
+            self.watermarking(sign_block, s)
+            self.mergeImage(R, sign_block)
+            imageResult = self.outImage(R, G, B)
+
+            result = {
+                "caption" : "",
+                "image" : imageResult,
+                "imageMark": "",
+                "error": ""
+                
+            }
+        except:
+            print("An exception occurred")
+        
+        return result
 
 
 

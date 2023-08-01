@@ -4,18 +4,17 @@ import io
 import base64
 from models.imagecaption import ImageCaption
 from models.captionsimilar import CaptionSimilar
-from repositories.dlcopyright import DLCopyright
+from ulti.callhttprequest import CallHttpRequest
 
 class ImageCaptionBL:
 
     oModel = None
-    oDL = None
     oModelSimilar = None
+    http = CallHttpRequest()
 
     def __init__(self) -> None:
         self.oModel = ImageCaption()
         self.oModelSimilar = CaptionSimilar()
-        self.oDL = DLCopyright()
         pass
 
     '''
@@ -42,7 +41,9 @@ class ImageCaptionBL:
     (21/4/2023)
     '''
     def getListImageForCheck(self, caption):
-        lstImage = self.oDL.getAllImage()
+        url = "copyright/images"
+        resultRequest = self.http.CallHTTPGet(url, {})
+        lstImage = resultRequest["data"]
 
         lstCaption = [caption]
         lstResult = []

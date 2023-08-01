@@ -1,3 +1,5 @@
+import os
+os.environ['TRANSFORMERS_CACHE'] = 'D:\DATN\pic-app\BE.Copyright.Manager\cache\CaptionCache'
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 

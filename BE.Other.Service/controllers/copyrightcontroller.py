@@ -31,7 +31,6 @@ def secret_key_require(f):
 
 @copyright.route("/", methods=['GET'])
 @cross_origin()
-@secret_key_require
 def helloworld():
     serviceResult = "Hello world"
     return Response(response=serviceResult, status=200, mimetype="application/json")

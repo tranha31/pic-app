@@ -130,8 +130,8 @@ namespace BE.PICBIN.DL
             parameters.Add($"@Start", start);
             parameters.Add($"@Length", length);
             parameters.Add($"@Key", key);
-            parameters.Add($"@FromDate", fromDate.AddHours(diffHours));
-            parameters.Add($"@ToDate", toDate.AddHours(diffHours));
+            parameters.Add($"@FromDate", fromDate);
+            parameters.Add($"@ToDate", toDate);
             parameters.Add($"@Status", status);
 
             List<string> listOutPut = null;

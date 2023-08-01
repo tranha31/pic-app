@@ -1,0 +1,8 @@
+python-dotenv
+flask
+Flask-Cors
+blueprint
+numpy
+mysql-connector-python
+pymongo
+requests

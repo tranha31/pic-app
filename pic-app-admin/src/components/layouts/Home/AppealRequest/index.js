@@ -96,8 +96,8 @@ function AppealRequest() {
         var param = {
             start : index,
             length : count,
-            fromDate: new Date(fromDate.setHours(0,0,0,0)),
-            toDate: new Date(toDate.setHours(23,59,59,1000)),
+            fromDate: fromDate.toLocaleDateString() + " 00:00:00",
+            toDate: toDate.toLocaleDateString() + " 23:59:59",
         }
         
         var res = await api.getAllAppealRequestPaging(param);

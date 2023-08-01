@@ -59,8 +59,8 @@ namespace BE.PICBIN.DL
             {
                 var from = (DateTime)fromDate;
                 var end = (DateTime)toDate;
-                parameters.Add($"@FromDate", from.AddHours(diffHours));
-                parameters.Add($"@ToDate", end.AddHours(diffHours));
+                parameters.Add($"@FromDate", from);
+                parameters.Add($"@ToDate", end);
             }
             
 
@@ -161,8 +161,8 @@ namespace BE.PICBIN.DL
             parameters.Add("@Mode", mode);
             parameters.Add("@ImageID", imageID);
             parameters.Add("@Key", key);
-            parameters.Add("@FromDate", fromDate.AddHours(diffHours));
-            parameters.Add("@ToDate", toDate.AddHours(diffHours));
+            parameters.Add("@FromDate", fromDate);
+            parameters.Add("@ToDate", toDate);
             parameters.Add("@Price", startPrice);
             parameters.Add("@ItemID", itemID);
 
@@ -199,8 +199,8 @@ namespace BE.PICBIN.DL
             parameters.Add($"@Start", start);
             parameters.Add($"@Length", length);
             parameters.Add($"@PublicKey", key);
-            parameters.Add($"@FromDate", fromDate.AddHours(diffHours));
-            parameters.Add($"@ToDate", toDate.AddHours(diffHours));
+            parameters.Add($"@FromDate", fromDate);
+            parameters.Add($"@ToDate", toDate);
 
             List<string> listOutPut = null;
 

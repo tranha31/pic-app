@@ -1,3 +1,5 @@
+import os
+os.environ['TRANSFORMERS_CACHE'] = 'D:\DATN\pic-app\BE.Copyright.Manager\cache\ImageSimilar'
 import base64
 import io
 import numpy as np

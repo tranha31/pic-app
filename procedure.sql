@@ -19,13 +19,13 @@ BEGIN
 
   IF Mode = 0 THEN
     INSERT INTO marketitem
-      VALUE (ID, ImageID, `Key`, Caption, Detail, Price, NOW(), NOW());
+      VALUE (ID, ImageID, `Key`, Caption, Detail, Price, DATE_ADD(NOW(), INTERVAL 7 HOUR), DATE_ADD(NOW(), INTERVAL 7 HOUR));
   ELSE
     UPDATE marketitem m
     SET m.Caption = Caption,
         m.Detail = Detail,
         m.Price = Price,
-        m.ModifiedDate = NOW()
+        m.ModifiedDate = DATE_ADD(NOW(), INTERVAL 7 HOUR)
     WHERE m.ID = ID;
   END IF;
 
@@ -116,7 +116,7 @@ CREATE DEFINER = 'root'@'localhost'
 PROCEDURE Proc_InsertLog (IN Message text, IN StackTrace text)
 BEGIN
   INSERT INTO log
-    VALUE (UUID(), Message, StackTrace, NOW());
+    VALUE (UUID(), Message, StackTrace, DATE_ADD(NOW(), INTERVAL 7 HOUR));
 END
 $$
 
@@ -132,7 +132,7 @@ BEGIN
 
   UPDATE copyrightimage c
   SET c.UserPublicKey = NeKey,
-      c.ModifiedDate = NOW(),
+      c.ModifiedDate = DATE_ADD(NOW(), INTERVAL 7 HOUR),
       c.Status = 0
   WHERE c.ImageID = ImageID;
 
@@ -149,7 +149,7 @@ BEGIN
     WHERE c.UserPublicKey = NeKey;
   ELSE
     INSERT INTO copyrightsignature
-      VALUE (UUID(), NeKey, NOW(), 1);
+      VALUE (UUID(), NeKey, DATE_ADD(NOW(), INTERVAL 7 HOUR), 1);
   END IF;
 
 END
@@ -212,7 +212,7 @@ CREATE DEFINER = 'root'@'localhost'
 PROCEDURE Proc_AuctionRoom_AddHistory (IN RoomID varchar(36), IN `Key` varchar(255), IN Price decimal(10, 10), IN Action int)
 BEGIN
   INSERT INTO auctionhistory
-    VALUE (UUID(), RoomID, `Key`, Price, NOW(), Action);
+    VALUE (UUID(), RoomID, `Key`, Price, DATE_ADD(NOW(), INTERVAL 7 HOUR), Action);
 
   IF Action = 0 THEN
     INSERT INTO auctionjoin
@@ -259,7 +259,7 @@ BEGIN
   SET ID = UUID();
 
   INSERT INTO copyrightimage
-    VALUE (ID, Sign, Caption, NOW(), NOW(), 0);
+    VALUE (ID, Sign, Caption, DATE_ADD(NOW(), INTERVAL 7 HOUR), DATE_ADD(NOW(), INTERVAL 7 HOUR), 0);
 
   SET @ExistSign = (SELECT
       1
@@ -272,9 +272,34 @@ BEGIN
     WHERE c.UserPublicKey = Sign;
   ELSE
     INSERT INTO copyrightsignature
-      VALUE (UUID(), Sign, NOW(), 1);
+      VALUE (UUID(), Sign, DATE_ADD(NOW(), INTERVAL 7 HOUR), 1);
   END IF;
 
+END
+$$
+
+--
+-- Create procedure `Proc_Notification_Insert`
+--
+CREATE DEFINER = 'root'@'localhost'
+PROCEDURE Proc_Notification_Insert (IN UserKey varchar(255), IN Content varchar(500), IN Type int, IN ReferenceLink varchar(500), IN ImageID varchar(36))
+BEGIN
+  INSERT INTO notification
+    VALUES (UUID(), UserKey, Content, 0, Type, ReferenceLink, DATE_ADD(NOW(), INTERVAL 7 HOUR), ImageID);
+END
+$$
+
+--
+-- Create procedure `Proc_Notification_Get`
+--
+CREATE DEFINER = 'root'@'localhost'
+PROCEDURE Proc_Notification_Get (IN UserKey varchar(255))
+BEGIN
+  SELECT
+    *
+  FROM notification n
+  WHERE n.UserPublicKey = UserKey
+  AND n.Status = 0;
 END
 $$
 

@@ -141,7 +141,9 @@ function AddNewAutionDetail({callBackEvent, oData}) {
                 await metamask.updateAuctionRoom(oData?.id, startTime, endTime, now, startPrice * Math.pow(10, 18), address);
             }
             address = address.substring(2);
-            var res = await api.updateAuctionRoom(oData?.editMode, address, oData?.id, currentImage.imageID, startDate, endDate, startPrice);
+            var beginT = startDate.toLocaleDateString() + " " + startDate.toLocaleTimeString();
+            var endT = endDate.toLocaleDateString() + " " + endDate.toLocaleTimeString();
+            var res = await api.updateAuctionRoom(oData?.editMode, address, oData?.id, currentImage.imageID, beginT, endT, startPrice);
             setShowLoading(false);
             if(res.data.success){
                 setShowLoading(false);

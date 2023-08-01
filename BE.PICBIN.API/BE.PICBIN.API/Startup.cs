@@ -33,13 +33,16 @@ namespace BE.PICBIN.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var appNameSpace = Configuration.GetSection("AppURL").Value;
-            var adminNameSpace = Configuration.GetSection("AdminURL").Value;
+            //var appNameSpace = Configuration.GetSection("AppURL").Value;
+            //var adminNameSpace = Configuration.GetSection("AdminURL").Value;
+            var appUrls = Configuration.GetSection("WebAppUrls").Value;
+            List<string> urls = appUrls.Split(';').ToList();
 
             services.AddCors(options => options.AddPolicy("ApiCorsPolicy", builder =>
             {
-                builder.WithOrigins(appNameSpace).AllowAnyMethod().AllowAnyHeader();
-                builder.WithOrigins(adminNameSpace).AllowAnyMethod().AllowAnyHeader();
+                builder.WithOrigins("*").AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+                //builder.WithOrigins(appNameSpace).AllowAnyMethod().AllowAnyHeader();
+                //builder.WithOrigins(adminNameSpace).AllowAnyMethod().AllowAnyHeader();
             }));
 
             //JWT Authentication

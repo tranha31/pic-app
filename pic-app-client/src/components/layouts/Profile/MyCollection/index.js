@@ -271,8 +271,8 @@ function MyCollection({callBackUpdate, searchKey, isSearchData}) {
                 searchKey: searchValue,
                 start : index,
                 length : 20,
-                fromDate: new Date(fromDate.setHours(0,0,0,0)),
-                toDate: new Date(toDate.setHours(23,59,59,1000)),
+                fromDate: fromDate.toLocaleDateString() + " 00:00:00",
+                toDate: toDate.toLocaleDateString() + " 23:59:59",
             }
             
             var res = await api.getSellPaging(param);
@@ -309,8 +309,8 @@ function MyCollection({callBackUpdate, searchKey, isSearchData}) {
                 start : index,
                 length : 20,
                 status : paramImageStatus,
-                fromDate: new Date(fromDate.setHours(0,0,0,0)),
-                toDate: new Date(toDate.setHours(23,59,59,1000)),
+                fromDate: fromDate.toLocaleDateString() + " 00:00:00",
+                toDate: toDate.toLocaleDateString() + " 23:59:59",
             }
             
             var res = await api.getImagePaging(param);

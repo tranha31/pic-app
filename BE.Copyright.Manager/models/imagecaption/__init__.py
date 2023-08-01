@@ -1,3 +1,5 @@
+import os
+os.environ['TRANSFORMERS_CACHE'] = 'D:\DATN\pic-app\BE.Copyright.Manager\cache\ImageCaption'
 from transformers import VisionEncoderDecoderModel, ViTImageProcessor, AutoTokenizer
 import torch
 from PIL import Image

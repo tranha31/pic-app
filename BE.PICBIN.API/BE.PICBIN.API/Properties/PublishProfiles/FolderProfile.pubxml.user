@@ -4,7 +4,8 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
 -->
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <_PublishTargetUrl>D:\Blockchain\pic-app\BE.PICBIN.API\BE.PICBIN.API\bin\Release\netcoreapp3.1\publish\</_PublishTargetUrl>
-    <History>True|2023-06-16T13:37:38.5445263Z;True|2023-06-11T23:40:15.6499814+07:00;True|2023-06-11T21:27:32.5608793+07:00;False|2023-06-11T21:26:52.8301372+07:00;True|2023-06-11T20:57:26.2145556+07:00;True|2023-06-10T23:34:30.6241632+07:00;True|2023-06-10T23:16:23.6223919+07:00;</History>
+    <_PublishTargetUrl>D:\DATN\pic-app\BE.PICBIN.API\BE.PICBIN.API\bin\Release\netcoreapp3.1\publish\</_PublishTargetUrl>
+    <History>True|2023-07-19T16:30:30.7143650Z;True|2023-07-19T23:19:50.9674376+07:00;True|2023-07-19T23:14:11.5238005+07:00;True|2023-07-19T23:06:53.8568477+07:00;True|2023-07-19T22:30:56.6232812+07:00;True|2023-07-15T23:29:28.5169800+07:00;True|2023-06-16T20:37:38.5445263+07:00;True|2023-06-11T23:40:15.6499814+07:00;True|2023-06-11T21:27:32.5608793+07:00;False|2023-06-11T21:26:52.8301372+07:00;True|2023-06-11T20:57:26.2145556+07:00;True|2023-06-10T23:34:30.6241632+07:00;True|2023-06-10T23:16:23.6223919+07:00;</History>
+    <LastFailureDetails />
   </PropertyGroup>
 </Project>

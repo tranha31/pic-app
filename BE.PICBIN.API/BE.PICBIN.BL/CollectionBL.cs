@@ -39,8 +39,8 @@ namespace BE.PICBIN.BL
             ServiceResult serviceResult = new ServiceResult();
 
             var fUser = Builders<RegisterRequestModel>.Filter.Eq(x => x.UserPublicKey, key);
-            var fFromDate = Builders<RegisterRequestModel>.Filter.Gte<DateTime>(x => x.CreatedDate, fromDate.AddHours(diffHours));
-            var fToDate = Builders<RegisterRequestModel>.Filter.Lte<DateTime>(x => x.CreatedDate, toDate.AddHours(diffHours));
+            var fFromDate = Builders<RegisterRequestModel>.Filter.Gte<DateTime>(x => x.CreatedDate, fromDate);
+            var fToDate = Builders<RegisterRequestModel>.Filter.Lte<DateTime>(x => x.CreatedDate, toDate);
             var fStatus = Builders<RegisterRequestModel>.Filter.Eq(x => x.Status, status);
 
             FilterDefinition<RegisterRequestModel> combineFilters;
@@ -124,8 +124,8 @@ namespace BE.PICBIN.BL
             ServiceResult serviceResult = new ServiceResult();
 
             var fUser = Builders<AppealRegisterModel>.Filter.Eq(x => x.UserPublicKey, key);
-            var fFromDate = Builders<AppealRegisterModel>.Filter.Gte<DateTime>(x => x.CreatedDate, fromDate.AddHours(diffHours));
-            var fToDate = Builders<AppealRegisterModel>.Filter.Lte<DateTime>(x => x.CreatedDate, toDate.AddHours(diffHours));
+            var fFromDate = Builders<AppealRegisterModel>.Filter.Gte<DateTime>(x => x.CreatedDate, fromDate);
+            var fToDate = Builders<AppealRegisterModel>.Filter.Lte<DateTime>(x => x.CreatedDate, toDate);
 
             FilterDefinition<AppealRegisterModel> combineFilters;
 
@@ -162,8 +162,8 @@ namespace BE.PICBIN.BL
         {
             ServiceResult serviceResult = new ServiceResult();
 
-            var fFromDate = Builders<AppealRegisterModel>.Filter.Gte<DateTime>(x => x.CreatedDate, fromDate.AddHours(diffHours));
-            var fToDate = Builders<AppealRegisterModel>.Filter.Lte<DateTime>(x => x.CreatedDate, toDate.AddHours(diffHours));
+            var fFromDate = Builders<AppealRegisterModel>.Filter.Gte<DateTime>(x => x.CreatedDate, fromDate);
+            var fToDate = Builders<AppealRegisterModel>.Filter.Lte<DateTime>(x => x.CreatedDate, toDate);
 
             FilterDefinition<AppealRegisterModel> combineFilters;
 
@@ -228,7 +228,7 @@ namespace BE.PICBIN.BL
                     var value = new
                     {
                         Infor = listData[item.ImageID],
-                        Image = listImage[item.ImageID]
+                        Image = listImage.ContainsKey(item.ImageID) ? listImage[item.ImageID] : ""
                     };
 
                     result.Add(value);
@@ -327,7 +327,7 @@ namespace BE.PICBIN.BL
                     var value = new
                     {
                         Infor = listData[item.ImageID],
-                        Image = listImage[item.ImageID]
+                        Image = listImage.ContainsKey(item.ImageID) ? listImage[item.ImageID] : ""
                     };
 
                     result.Add(value);

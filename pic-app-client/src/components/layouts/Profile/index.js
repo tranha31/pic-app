@@ -17,8 +17,8 @@ function Profile({callBackUpdate, searchKey, isSearchData}) {
         <div className={cx('home-container', 'd-flex')}>
             <div className={cx('menu-bar', 'd-flex')}>
                 {profileRoutes.map((router, index) => {
-                    var isActive = location.pathname == router.path
-                    if(location.pathname == '/my_collection'){
+                    var isActive =  window.location.href.includes(router.path)
+                    if(window.location.href.includes('/my_collection')){
                         isDefault = true;
                     }
                     return (

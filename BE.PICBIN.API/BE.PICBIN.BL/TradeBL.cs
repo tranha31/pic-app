@@ -183,7 +183,7 @@ namespace BE.PICBIN.BL
                     var value = new
                     {
                         Infor = listData[item.ImageID],
-                        Image = listImage[item.ImageID]
+                        Image = listImage.ContainsKey(item.ImageID) ? listImage[item.ImageID] : ""
                     };
 
                     result.Add(value);
@@ -300,7 +300,7 @@ namespace BE.PICBIN.BL
                     var value = new
                     {
                         Infor = listData[item.ImageID],
-                        Image = listImage[item.ImageID]
+                        Image = listImage.ContainsKey(item.ImageID) ? listImage[item.ImageID] : ""
                     };
 
                     result.Add(value);

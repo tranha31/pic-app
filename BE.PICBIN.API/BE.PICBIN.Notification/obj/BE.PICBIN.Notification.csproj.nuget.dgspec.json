@@ -1,24 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Blockchain\\pic-app\\BE.PICBIN.API\\BE.PICBIN.Notification\\BE.PICBIN.Notification.csproj": {}
+    "D:\\DATN\\pic-app\\BE.PICBIN.API\\BE.PICBIN.Notification\\BE.PICBIN.Notification.csproj": {}
   },
   "projects": {
-    "D:\\Blockchain\\pic-app\\BE.PICBIN.API\\BE.PICBIN.DL\\BE.PICBIN.DL.csproj": {
+    "D:\\DATN\\pic-app\\BE.PICBIN.API\\BE.PICBIN.DL\\BE.PICBIN.DL.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Blockchain\\pic-app\\BE.PICBIN.API\\BE.PICBIN.DL\\BE.PICBIN.DL.csproj",
+        "projectUniqueName": "D:\\DATN\\pic-app\\BE.PICBIN.API\\BE.PICBIN.DL\\BE.PICBIN.DL.csproj",
         "projectName": "BE.PICBIN.DL",
-        "projectPath": "D:\\Blockchain\\pic-app\\BE.PICBIN.API\\BE.PICBIN.DL\\BE.PICBIN.DL.csproj",
-        "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-        "outputPath": "D:\\Blockchain\\pic-app\\BE.PICBIN.API\\BE.PICBIN.DL\\obj\\",
+        "projectPath": "D:\\DATN\\pic-app\\BE.PICBIN.API\\BE.PICBIN.DL\\BE.PICBIN.DL.csproj",
+        "packagesPath": "C:\\Users\\DELL\\.nuget\\packages\\",
+        "outputPath": "D:\\DATN\\pic-app\\BE.PICBIN.API\\BE.PICBIN.DL\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\DELL\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -67,7 +63,8 @@
             "net47",
             "net471",
             "net472",
-            "net48"
+            "net48",
+            "net481"
           ],
           "assetTargetFallback": true,
           "warn": true,
@@ -76,25 +73,21 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.412\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.304\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\Blockchain\\pic-app\\BE.PICBIN.API\\BE.PICBIN.Notification\\BE.PICBIN.Notification.csproj": {
+    "D:\\DATN\\pic-app\\BE.PICBIN.API\\BE.PICBIN.Notification\\BE.PICBIN.Notification.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Blockchain\\pic-app\\BE.PICBIN.API\\BE.PICBIN.Notification\\BE.PICBIN.Notification.csproj",
+        "projectUniqueName": "D:\\DATN\\pic-app\\BE.PICBIN.API\\BE.PICBIN.Notification\\BE.PICBIN.Notification.csproj",
         "projectName": "BE.PICBIN.Notification",
-        "projectPath": "D:\\Blockchain\\pic-app\\BE.PICBIN.API\\BE.PICBIN.Notification\\BE.PICBIN.Notification.csproj",
-        "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-        "outputPath": "D:\\Blockchain\\pic-app\\BE.PICBIN.API\\BE.PICBIN.Notification\\obj\\",
+        "projectPath": "D:\\DATN\\pic-app\\BE.PICBIN.API\\BE.PICBIN.Notification\\BE.PICBIN.Notification.csproj",
+        "packagesPath": "C:\\Users\\DELL\\.nuget\\packages\\",
+        "outputPath": "D:\\DATN\\pic-app\\BE.PICBIN.API\\BE.PICBIN.Notification\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\DELL\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -102,14 +95,15 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\sdk\\7.0.304\\Sdks\\Microsoft.NET.Sdk.Web\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "netcoreapp3.1": {
             "targetAlias": "netcoreapp3.1",
             "projectReferences": {
-              "D:\\Blockchain\\pic-app\\BE.PICBIN.API\\BE.PICBIN.DL\\BE.PICBIN.DL.csproj": {
-                "projectPath": "D:\\Blockchain\\pic-app\\BE.PICBIN.API\\BE.PICBIN.DL\\BE.PICBIN.DL.csproj"
+              "D:\\DATN\\pic-app\\BE.PICBIN.API\\BE.PICBIN.DL\\BE.PICBIN.DL.csproj": {
+                "projectPath": "D:\\DATN\\pic-app\\BE.PICBIN.API\\BE.PICBIN.DL\\BE.PICBIN.DL.csproj"
               }
             }
           }
@@ -135,7 +129,8 @@
             "net47",
             "net471",
             "net472",
-            "net48"
+            "net48",
+            "net481"
           ],
           "assetTargetFallback": true,
           "warn": true,
@@ -147,7 +142,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.412\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.304\\RuntimeIdentifierGraph.json"
         }
       }
     }

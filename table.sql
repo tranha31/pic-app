@@ -9,6 +9,34 @@ SET NAMES 'utf8';
 USE pic_bin_db;
 
 --
+-- Create table `admin`
+--
+CREATE TABLE admin (
+  ID varchar(36) NOT NULL DEFAULT '',
+  UserName varchar(255) DEFAULT NULL,
+  Password varchar(255) DEFAULT NULL,
+  PRIMARY KEY (ID)
+)
+ENGINE = INNODB,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_0900_ai_ci;
+
+USE pic_bin_db;
+
+INSERT INTO admin
+(
+  ID
+ ,UserName
+ ,Password
+)
+VALUES
+(
+  UUID() -- ID - VARCHAR(36) NOT NULL
+ ,'admin' -- UserName - VARCHAR(255)
+ ,'MjgxMDQ1ODk=' -- Password - VARCHAR(255)
+);
+
+--
 -- Create table `copyrightimage`
 --
 CREATE TABLE copyrightimage (
@@ -173,3 +201,17 @@ ENGINE = INNODB,
 AVG_ROW_LENGTH = 5461,
 CHARACTER SET utf8mb3,
 COLLATE utf8mb3_general_ci;
+
+
+CREATE TABLE notification (
+  ID varchar(36) NOT NULL DEFAULT '',
+  UserPublicKey varchar(255) DEFAULT NULL,
+  Content varchar(500) DEFAULT NULL,
+  Status int DEFAULT NULL,
+  Type int DEFAULT NULL,
+  ReferenceLink varchar(500) DEFAULT NULL,
+  CreatedTime datetime DEFAULT NULL,
+  ImageID varchar(36) DEFAULT NULL,
+  PRIMARY KEY (ID)
+)
+ENGINE = INNODB;

@@ -13,3 +13,4 @@ Pillow
 pandas
 tensorflow
 transformers
+pymysql
